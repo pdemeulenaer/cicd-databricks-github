@@ -1,3 +1,5 @@
+[![Test pipeline](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onpush.yml/badge.svg?branch=main)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onpush.yml)
+
 # cicd-databricks-github
 
 This is a sample project for Databricks, generated via cookiecutter.
