@@ -38,9 +38,9 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
 
-      - name: Deploy the job
-        run: |
-          dbx deploy --jobs=cicd-databricks-github-sample
+      # - name: Deploy the job
+      #   run: |
+      #     dbx deploy --jobs=cicd-databricks-github-sample
 
       # - name: Create Release
       #   id: create_release
