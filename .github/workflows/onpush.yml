@@ -3,7 +3,12 @@ name: Test pipeline
 on:
   push:
     branches:
-      - '**'
+      - development
+  pull_request:
+    branches:
+      - main  
+      - development   
+      - 'release/**'       
     tags-ignore:
       - 'v*' # this tag type is used for release pipelines
 
