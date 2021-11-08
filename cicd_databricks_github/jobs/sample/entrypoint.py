@@ -17,7 +17,7 @@ from sklearn.datasets import load_iris
 class SampleJob(Job):
 
     # Custom function
-    def train(model_conf, **kwargs):
+    def train(self, model_conf, **kwargs):
 
         try:
             print()
@@ -149,7 +149,7 @@ class SampleJob(Job):
         # data_conf = json.loads(data_json)
         model_conf = json.loads(config_json)
 
-        train(model_conf)
+        self.train(model_conf)
 
         self.logger.info("Sample job finished!")
 
