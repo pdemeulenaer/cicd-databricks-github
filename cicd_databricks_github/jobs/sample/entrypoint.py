@@ -1,12 +1,16 @@
 from cicd_databricks_github.common import Job
 
+import pandas as pd
+import numpy as np
+import mlflow
+
 #Import of SKLEARN packages
 from sklearn.metrics import accuracy_score, roc_curve, auc, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_iris
 
-import mlflow
+
 
 
 class SampleJob(Job):
