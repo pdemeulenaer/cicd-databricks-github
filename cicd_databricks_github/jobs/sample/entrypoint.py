@@ -59,7 +59,7 @@ class SampleJob(Job):
             test_pd.loc[data_pd['label']==0,'species'] = 'setosa'
             test_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
             test_pd.loc[data_pd['label']==2,'species'] = 'virginica'
-            test_df = spark.createDataFrame(test_pd)
+            test_df = self.spark.createDataFrame(test_pd)
             test_df.write.format("delta").mode("overwrite").save("dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
 
             print("Step 1.0 completed: Loaded Iris dataset in Pandas")      
