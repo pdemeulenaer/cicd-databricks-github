@@ -4,3 +4,6 @@ pyspark==3.0.0
 pytest
 pytest-cov
 dbx
+scikit-learn
+pandas
+numpy
