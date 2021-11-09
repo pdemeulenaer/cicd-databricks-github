@@ -41,7 +41,6 @@ class SampleJob(Job):
             }
         }'''
 
-        # data_conf = json.loads(data_json)
         model_conf = json.loads(config_json)        
 
         try:
