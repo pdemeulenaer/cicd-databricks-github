@@ -1,9 +1,9 @@
 name: Test pipeline
 
 on:
-  push:
-    branches:
-      - development
+  # push:
+  #   branches:
+  #     - development
   pull_request:
     branches:
       - main  
