@@ -17,7 +17,32 @@ from sklearn.datasets import load_iris
 class SampleJob(Job):
 
     # Custom function
-    def train(self, model_conf, **kwargs):
+    def train(self, **kwargs):
+
+        self.logger.info("Launching TRAIN job")
+
+        listing = self.dbutils.fs.ls("dbfs:/")
+
+        for l in listing:
+            self.logger.info(f"DBFS directory: {l}")        
+
+        # Define the MLFlow experiment location
+        mlflow.set_experiment("/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment")
+        
+        config_json = '''{
+            "hyperparameters": {
+                "max_depth": "20",
+                "n_estimators": "100",
+                "max_features": "auto",
+                "criterion": "gini",
+                "class_weight": "balanced",
+                "bootstrap": "True",
+                "random_state": "21"        
+            }
+        }'''
+
+        # data_conf = json.loads(data_json)
+        model_conf = json.loads(config_json)        
 
         try:
             print()
@@ -131,29 +156,10 @@ class SampleJob(Job):
             self.conf["output_path"]
         )
 
-        # Define the MLFlow experiment location
-        mlflow.set_experiment("/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment")
-        
-        config_json = '''{
-            "hyperparameters": {
-                "max_depth": "20",
-                "n_estimators": "100",
-                "max_features": "auto",
-                "criterion": "gini",
-                "class_weight": "balanced",
-                "bootstrap": "True",
-                "random_state": "21"        
-            }
-        }'''
-
-        # data_conf = json.loads(data_json)
-        model_conf = json.loads(config_json)
-
-        self.train(model_conf)
-
         self.logger.info("Sample job finished!")
 
 
 if __name__ == "__main__":
     job = SampleJob()
     job.launch()
+    job.train()
