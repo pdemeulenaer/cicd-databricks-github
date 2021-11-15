@@ -38,6 +38,14 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
 
+      - name: Deploy integration test
+        run: |
+          dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
+
+      - name: Run integration test
+        run: |
+          dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace          
+
       - name: Deploy the job
         run: |
           dbx deploy --jobs=cicd-databricks-github-sample --files-only
