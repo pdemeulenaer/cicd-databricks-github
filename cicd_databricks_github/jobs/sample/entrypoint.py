@@ -160,5 +160,5 @@ class SampleJob(Job):
 
 if __name__ == "__main__":
     job = SampleJob()
-    job.launch()
-    # job.train()
+    # job.launch()
+    job.train()
