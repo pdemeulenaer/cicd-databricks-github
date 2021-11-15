@@ -40,7 +40,7 @@ jobs:
 
       - name: Deploy the job
         run: |
-          dbx deploy --jobs=cicd-databricks-github-sample
+          dbx deploy --jobs=cicd-databricks-github-sample --files-only
 
       - name: Run the job
         run: |
