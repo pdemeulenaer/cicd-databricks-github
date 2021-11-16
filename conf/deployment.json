@@ -5,7 +5,11 @@
                 "name": "cicd-databricks-github-sample",
                 "new_cluster": {
                     "spark_version": "7.3.x-cpu-ml-scala2.12",
-                    "node_type_id": "Standard_F4s",
+                    "node_type_id": "i3.xlarge",
+                    "aws_attributes": {
+                        "first_on_demand": 0,
+                        "availability": "SPOT"
+                    },
                     "num_workers": 2
                 },
                 "libraries": [],
@@ -27,7 +31,11 @@
                 "name": "cicd-databricks-github-sample-integration-test",
                 "new_cluster": {
                     "spark_version": "7.3.x-cpu-ml-scala2.12",
-                    "node_type_id": "Standard_F4s",
+                    "node_type_id": "i3.xlarge",
+                    "aws_attributes": {
+                        "first_on_demand": 0,
+                        "availability": "SPOT"
+                    },                    
                     "num_workers": 1
                 },
                 "libraries": [],
