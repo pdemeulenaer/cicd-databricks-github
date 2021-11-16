@@ -12,8 +12,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_iris
 
 
-
-
 class SampleJob(Job):
 
     # Custom function
