@@ -29,17 +29,18 @@
             },
             {
                 "name": "multi-tasks-job",
-                "new_cluster": {
-                    "spark_version": "7.3.x-cpu-ml-scala2.12",
-                    "node_type_id": "i3.xlarge",
-                    "aws_attributes": {
-                        "first_on_demand": 0,
-                        "availability": "SPOT"
-                    },
-                    "num_workers": 2
-                },
                 "tasks": [
                     {
+                        "task_key": "task1",
+                        "new_cluster": {
+                            "spark_version": "7.3.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2
+                        },                        
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],
@@ -54,7 +55,29 @@
                                 "conf/test/sample.json"
                             ]
                         }
-                    }
+                    },
+                    {
+                        "task_key": "task2",
+                        "new_cluster": {
+                            "spark_version": "7.3.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2
+                        },                        
+                        "libraries": [],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "tests/integration/sample_test.py"
+                        }
+                    }                    
                 ]
 
             },            
