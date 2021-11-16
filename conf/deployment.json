@@ -20,7 +20,7 @@
                 },
                 "max_retries": 0,
                 "spark_python_task": {
-                    "python_file": "cicd_databricks_github/jobs/sample/entrypoint.py",
+                    "python_file": ["tests/integration/sample_test.py", "cicd_databricks_github/jobs/sample/entrypoint.py"],
                     "parameters": [
                         "--conf-file",
                         "conf/test/sample.json"
