@@ -1,4 +1,5 @@
 [![Test pipeline](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onpush.yml/badge.svg?branch=main)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onpush.yml)
+[![Release pipeline](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onrelease.yml/badge.svg)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onrelease.yml)
 
 # cicd-databricks-github
 
