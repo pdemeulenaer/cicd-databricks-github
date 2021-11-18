@@ -1,0 +1,116 @@
+{
+    "default": {
+        "jobs": [
+            {
+                "name": "cicd-databricks-github-sample",
+                "new_cluster": {
+                    "spark_version": "7.3.x-cpu-ml-scala2.12",
+                    "node_type_id": "i3.xlarge",
+                    "aws_attributes": {
+                        "first_on_demand": 0,
+                        "availability": "SPOT"
+                    },
+                    "num_workers": 2
+                },
+                "libraries": [],
+                "email_notifications": {
+                    "on_start": [],
+                    "on_success": [],
+                    "on_failure": []
+                },
+                "max_retries": 0,
+                "spark_python_task": {
+                    "python_file": "cicd_databricks_github/jobs/sample/entrypoint.py",
+                    "parameters": [
+                        "--conf-file",
+                        "conf/test/sample.json"
+                    ]
+                }
+            },         
+            {
+                "name": "cicd-databricks-github-sample-integration-test",
+                "new_cluster": {
+                    "spark_version": "7.3.x-cpu-ml-scala2.12",
+                    "node_type_id": "i3.xlarge",
+                    "aws_attributes": {
+                        "first_on_demand": 0,
+                        "availability": "SPOT"
+                    },                    
+                    "num_workers": 1
+                },
+                "libraries": [],
+                "email_notifications": {
+                    "on_start": [],
+                    "on_success": [],
+                    "on_failure": []
+                },
+                "max_retries": 0,
+                "spark_python_task": {
+                    "python_file": "tests/integration/sample_test.py"
+                }
+            },            
+            {
+                "name": "multi-tasks-job",
+                "max_concurrent_runs": 1,
+                "tasks": [
+                    {
+                        "task_key": "task1",
+                        "description":"Integration test task",
+                        "new_cluster": {
+                            "spark_version": "7.3.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2
+                        },                        
+                        "libraries": [],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "tests/integration/sample_test.py"
+                        }                       
+                    },                     
+                    {
+                        "task_key": "task2",
+                        "description":"Training task",
+                        "depends_on": [
+                            {
+                              "task_key": "task1"
+                            }
+                        ],                         
+                        "new_cluster": {
+                            "spark_version": "7.3.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2
+                        },                        
+                        "libraries": [],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "cicd_databricks_github/jobs/sample/entrypoint.py",
+                            "parameters": [
+                                "--conf-file",
+                                "conf/test/sample.json"
+                            ]
+                        }
+                    }                   
+                ],
+                "format": "MULTI_TASK"
+            }            
+        ]
+    }
+}
