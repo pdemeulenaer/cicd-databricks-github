@@ -53,5 +53,13 @@ jobs:
       #   run: |
       #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace
 
+      - name: Deploy the job TRAINING
+        run: |
+          dbx deploy --jobs=ci-train --files-only
+       
+      - name: Run the job TRAINING
+        run: |
+          dbx launch --job=ci-train --as-run-submit --trace         
+
 
 
