@@ -52,15 +52,15 @@ class SampleJob(Job):
         # 1.0 Data Loading
         # ==============================
 
-        train_df = self.spark.read.format("delta").load("dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
-        train_pd = train_df.toPandas()
+        test_df = self.spark.read.format("delta").load("dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
+        test_pd = test_df.toPandas()
 
         # Feature selection
         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         target       = 'label'   
 
-        x_train = train_pd[feature_cols].values
-        y_train = train_pd[target].values
+        x_test = test_pd[feature_cols].values
+        y_test = test_pd[target].values
 
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
         self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")   
@@ -119,6 +119,7 @@ class SampleJob(Job):
         #     print(traceback.format_exc())
         #     raise e                  
 
+
     def launch(self):
         self.logger.info("Launching sample job")
 
@@ -133,8 +134,8 @@ class SampleJob(Job):
             self.conf["output_path"]
         )
 
-        self.logger.info("Sample job finished!")       
-
+        self.logger.info("Sample job finished!")
+        
 
 if __name__ == "__main__":
     job = SampleJob()
