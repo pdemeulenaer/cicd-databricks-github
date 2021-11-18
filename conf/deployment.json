@@ -54,7 +54,7 @@
                 "max_concurrent_runs": 1,            
                 "tasks": [
                     {
-                        "task_key": "step data prep task",
+                        "task_key": "step-data-prep-task",
                         "description":"step data preparation",
                         "new_cluster": {
                             "spark_version": "7.3.x-cpu-ml-scala2.12",
@@ -77,11 +77,11 @@
                         }                       
                     },                     
                     {
-                        "task_key": "step training task",
+                        "task_key": "step-training-task",
                         "description":"Step Training",
                         "depends_on": [
                             {
-                              "task_key": "task1"
+                              "task_key": "step-data-prep-task"
                             }
                         ],                         
                         "new_cluster": {
