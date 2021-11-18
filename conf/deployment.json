@@ -26,33 +26,7 @@
                         "conf/test/sample.json"
                     ]
                 }
-            },     
-            {
-                "name": "ci-train",
-                "new_cluster": {
-                    "spark_version": "7.3.x-cpu-ml-scala2.12",
-                    "node_type_id": "i3.xlarge",
-                    "aws_attributes": {
-                        "first_on_demand": 0,
-                        "availability": "SPOT"
-                    },
-                    "num_workers": 2
-                },
-                "libraries": [],
-                "email_notifications": {
-                    "on_start": [],
-                    "on_success": [],
-                    "on_failure": []
-                },
-                "max_retries": 0,
-                "spark_python_task": {
-                    "python_file": "cicd_databricks_github/jobs/sample/training.py",
-                    "parameters": [
-                        "--conf-file",
-                        "conf/test/sample.json"
-                    ]
-                }
-            },                   
+            },                      
             {
                 "name": "cicd-databricks-github-sample-integration-test",
                 "new_cluster": {
@@ -74,7 +48,74 @@
                 "spark_python_task": {
                     "python_file": "tests/integration/sample_test.py"
                 }
-            },            
+            },    
+            {
+                "name": "ci-train-job",
+                "max_concurrent_runs": 1,
+                "schedule": {
+                    "quartz_cron_expression": "0 0/30 * * * ?",
+                    "timezone_id": "Europe/Kiev",
+                    "pause_status": "UNPAUSED"
+                },                
+                "tasks": [
+                    {
+                        "task_key": "step data prep task",
+                        "description":"step data preparation",
+                        "new_cluster": {
+                            "spark_version": "7.3.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2
+                        },                        
+                        "libraries": [],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "tests/integration/step_data_prep.py"
+                        }                       
+                    },                     
+                    {
+                        "task_key": "step training task",
+                        "description":"Step Training",
+                        "depends_on": [
+                            {
+                              "task_key": "task1"
+                            }
+                        ],                         
+                        "new_cluster": {
+                            "spark_version": "7.3.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2
+                        },                        
+                        "libraries": [],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "cicd_databricks_github/jobs/sample/step_training.py",
+                            "parameters": [
+                                "--conf-file",
+                                "conf/test/sample.json"
+                            ]
+                        }
+                    }                   
+                ],
+                "format": "MULTI_TASK"
+            },                      
             {
                 "name": "multi-tasks-job",
                 "max_concurrent_runs": 1,

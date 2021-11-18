@@ -49,9 +49,9 @@ jobs:
         run: |
           dbx deploy --jobs=ci-train --files-only
        
-      # - name: Run the job TRAINING
-      #   run: |
-      #     dbx launch --job=ci-train --as-run-submit --trace         
+      - name: Run the job TRAINING
+        run: |
+          dbx launch --job=ci-train --as-run-submit --trace         
 
 
 

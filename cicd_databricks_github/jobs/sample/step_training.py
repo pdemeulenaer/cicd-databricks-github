@@ -52,39 +52,19 @@ class SampleJob(Job):
         # 1.0 Data Loading
         # ==============================
 
-        # Loading of dataset
-        iris = load_iris()                  #The Iris dataset is available through the scikit-learn API
-        idx = list(range(len(iris.target)))
-        np.random.shuffle(idx)              #We shuffle it (important if we want to split in train and test sets)
-        X = iris.data[idx]
-        y = iris.target[idx]
+        train_df = self.spark.read.format("delta").load("dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
+        train_pd = train_df.toPandas()
 
-        # Load data in Pandas dataFrame
-        data_pd = pd.DataFrame(data=np.column_stack((X,y)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label'])
-        data_pd.loc[data_pd['label']==0,'species'] = 'setosa'
-        data_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
-        data_pd.loc[data_pd['label']==2,'species'] = 'virginica'
-        data_pd.head()
-        
         # Feature selection
         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         target       = 'label'   
-        
-        X = data_pd[feature_cols].values
-        y = data_pd[target].values
 
-        # Creation of train and test datasets
-        x_train, x_test, y_train, y_test = train_test_split(X,y,train_size=0.7, stratify=y) #stratify=y ensures that the same proportion of labels are in both train and test sets! 
-        
-        # Save test dataset
-        test_pd = pd.DataFrame(data=np.column_stack((x_test,y_test)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label'])
-        test_pd.loc[data_pd['label']==0,'species'] = 'setosa'
-        test_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
-        test_pd.loc[data_pd['label']==2,'species'] = 'virginica'
-        test_df = self.spark.createDataFrame(test_pd)
-        test_df.write.format("delta").mode("overwrite").save("dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
+        x_train = train_pd[feature_cols].values
+        y_train = train_pd[target].values
 
-        print("Step 1.0 completed: Loaded Iris dataset in Pandas")      
+        # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
+        self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")   
+          
 
         # except Exception as e:
         #     print("Errored on 1.0: data loading")
@@ -130,7 +110,8 @@ class SampleJob(Job):
                                 "model",
                                 registered_model_name="sklearn-rf")                        
 
-        print("Step 1.1 completed: model training and saved to MLFlow")                  
+        # print("Step 1.1 completed: model training and saved to MLFlow")  
+        self.logger.info("Step 1.1 completed: model training and saved to MLFlow")                
 
         # except Exception as e:
         #     print("Errored on step 1.1: model training")
@@ -139,24 +120,6 @@ class SampleJob(Job):
         #     raise e                  
 
 
-    def launch(self):
-        self.logger.info("Launching sample job")
-
-        listing = self.dbutils.fs.ls("dbfs:/")
-
-        for l in listing:
-            self.logger.info(f"DBFS directory: {l}")
-
-        df = self.spark.range(0, 1000)
-
-        df.write.format(self.conf["output_format"]).mode("overwrite").save(
-            self.conf["output_path"]
-        )
-
-        self.logger.info("Sample job finished!")
-
-
 if __name__ == "__main__":
     job = SampleJob()
-    # job.launch()
     job.train()
