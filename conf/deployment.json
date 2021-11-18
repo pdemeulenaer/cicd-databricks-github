@@ -73,7 +73,7 @@
                         },
                         "max_retries": 0,
                         "spark_python_task": {
-                            "python_file": "tests/integration/step_data_prep.py"
+                            "python_file": "cicd_databricks_github/jobs/sample/step_data_prep.py"
                         }                       
                     },                     
                     {
