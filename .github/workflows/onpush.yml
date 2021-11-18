@@ -47,11 +47,11 @@ jobs:
 
       - name: Deploy the job TRAINING
         run: |
-          dbx deploy --jobs=ci-train --files-only
+          dbx deploy --jobs=ci-train-job --files-only
        
       - name: Run the job TRAINING
         run: |
-          dbx launch --job=ci-train --as-run-submit --trace         
+          dbx launch --job=ci-train-job --as-run-submit --trace         
 
 
 
