@@ -2,6 +2,7 @@
     "data": {
         "output_format": "delta",
         "data_path": "dbfs:/dbx/tmp/cicd_databricks_github/data/",
+        "output_path":"dbfs:/dbx/tmp/cicd_databricks_github/output_data/",
         "train_val_dataset":"train_val_iris_dataset",
         "train_dataset":"train_iris_dataset",
         "val_dataset":"val_iris_dataset",

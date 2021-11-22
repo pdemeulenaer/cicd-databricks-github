@@ -33,6 +33,7 @@ class SampleJob(Job):
         train_dataset = self.conf["data"]["train_dataset"]
         val_dataset = self.conf["data"]["val_dataset"]   
         experiment = self.conf["model"]["experiment_name"] 
+        output_path = self.conf["data"]["output_path"]
 
         # Define the MLFlow experiment location
         mlflow.set_experiment(experiment)    
@@ -103,7 +104,35 @@ class SampleJob(Job):
             mlflow.log_param("max_features", str(max_features)) 
             mlflow.sklearn.log_model(model, 
                                 "model",
-                                registered_model_name="sklearn-rf")                        
+                                registered_model_name="sklearn-rf")   
+
+            y_val_pred = model.predict(x_val)    
+
+            # Accuracy and Confusion Matrix
+            accuracy = accuracy_score(y_val, y_val_pred)
+            print('Accuracy = ',accuracy)
+            print('Confusion matrix:')
+            Classes = ['setosa','versicolor','virginica']
+            C = confusion_matrix(y_val, y_val_pred)
+            C_normalized = C / C.astype(np.float).sum()        
+            C_normalized_pd = pd.DataFrame(C_normalized,columns=Classes,index=Classes)
+            print(C_normalized_pd)   
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            cax = ax.matshow(C,cmap='Blues')
+            plt.title('Confusion matrix of the classifier')
+            fig.colorbar(cax)
+            ax.set_xticklabels([''] + Classes)
+            ax.set_yticklabels([''] + Classes)
+            plt.xlabel('Predicted')
+            plt.ylabel('True')
+            plt.show()
+            fig.savefig(output_path+'confusion_matrix_iris.png')
+
+            # Tracking performance metrics
+            mlflow.log_metric("Accuracy", accuracy)
+            mlflow.log_artifact(output_path+'confusion_matrix_iris.png')                                        
 
         # print("Step 1.1 completed: model training and saved to MLFlow")  
         self.logger.info("Step 1.1 completed: model training and saved to MLFlow")                
