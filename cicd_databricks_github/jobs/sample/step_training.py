@@ -52,12 +52,18 @@ class SampleJob(Job):
         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
         train_pd = train_df.toPandas()
 
+        val_df = self.spark.read.format("delta").load(data_path+val_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
+        val_pd = val_df.toPandas()        
+
         # Feature selection
         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         target       = 'label'   
 
         x_train = train_pd[feature_cols].values
         y_train = train_pd[target].values
+
+        x_val = val_pd[feature_cols].values
+        y_val = val_pd[target].values        
 
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
         self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")   
@@ -102,10 +108,9 @@ class SampleJob(Job):
             mlflow.log_param("class_weight", str(class_weight))  
             mlflow.log_param("bootstrap", str(bootstrap))  
             mlflow.log_param("max_features", str(max_features)) 
-            mlflow.sklearn.log_model(model, 
-                                "model",
-                                registered_model_name="sklearn-rf")   
+            mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
 
+            # Inference on validation dataset
             y_val_pred = model.predict(x_val)    
 
             # Accuracy and Confusion Matrix
@@ -118,6 +123,7 @@ class SampleJob(Job):
             C_normalized_pd = pd.DataFrame(C_normalized,columns=Classes,index=Classes)
             print(C_normalized_pd)   
 
+            # Figure plot
             fig = plt.figure()
             ax = fig.add_subplot(111)
             cax = ax.matshow(C,cmap='Blues')
