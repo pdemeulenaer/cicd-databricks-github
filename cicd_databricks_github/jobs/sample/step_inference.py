@@ -5,7 +5,7 @@ import numpy as np
 import mlflow
 import json
 
-#Import of SKLEARN packages
+# Import of Sklearn packages
 from sklearn.metrics import accuracy_score, roc_curve, auc, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -24,27 +24,24 @@ class SampleJob(Job):
         for l in listing:
             self.logger.info(f"DBFS directory: {l}")        
 
-        # Define the MLFlow experiment location
-        mlflow.set_experiment("/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment")
-        
-        config_json = '''{
-            "hyperparameters": {
-                "max_depth": "20",
-                "n_estimators": "100",
-                "max_features": "auto",
-                "criterion": "gini",
-                "class_weight": "balanced",
-                "bootstrap": "True",
-                "random_state": "21"        
-            }
-        }'''
+        # Read config file and necessary config fields
+        model_conf = self.conf["model"]
+        self.logger.info("model configs: {0}".format(model_conf))
+        print(model_conf)   
+        data_path = self.conf["data"]["data_path"]
+        train_val_dataset = self.conf["data"]["train_val_dataset"]
+        train_dataset = self.conf["data"]["train_dataset"]
+        val_dataset = self.conf["data"]["val_dataset"]   
+        experiment = self.conf["model"]["experiment_name"] 
+        output_path = self.conf["data"]["output_path"]
 
-        model_conf = json.loads(config_json)        
+        # Define the MLFlow experiment location
+        mlflow.set_experiment(experiment)       
 
         # try:
         print()
         print("-----------------------------------")
-        print("         Model Training            ")
+        print("         Model Inference           ")
         print("-----------------------------------")
         print()
 
