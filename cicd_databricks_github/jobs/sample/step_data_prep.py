@@ -27,19 +27,24 @@ class SampleJob(Job):
         # Define the MLFlow experiment location
         mlflow.set_experiment("/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment")
         
-        config_json = '''{
-            "hyperparameters": {
-                "max_depth": "20",
-                "n_estimators": "100",
-                "max_features": "auto",
-                "criterion": "gini",
-                "class_weight": "balanced",
-                "bootstrap": "True",
-                "random_state": "21"        
-            }
-        }'''
+        config_json = self.conf["model"]
+        # config_json = '''{
+        #     "hyperparameters": {
+        #         "max_depth": "20",
+        #         "n_estimators": "100",
+        #         "max_features": "auto",
+        #         "criterion": "gini",
+        #         "class_weight": "balanced",
+        #         "bootstrap": "True",
+        #         "random_state": "21"        
+        #     }
+        # }'''
+        self.logger.info("model configs: {0}".format(config_json))
+        print(config_json)
 
-        model_conf = json.loads(config_json)        
+        model_conf = json.loads(config_json)   
+        self.logger.info("model configs: {0}".format(model_conf))
+        print(model_conf)             
 
         # try:
         print()
@@ -74,7 +79,7 @@ class SampleJob(Job):
         y = data_pd[target].values
 
         # Creation of train and test datasets
-        x_train, x_test, y_train, y_test = train_test_split(X,y,train_size=0.7, stratify=y) #stratify=y ensures that the same proportion of labels are in both train and test sets! 
+        x_train, x_val, y_train, y_val = train_test_split(X,y,train_size=0.7, stratify=y) #stratify=y ensures that the same proportion of labels are in both train and test sets! 
 
         # Save train dataset
         train_pd = pd.DataFrame(data=np.column_stack((x_train,y_train)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label'])
@@ -85,12 +90,12 @@ class SampleJob(Job):
         train_df.write.format("delta").mode("overwrite").save("dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
 
         # Save test dataset
-        test_pd = pd.DataFrame(data=np.column_stack((x_test,y_test)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label'])
-        test_pd.loc[data_pd['label']==0,'species'] = 'setosa'
-        test_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
-        test_pd.loc[data_pd['label']==2,'species'] = 'virginica'
-        test_df = self.spark.createDataFrame(test_pd)
-        test_df.write.format("delta").mode("overwrite").save("dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
+        val_pd = pd.DataFrame(data=np.column_stack((x_val,y_val)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label'])
+        val_pd.loc[data_pd['label']==0,'species'] = 'setosa'
+        val_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
+        val_pd.loc[data_pd['label']==2,'species'] = 'virginica'
+        test_df = self.spark.createDataFrame(val_pd)
+        test_df.write.format("delta").mode("overwrite").save("dbfs:/dbx/tmp/test/{0}".format('val_data_sklearn_rf'))
 
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")  
         self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")    

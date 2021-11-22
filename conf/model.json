@@ -1,0 +1,16 @@
+{
+    "output_format": "delta",
+    "output_path": "dbfs:/dbx/tmp/test/cicd_databricks_github",
+    "model": {
+        "hyperparameters": {
+            "max_depth": "20",
+            "n_estimators": "100",
+            "max_features": "auto",
+            "criterion": "gini",
+            "class_weight": "balanced",
+            "bootstrap": "True",
+            "random_state": "21"        
+        }
+    }
+
+}

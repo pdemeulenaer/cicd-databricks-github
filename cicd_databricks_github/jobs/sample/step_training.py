@@ -52,7 +52,7 @@ class SampleJob(Job):
         # 1.0 Data Loading
         # ==============================
 
-        train_df = self.spark.read.format("delta").load("dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
+        train_df = self.spark.read.format("delta").load("dbfs:/dbx/tmp/test/{0}".format('train_val_data_sklearn_rf'))
         train_pd = train_df.toPandas()
 
         # Feature selection

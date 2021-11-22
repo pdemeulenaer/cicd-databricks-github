@@ -101,3 +101,40 @@ Please set the following secrets or environment variables for your CI provider:
 git tag -a v<your-project-version> -m "Release tag for version <your-project-version>"
 git push origin --tags
 ```
+
+## The use case
+
+Use case: a simple random forest classifier (using scikit-learn) of the Iris dataset
+
+The CI/CD procedure:
+
+CI:
+
+* unit tests (dummy, so far unrelated to the use case)
+
+* Deploy & trigger training job. Training job made of 2 tasks:
+
+  - task 1 (step_data_prep.py): data preparation task: Iris dataset is downloaded and split into train and test. Both are saved (test kept for validation step)
+  - task 2 (step_training.py): training RF model (aka the "CI experiment"). Experiment saved to MLflow
+  - task 3 (step_compare_performance.py): comparison of model performance to all experiments logged during the feature branch; Validate as a custom tag in MLflow for the CI experiment
+
+Based on the CI experiment tag, reviewer will know if the PR is to be merged (also looking at results of unit tests, code analysis if such exists,...)  
+
+CD:
+
+* Deploy & trigger integration tests (dummy, so far unrelated to the use case)
+
+* Validation job: run the scoring function on the test dataset
+
+* Deploy the scheduled batch inference on Databricks Jobs: here the scoring function is applied on unseen data (again, test dataset?)
+
+
+## TODO list
+
+* Put all functions into a utils.py module that we can refer to in any file. 
+
+* Store configs in json, and read from them from each task
+
+* Build the TRAIN and TEST datasets BEFORE the data preparation task. It should be there even before the CI takes place. 
+
+
