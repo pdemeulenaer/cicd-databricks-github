@@ -27,24 +27,9 @@ class SampleJob(Job):
         # Define the MLFlow experiment location
         mlflow.set_experiment("/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment")
         
-        config_json = self.conf["model"]
-        # config_json = '''{
-        #     "hyperparameters": {
-        #         "max_depth": "20",
-        #         "n_estimators": "100",
-        #         "max_features": "auto",
-        #         "criterion": "gini",
-        #         "class_weight": "balanced",
-        #         "bootstrap": "True",
-        #         "random_state": "21"        
-        #     }
-        # }'''
+        model_conf = self.conf["model"]
         self.logger.info("model configs: {0}".format(config_json))
-        print(config_json)
-
-        model_conf = json.loads(config_json)   
-        self.logger.info("model configs: {0}".format(model_conf))
-        print(model_conf)             
+        print(config_json)           
 
         # try:
         print()
