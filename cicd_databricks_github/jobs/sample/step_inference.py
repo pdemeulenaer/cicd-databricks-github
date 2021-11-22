@@ -3,6 +3,7 @@ from cicd_databricks_github.common import Job
 import pandas as pd
 import numpy as np
 import mlflow
+from mlflow.tracking import MlflowClient
 import json
 
 # Import of Sklearn packages
@@ -49,12 +50,12 @@ class SampleJob(Job):
         # 1.0 Data Loading
         # ==============================
 
-        test_df = self.spark.read.format("delta").load("dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
+        test_df = self.spark.read.format("delta").load(data_path+test_dataset) #"dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
         test_pd = test_df.toPandas()
 
         # Feature selection
         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-        target       = 'label'   
+        target = 'label'   
 
         x_test = test_pd[feature_cols].values
         y_test = test_pd[target].values
@@ -62,7 +63,6 @@ class SampleJob(Job):
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
         self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")   
           
-
         # except Exception as e:
         #     print("Errored on 1.0: data loading")
         #     print("Exception Trace: {0}".format(e))
@@ -71,44 +71,24 @@ class SampleJob(Job):
 
         # try:
         # ========================================
-        # 1.1 Model training
+        # 1.1 Model inference
         # ========================================
         
-        with mlflow.start_run() as run:          
+        # Load model from MLflow experiment
 
-            # Model definition
-            max_depth = int(model_conf['hyperparameters']['max_depth'])
-            n_estimators = int(model_conf['hyperparameters']['n_estimators'])
-            max_features = model_conf['hyperparameters']['max_features']
-            criterion = model_conf['hyperparameters']['criterion']
-            class_weight = model_conf['hyperparameters']['class_weight']
-            bootstrap = bool(model_conf['hyperparameters']['bootstrap'])
-            clf = RandomForestClassifier(max_depth=max_depth,
-                                    n_estimators=n_estimators,
-                                    max_features=max_features,
-                                    criterion=criterion,
-                                    class_weight=class_weight,
-                                    bootstrap=bootstrap,
-                                    random_state=21,
-                                    n_jobs=-1)          
-            
-            # Fit of the model on the training set
-            model = clf.fit(x_train, y_train) 
-            
-            # Log the model within the MLflow run
-            mlflow.log_param("max_depth", str(max_depth))
-            mlflow.log_param("n_estimators", str(n_estimators))  
-            mlflow.log_param("max_features", str(max_features))             
-            mlflow.log_param("criterion", str(criterion))  
-            mlflow.log_param("class_weight", str(class_weight))  
-            mlflow.log_param("bootstrap", str(bootstrap))  
-            mlflow.log_param("max_features", str(max_features)) 
-            mlflow.sklearn.log_model(model, 
-                                "model",
-                                registered_model_name="sklearn-rf")                        
+        # Initialize client
+        client = MlflowClient()
 
-        # print("Step 1.1 completed: model training and saved to MLFlow")  
-        self.logger.info("Step 1.1 completed: model training and saved to MLFlow")                
+        # Get experiment and runs 
+        exp  = client.get_experiment_by_name(experiment)
+        runs = mlflow.search_runs([exp.experiment_id])
+
+        model_path = 
+        model = mlflow.pyfunc.load_model(model_path)
+        model.predict(model_input)                    
+
+        # print("Step 1.1 completed: model inference")  
+        self.logger.info("Step 1.1 completed: model inference")                
 
         # except Exception as e:
         #     print("Errored on step 1.1: model training")

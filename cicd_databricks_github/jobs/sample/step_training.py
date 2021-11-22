@@ -11,6 +11,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_iris
 
+# Import matplotlib packages
+from IPython.core.pylabtools import figsize
+from matplotlib import pyplot as plt
+import pylab
+from pylab import *
+import matplotlib.cm as cm
+import matplotlib.mlab as mlab
+
 
 class SampleJob(Job):
 
@@ -57,7 +65,7 @@ class SampleJob(Job):
 
         # Feature selection
         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-        target       = 'label'   
+        target = 'label'   
 
         x_train = train_pd[feature_cols].values
         y_train = train_pd[target].values
