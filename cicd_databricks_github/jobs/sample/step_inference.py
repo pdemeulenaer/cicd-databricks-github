@@ -3,7 +3,6 @@ from cicd_databricks_github.common import Job
 import pandas as pd
 import numpy as np
 import mlflow
-from mlflow.tracking import MlflowClient
 import json
 
 # Import of Sklearn packages
@@ -77,13 +76,16 @@ class SampleJob(Job):
         # Load model from MLflow experiment
 
         # Initialize client
-        client = MlflowClient()
+        client = mlflow.tracking.MlflowClient()
+        
+        
 
         # Get experiment and runs 
         exp  = client.get_experiment_by_name(experiment)
-        runs = mlflow.search_runs([exp.experiment_id])
+        runs = mlflow.search_runs([exp.experiment_id], "", order_by=["metrics.Accuracy DESC"], max_results=1)
+        best_run = runs[0]
 
-        model_path = 
+        model_path = # TODO
         model = mlflow.pyfunc.load_model(model_path)
         model.predict(model_input)                    
 
