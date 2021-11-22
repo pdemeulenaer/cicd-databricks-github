@@ -1,7 +1,15 @@
 {
-    "output_format": "delta",
-    "output_path": "dbfs:/dbx/tmp/test/cicd_databricks_github",
+    "data": {
+        "output_format": "delta",
+        "data_path": "dbfs:/dbx/tmp/cicd_databricks_github/data/",
+        "train_val_dataset":"train_val_iris_dataset",
+        "train_dataset":"train_iris_dataset",
+        "val_dataset":"val_iris_dataset",
+        "test_dataset":"test_iris_dataset"
+    },    
     "model": {
+        "model_name": "cicd_databricks_github",
+        "experiment_name": "/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment",
         "hyperparameters": {
             "max_depth": "20",
             "n_estimators": "100",

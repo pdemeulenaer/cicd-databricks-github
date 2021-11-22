@@ -131,10 +131,10 @@ CD:
 
 ## TODO list
 
+* [Done] Build the TRAIN and TEST datasets BEFORE the data preparation task. It should be there even before the CI takes place.
+
 * Put all functions into a utils.py module that we can refer to in any file. 
 
-* Store configs in json, and read from them from each task
-
-* Build the TRAIN and TEST datasets BEFORE the data preparation task. It should be there even before the CI takes place. 
+* Store data path and model configs in json, and read them from each task file 
 
 

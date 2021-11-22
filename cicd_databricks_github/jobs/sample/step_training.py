@@ -24,23 +24,18 @@ class SampleJob(Job):
         for l in listing:
             self.logger.info(f"DBFS directory: {l}")        
 
-        # Define the MLFlow experiment location
-        mlflow.set_experiment("/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment")
-        
-        # config_json = '''{
-        #     "hyperparameters": {
-        #         "max_depth": "20",
-        #         "n_estimators": "100",
-        #         "max_features": "auto",
-        #         "criterion": "gini",
-        #         "class_weight": "balanced",
-        #         "bootstrap": "True",
-        #         "random_state": "21"        
-        #     }
-        # }'''
+        # Read config file and necessary config fields
+        model_conf = self.conf["model"]
+        self.logger.info("model configs: {0}".format(config_json))
+        print(model_conf)   
+        data_path = self.conf["data"]["data_path"]
+        train_val_dataset = self.conf["data"]["train_val_dataset"]
+        train_dataset = self.conf["data"]["train_dataset"]
+        val_dataset = self.conf["data"]["val_dataset"]   
+        experiment = self.conf["model"]["experiment_name"] 
 
-        # model_conf = json.loads(config_json)  
-        model_conf = self.conf["model"]      
+        # Define the MLFlow experiment location
+        mlflow.set_experiment(experiment)    
 
         # try:
         print()
@@ -53,7 +48,7 @@ class SampleJob(Job):
         # 1.0 Data Loading
         # ==============================
 
-        train_df = self.spark.read.format("delta").load("dbfs:/dbx/tmp/test/{0}".format('train_val_data_sklearn_rf'))
+        train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
         train_pd = train_df.toPandas()
 
         # Feature selection
@@ -66,7 +61,6 @@ class SampleJob(Job):
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
         self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")   
           
-
         # except Exception as e:
         #     print("Errored on 1.0: data loading")
         #     print("Exception Trace: {0}".format(e))

@@ -22,14 +22,21 @@ class SampleJob(Job):
         listing = self.dbutils.fs.ls("dbfs:/")
 
         for l in listing:
-            self.logger.info(f"DBFS directory: {l}")        
+            self.logger.info(f"DBFS directory: {l}")  
 
-        # Define the MLFlow experiment location
-        mlflow.set_experiment("/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment")
-        
+        # Read config file and necessary config fields
         model_conf = self.conf["model"]
         self.logger.info("model configs: {0}".format(config_json))
-        print(model_conf)           
+        print(model_conf)   
+        data_path = self.conf["data"]["data_path"]
+        train_val_dataset = self.conf["data"]["train_val_dataset"]
+        train_dataset = self.conf["data"]["train_dataset"]
+        val_dataset = self.conf["data"]["val_dataset"]   
+        experiment = self.conf["model"]["experiment_name"] 
+
+        # Define the MLFlow experiment location
+        mlflow.set_experiment(experiment)
+                  
 
         # try:
         print()
@@ -42,19 +49,23 @@ class SampleJob(Job):
         # 1.0 Data Loading
         # ==============================
 
-        # Loading of dataset
-        iris = load_iris()                  #The Iris dataset is available through the scikit-learn API
-        idx = list(range(len(iris.target)))
-        np.random.shuffle(idx)              #We shuffle it (important if we want to split in train and test sets)
-        X = iris.data[idx]
-        y = iris.target[idx]
+        # # Loading of dataset
+        # iris = load_iris()                  #The Iris dataset is available through the scikit-learn API
+        # idx = list(range(len(iris.target)))
+        # np.random.shuffle(idx)              #We shuffle it (important if we want to split in train and test sets)
+        # X = iris.data[idx]
+        # y = iris.target[idx]
 
-        # Load data in Pandas dataFrame
-        data_pd = pd.DataFrame(data=np.column_stack((X,y)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label'])
-        data_pd.loc[data_pd['label']==0,'species'] = 'setosa'
-        data_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
-        data_pd.loc[data_pd['label']==2,'species'] = 'virginica'
-        data_pd.head()
+        # # Load data in Pandas dataFrame
+        # data_pd = pd.DataFrame(data=np.column_stack((X,y)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label'])
+        # data_pd.loc[data_pd['label']==0,'species'] = 'setosa'
+        # data_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
+        # data_pd.loc[data_pd['label']==2,'species'] = 'virginica'
+        # data_pd.head()        
+
+        # Loading the train_val dataset
+        data_df = self.spark.read.format("delta").load(data_path+train_val_dataset)
+        data_pd = data_df.toPandas()
         
         # Feature selection
         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
@@ -72,15 +83,15 @@ class SampleJob(Job):
         train_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
         train_pd.loc[data_pd['label']==2,'species'] = 'virginica'
         train_df = self.spark.createDataFrame(train_pd)
-        train_df.write.format("delta").mode("overwrite").save("dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
+        train_df.write.format("delta").mode("overwrite").save(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
 
-        # Save test dataset
+        # Save validation dataset
         val_pd = pd.DataFrame(data=np.column_stack((x_val,y_val)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label'])
         val_pd.loc[data_pd['label']==0,'species'] = 'setosa'
         val_pd.loc[data_pd['label']==1,'species'] = 'versicolor'
         val_pd.loc[data_pd['label']==2,'species'] = 'virginica'
-        test_df = self.spark.createDataFrame(val_pd)
-        test_df.write.format("delta").mode("overwrite").save("dbfs:/dbx/tmp/test/{0}".format('val_data_sklearn_rf'))
+        val_df = self.spark.createDataFrame(val_pd)
+        val_df.write.format("delta").mode("overwrite").save(data_path+val_dataset) #"dbfs:/dbx/tmp/test/{0}".format('val_data_sklearn_rf'))
 
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")  
         self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")    
