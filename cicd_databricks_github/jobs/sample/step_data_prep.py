@@ -29,7 +29,7 @@ class SampleJob(Job):
         
         model_conf = self.conf["model"]
         self.logger.info("model configs: {0}".format(config_json))
-        print(config_json)           
+        print(model_conf)           
 
         # try:
         print()
