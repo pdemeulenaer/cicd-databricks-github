@@ -26,7 +26,7 @@ class SampleJob(Job):
 
         # Read config file and necessary config fields
         model_conf = self.conf["model"]
-        self.logger.info("model configs: {0}".format(config_json))
+        self.logger.info("model configs: {0}".format(model_conf))
         print(model_conf)   
         data_path = self.conf["data"]["data_path"]
         train_val_dataset = self.conf["data"]["train_val_dataset"]
