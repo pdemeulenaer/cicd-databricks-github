@@ -76,7 +76,7 @@
                             "python_file": "cicd_databricks_github/jobs/sample/step_data_prep.py",
                             "parameters": [
                                 "--conf-file",
-                                "conf/data.json"
+                                "conf/model.json"
                             ]                            
                         }                       
                     },                     
