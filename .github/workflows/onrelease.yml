@@ -38,9 +38,33 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
 
-      - name: Deploy the job
-        run: |
-          dbx deploy --jobs=cicd-databricks-github-sample
+      # - name: Deploy integration test
+      #   run: |
+      #     dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
+
+      # - name: Run integration test
+      #   run: |
+      #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace          
+
+
+      
+      # - name: Deploy the job cicd-databricks-github-sample
+      #   run: |
+      #     dbx deploy --jobs=cicd-databricks-github-sample --files-only
+       
+      # - name: Run the job cicd-databricks-github-sample
+      #   run: |
+      #     dbx launch --job=cicd-databricks-github-sample --as-run-submit --trace          
+
+      # - name: Deploy the job multi-tasks-job
+      #   run: |
+      #     dbx deploy --jobs=multi-tasks-job
+       
+
+
+      # - name: Run the job
+      #   run: |
+      #     dbx launch --job=multi-tasks-job --as-run-submit --trace              
 
       # - name: Create Release
       #   id: create_release

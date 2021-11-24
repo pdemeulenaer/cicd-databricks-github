@@ -6,9 +6,9 @@ on:
   #     - development
   pull_request:
     branches:
-      - main  
+      # - main  
       - development   
-      - 'release/**'       
+      # - 'release/**'       
     tags-ignore:
       - 'v*' # this tag type is used for release pipelines
 
@@ -45,13 +45,20 @@ jobs:
           echo "Launching unit tests"
           pytest tests/unit
 
-      - name: Deploy integration test
+      - name: Deploy the job TRAINING
         run: |
-          dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
+          dbx deploy --jobs=ci-train-job --files-only
+       
+      - name: Run the job TRAINING
+        run: |
+          dbx launch --job=ci-train-job --as-run-submit --trace     
 
-      # - name: Run integration test
+      # TODO: deploy files to workspace
+      # - name: Deploy notebooks
+      #   shell: bash
       #   run: |
-      #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace
+      #     echo "Deploying notebooks"
+      #     databricks workspace import_dir --overwrite notebooks/ /Released/notebook/              
 
 
 
