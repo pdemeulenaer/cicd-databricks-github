@@ -133,8 +133,14 @@ CD:
 
 * [Done] Build the TRAIN and TEST datasets BEFORE the data preparation task. It should be there even before the CI takes place.
 
+* [Done] Store data path and model configs in json, and read them from each task file 
+
+* [Done] Look for a way to trigger jobs from Airflow (follow the example from the Databricks documentation: https://docs.databricks.com/dev-tools/data-pipelines.html)
+
+* Add a folder to contain development notebooks
+
 * Put all functions into a utils.py module that we can refer to in any file. 
 
-* Store data path and model configs in json, and read them from each task file 
+
 
 
