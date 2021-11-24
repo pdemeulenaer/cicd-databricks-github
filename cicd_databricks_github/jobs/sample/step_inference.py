@@ -78,16 +78,14 @@ class SampleJob(Job):
         # Initialize client
         client = mlflow.tracking.MlflowClient()
         
-        
-
         # Get experiment and runs 
         exp  = client.get_experiment_by_name(experiment)
         runs = mlflow.search_runs([exp.experiment_id], "", order_by=["metrics.Accuracy DESC"], max_results=1)
         best_run = runs[0]
 
-        model_path = # TODO
+        model_path = "runs:/{0}/model".format(best_run)
         model = mlflow.pyfunc.load_model(model_path)
-        model.predict(model_input)                    
+        y_test_pred = model.predict(pd.DataFrame(x_test))                    
 
         # print("Step 1.1 completed: model inference")  
         self.logger.info("Step 1.1 completed: model inference")                
