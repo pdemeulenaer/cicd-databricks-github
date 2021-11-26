@@ -137,6 +137,8 @@ CD:
 
 * [Done] Look for a way to trigger jobs from Airflow (follow the example from the Databricks documentation: https://docs.databricks.com/dev-tools/data-pipelines.html)
 
+* Use a pool for clusters to keep them alive between tasks within a job
+
 * Add a folder to contain development notebooks
 
 * Put all functions into a utils.py module that we can refer to in any file. 
