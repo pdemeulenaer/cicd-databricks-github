@@ -44,8 +44,17 @@ with DAG(
     tags=['example'],
     catchup=False,
 ) as dag:
-  opr_run_now = DatabricksRunNowOperator(
-    task_id = 'run_now',
+
+  opr_run_now_job_1 = DatabricksRunNowOperator(
+    task_id = 'job_1',
     databricks_conn_id = 'databricks_default',
     job_id = JOB_ID
   )
+
+  opr_run_now_job_2 = DatabricksRunNowOperator(
+    task_id = 'job_2',
+    databricks_conn_id = 'databricks_default',
+    job_id = JOB_ID
+  )  
+
+  opr_run_now_task_1 >> opr_run_now_task_2
