@@ -15,6 +15,8 @@ It is adapted to flesh out the adoption of a git flow using Databricks. We take 
 
 * Main branch is there for book-keeping, displaying the last version deployed
 
+The idea is to trigger the CI during every PR from feature branches to the development branch. By running all the tests, the CI makes sure that the code landing on the development branch is healthy. Then, for each specific version of the code, the model can be deployed to a release branch in a PR, which will trigger the CD phase. 
+
 
 ## The CI/CD procedure:
 
