@@ -143,6 +143,8 @@ CD:
 
 * Finish the inference code; reading the model from MLflow
 
+* (optional) Get the name of the branch of the last commit (if in feature branch) as a tag in MLflow experiment. For the CI experiment, if passes tests, set the tag as "development"
+
 * (optional) Add step in the CI the captures all experiments of the branch that is PR'ed into the development branch, and compare the performance of the new experiment, produced during the training that happens within the CI, as a safeguard (the performance should not deviate "too much")
 
 * (optional) Automate the copy of the dag file to S3 bucket
