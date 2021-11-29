@@ -137,15 +137,19 @@ CD:
 
 * [Done] Look for a way to trigger jobs from Airflow (follow the example from the Databricks documentation: https://docs.databricks.com/dev-tools/data-pipelines.html)
 
-* Link the Github folder to a Databricks repo
+* [Done] Link the Github folder to a Databricks repo
 
-* Automate the copy of the dag file to S3 bucket
+* [Done] Add a folder to contain development notebooks
 
-* Use a pool for clusters to keep them alive between tasks within a job
+* Finish the inference code; reading the model from MLflow
 
-* Add a folder to contain development notebooks
+* (optional) Add step in the CI the captures all experiments of the branch that is PR'ed into the development branch, and compare the performance of the new experiment, produced during the training that happens within the CI, as a safeguard (the performance should not deviate "too much")
 
-* Put all functions into a utils.py module that we can refer to in any file. 
+* (optional) Automate the copy of the dag file to S3 bucket
+
+* (optional) Use a pool for clusters to keep them alive between tasks within a job
+
+* (optional) Put all functions into a utils.py module that we can refer to in any file. 
 
 
 
