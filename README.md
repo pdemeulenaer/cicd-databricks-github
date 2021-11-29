@@ -3,7 +3,11 @@
 
 # cicd-databricks-github
 
-This repo is built on top of the cicd-templates from DatabricksLabs (https://github.com/databrickslabs/cicd-templates), generated via cookiecutter using an AWS platform context with Github Actions as CICD engine. It is adapted to flesh out the adoption of a git flow using Databricks. 
+This repo is built on top of the cicd-templates from DatabricksLabs (https://github.com/databrickslabs/cicd-templates), generated via cookiecutter using an AWS platform context with Github Actions as CICD engine. 
+
+It is adapted to flesh out the adoption of a git flow using Databricks. We take the example of a git flow where:
+
+* Model coding and training by data scientists happen in feature branches
 
 
 ## The CI/CD procedure:
