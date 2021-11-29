@@ -7,7 +7,13 @@ This repo is built on top of the cicd-templates from DatabricksLabs (https://git
 
 It is adapted to flesh out the adoption of a git flow using Databricks. We take the example of a git flow where:
 
-* Model coding and training by data scientists happen in feature branches
+* Model coding and training by data scientists happen in feature branches (which are meant to be short-lived)
+
+* The common "code-base" is the development branch, where each feature branch are pull-requested
+
+* The release of specific versions happen in dedicated release branches
+
+* Main branch is there for book-keeping, displaying the last version deployed
 
 
 ## The CI/CD procedure:
