@@ -3,7 +3,7 @@
 
 # cicd-databricks-github
 
-This repo is built on top of the cicd-templates (https://github.com/databrickslabs/cicd-templates) from DatabricksLabs, generated via cookiecutter using an AWS platform context with Github Actions as CICD engine. 
+This repo is built on top of the cicd-templates from DatabricksLabs (https://github.com/databrickslabs/cicd-templates), generated via cookiecutter using an AWS platform context with Github Actions as CICD engine. 
 
 ## The CI/CD procedure:
 
@@ -27,7 +27,11 @@ CD:
 
 * Validation job: run the scoring function on the test dataset
 
-* Deploy the scheduled batch inference on Databricks Jobs: here the scoring function is applied on unseen data (again, test dataset?)
+* Deploy the scheduled batch inference (here the scoring function is applied on "unseen" data) on either:
+
+    - Databricks Jobs: using the "dbx deploy" approach, we can deploy the package as a Databricks Job, visible in the Jobs UI, and using the native Databricks Jobs Scheduling
+
+    - AWS Managed Airflow: the idea is to delegate the scheduling of the Job to Airflow via a dag file, that is deployed to an S3 "dags/" bucket
 
 
 ## TODO list
