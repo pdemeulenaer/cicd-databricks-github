@@ -3,6 +3,77 @@
 
 # cicd-databricks-github
 
+This repo is built on top of the cicd-templates from DatabricksLabs (https://github.com/databrickslabs/cicd-templates), generated via cookiecutter using an AWS platform context with Github Actions as CICD engine. 
+
+It is adapted to flesh out the adoption of a git flow using Databricks. We take the example of a git flow where:
+
+* Model coding and training by data scientists happen in feature branches (which are meant to be short-lived)
+
+* The common "code-base" is the development branch, where each feature branch are pull-requested
+
+* The release of specific versions happen in dedicated release branches
+
+* Main branch is there for book-keeping, displaying the last version deployed
+
+The idea is to trigger the CI during every PR from feature branches to the development branch. By running all the tests, the CI makes sure that the code landing on the development branch is healthy. Then, for each specific version of the code, the model can be deployed to a release branch in a PR, which will trigger the CD phase. 
+
+
+## The CI/CD procedure:
+
+Use case: to flesh out the use of the CI/CD, we use a simple random forest classifier (using scikit-learn) of the Iris dataset. Before running the CI/CD (or any experiments), the Train-Validation and Test datasets have to be generated out of the Iris dataset. This is done using the notebook /notebooks/datasets_creation.py. The information around the file structure and the model definition (parameters) is to be found in the /conf/model.json config file. 
+
+CI:
+
+* Unit tests (dummy from original repo, hence so far unrelated to the use case)
+
+* Deploy & trigger training job. Training job made of 2 tasks:
+
+  - task 1 (step_data_prep.py): data preparation task: Iris dataset is downloaded and split into train and test. Both are saved (test kept for validation step)
+  - task 2 (step_training.py): training RF model (aka the "CI experiment"). Experiment saved to MLflow
+  - task 3 (step_compare_performance.py): comparison of model performance to all experiments logged during the feature branch; Validate as a custom tag in MLflow for the CI experiment
+
+Based on the CI experiment tag, reviewer will know if the PR is to be merged (also looking at results of unit tests, code analysis if such exists,...)  
+
+CD:
+
+* Deploy & trigger integration tests (dummy from original repo, hence so far unrelated to the use case)
+
+* Validation job: run the scoring function on the test dataset
+
+* Deploy the scheduled batch inference (here the scoring function is applied on "unseen" data) on either:
+
+    - Databricks Jobs: using the "dbx deploy" approach, we can deploy the package as a Databricks Job, visible in the Jobs UI, and using the native Databricks Jobs Scheduling
+
+    - AWS Managed Airflow: the idea is to delegate the scheduling of the Job to Airflow via a dag file, that is deployed to an S3 "dags/" bucket
+
+
+## TODO list
+
+* [Done] Build the TRAIN and TEST datasets BEFORE the data preparation task. It should be there even before the CI takes place.
+
+* [Done] Store data path and model configs in json, and read them from each task file 
+
+* [Done] Look for a way to trigger jobs from Airflow (follow the example from the Databricks documentation: https://docs.databricks.com/dev-tools/data-pipelines.html)
+
+* [Done] Link the Github folder to a Databricks repo
+
+* [Done] Add a folder to contain development notebooks
+
+* Finish the inference code; reading the model from MLflow
+
+* (optional) Get the name of the branch of the last commit (if in feature branch) as a tag in MLflow experiment. For the CI experiment, if passes tests, set the tag as "development"
+
+* (optional) Add step in the CI the captures all experiments of the branch that is PR'ed into the development branch, and compare the performance of the new experiment, produced during the training that happens within the CI, as a safeguard (the performance should not deviate "too much")
+
+* (optional) Automate the copy of the dag file to S3 bucket
+
+* (optional) Use a pool for clusters to keep them alive between tasks within a job
+
+* (optional) Put all functions into a utils.py module that we can refer to in any file. 
+
+
+## Original Readme (generated via cookiecutter)
+
 This is a sample project for Databricks, generated via cookiecutter.
 
 While using this project, you need Python 3.X and `pip` or `conda` for package management.
@@ -101,40 +172,4 @@ Please set the following secrets or environment variables for your CI provider:
 git tag -a v<your-project-version> -m "Release tag for version <your-project-version>"
 git push origin --tags
 ```
-
-## The use case
-
-Use case: a simple random forest classifier (using scikit-learn) of the Iris dataset
-
-The CI/CD procedure:
-
-CI:
-
-* unit tests (dummy, so far unrelated to the use case)
-
-* Deploy & trigger training job. Training job made of 2 tasks:
-
-  - task 1 (step_data_prep.py): data preparation task: Iris dataset is downloaded and split into train and test. Both are saved (test kept for validation step)
-  - task 2 (step_training.py): training RF model (aka the "CI experiment"). Experiment saved to MLflow
-  - task 3 (step_compare_performance.py): comparison of model performance to all experiments logged during the feature branch; Validate as a custom tag in MLflow for the CI experiment
-
-Based on the CI experiment tag, reviewer will know if the PR is to be merged (also looking at results of unit tests, code analysis if such exists,...)  
-
-CD:
-
-* Deploy & trigger integration tests (dummy, so far unrelated to the use case)
-
-* Validation job: run the scoring function on the test dataset
-
-* Deploy the scheduled batch inference on Databricks Jobs: here the scoring function is applied on unseen data (again, test dataset?)
-
-
-## TODO list
-
-* [Done] Build the TRAIN and TEST datasets BEFORE the data preparation task. It should be there even before the CI takes place.
-
-* Put all functions into a utils.py module that we can refer to in any file. 
-
-* Store data path and model configs in json, and read them from each task file 
-
 
