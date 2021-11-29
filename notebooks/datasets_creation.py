@@ -71,8 +71,8 @@ df.show(3)
 
 import boto3
 from botocore.client import Config
-ACCESS_KEY = "pmeu@danskebank.lt" #'YOUR_ACCESS_KEY'
-SECRET_KEY = "ArNc3245!" #'YOUR_SECRET_KEY'
+ACCESS_KEY = 'YOUR_ACCESS_KEY'
+SECRET_KEY = 'YOUR_SECRET_KEY'
 AWS_BUCKET_NAME = "mwaa-environment-public-network-environmentbucket-6qum5wuwc0ed" #"BUCKET_NAME"
 
 s3 = boto3.resource('s3', aws_access_key_id = ACCESS_KEY, aws_secret_access_key = SECRET_KEY, config = Config(signature_version = 's3v4') )
