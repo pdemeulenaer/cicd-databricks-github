@@ -7,11 +7,11 @@ This repo is built on top of the cicd-templates from DatabricksLabs (https://git
 
 ## The CI/CD procedure:
 
-Use case: to flesh out the use of the CI/CD, we use a simple random forest classifier (using scikit-learn) of the Iris dataset
+Use case: to flesh out the use of the CI/CD, we use a simple random forest classifier (using scikit-learn) of the Iris dataset. Before running the CI/CD (or any experiments), the Train-Validation and Test datasets have to be generated out of the Iris dataset. This is done using the notebook /notebooks/datasets_creation.py. The information around the file structure and the model definition (parameters) is to be found in the /conf/model.json config file. 
 
 CI:
 
-* unit tests (dummy, so far unrelated to the use case)
+* Unit tests (dummy from original repo, hence so far unrelated to the use case)
 
 * Deploy & trigger training job. Training job made of 2 tasks:
 
@@ -23,7 +23,7 @@ Based on the CI experiment tag, reviewer will know if the PR is to be merged (al
 
 CD:
 
-* Deploy & trigger integration tests (dummy, so far unrelated to the use case)
+* Deploy & trigger integration tests (dummy from original repo, hence so far unrelated to the use case)
 
 * Validation job: run the scoring function on the test dataset
 
