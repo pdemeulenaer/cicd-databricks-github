@@ -137,6 +137,10 @@ CD:
 
 * [Done] Look for a way to trigger jobs from Airflow (follow the example from the Databricks documentation: https://docs.databricks.com/dev-tools/data-pipelines.html)
 
+* Link the Github folder to a Databricks repo
+
+* Automate the copy of the dag file to S3 bucket
+
 * Use a pool for clusters to keep them alive between tasks within a job
 
 * Add a folder to contain development notebooks
