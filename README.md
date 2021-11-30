@@ -67,7 +67,7 @@ CD:
 
 * (optional) Automate the copy of the dag file to S3 bucket
 
-* (optional) Use a pool for clusters to keep them alive between tasks within a job
+* (optional) Use a pool for clusters to keep them alive between tasks within a job. Then indicate in each task the id of the pool cluster, instead of the configuration of a new cluster for each task. This will speed up drastically execution of multi-task jobs
 
 * (optional) Put all functions into a utils.py module that we can refer to in any file. 
 
