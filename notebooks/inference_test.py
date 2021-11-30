@@ -35,4 +35,24 @@ model
 
 # COMMAND ----------
 
+test_df = spark.read.format("delta").load("dbfs:/dbx/tmp/cicd_databricks_github/data/{0}".format('test_iris_dataset'))
+test_df.show(3)
+
+# COMMAND ----------
+
+# Feature selection
+feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+target = 'label'   
+
+test_pd = test_df.toPandas()
+x_test = test_pd[feature_cols].values
+y_test = test_pd[target].values
+
+# COMMAND ----------
+
+y_test_pred = model.predict(pd.DataFrame(x_test)) 
+y_test_pred
+
+# COMMAND ----------
+
 
