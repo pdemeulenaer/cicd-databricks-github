@@ -143,6 +143,7 @@ class SampleJob(Job):
             plt.ylabel('True')
             # plt.show()
             # fig.savefig(output_path+'confusion_matrix_iris.png')
+            mlflow.log_figure(fig, "validation_confusion_matrix.png")
 
             # Tracking performance metrics
             mlflow.log_metric("Accuracy", accuracy)
