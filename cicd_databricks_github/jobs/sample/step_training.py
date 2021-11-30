@@ -141,13 +141,10 @@ class SampleJob(Job):
             ax.set_yticklabels([''] + Classes)
             plt.xlabel('Predicted')
             plt.ylabel('True')
-            # plt.show()
-            # fig.savefig(output_path+'confusion_matrix_iris.png')
-            mlflow.log_figure(fig, "validation_confusion_matrix.png")
-
+            
             # Tracking performance metrics
             mlflow.log_metric("Accuracy", accuracy)
-            # mlflow.log_artifact(output_path+'confusion_matrix_iris.png')  
+            mlflow.log_figure(fig, "validation_confusion_matrix.png")
             mlflow.set_tag("type", "CI run")                                      
 
         # print("Step 1.1 completed: model training and saved to MLFlow")  
