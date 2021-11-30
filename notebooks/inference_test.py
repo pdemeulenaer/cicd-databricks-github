@@ -10,14 +10,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_iris
 
-# COMMAND ----------
-
-experiment='/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment'
-mlflow.set_experiment(experiment) 
+from matplotlib import pyplot as plt
 
 # COMMAND ----------
 
 # Load model from MLflow experiment
+
+experiment='/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment'
+mlflow.set_experiment(experiment) 
 
 # Initialize client
 client = mlflow.tracking.MlflowClient()
@@ -27,6 +27,7 @@ exp  = client.get_experiment_by_name(experiment)
 runs = mlflow.search_runs([exp.experiment_id], "", order_by=["metrics.Accuracy DESC"], max_results=1)
 # best_run = runs[0]
 best_run_id = runs["run_id"][0]
+print(best_run_id)
 
 model_path = "runs:/{0}/model".format(best_run_id)
 model = mlflow.pyfunc.load_model(model_path)
@@ -52,6 +53,45 @@ y_test = test_pd[target].values
 
 y_test_pred = model.predict(pd.DataFrame(x_test)) 
 y_test_pred
+
+# COMMAND ----------
+
+# Accuracy and Confusion Matrix
+accuracy = accuracy_score(y_test, y_test_pred)
+print('Accuracy = ',accuracy)
+print('Confusion matrix:')
+Classes = ['setosa','versicolor','virginica']
+C = confusion_matrix(y_test, y_test_pred)
+C_normalized = C / C.astype(np.float).sum()        
+C_normalized_pd = pd.DataFrame(C_normalized,columns=Classes,index=Classes)
+print(C_normalized_pd)   
+
+# Figure plot
+fig = plt.figure()
+ax = fig.add_subplot(111)
+cax = ax.matshow(C,cmap='Blues')
+plt.title('Confusion matrix of the classifier')
+fig.colorbar(cax)
+ax.set_xticklabels([''] + Classes)
+ax.set_yticklabels([''] + Classes)
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.show()
+# fig.savefig(output_path+'confusion_matrix_iris.png')
+
+# COMMAND ----------
+
+# with mlflow.start_run(best_run_id) as run:
+#     mlflow.log_figure(fig, "test_confusion_matrix.png")
+# artifact_uri = mlflow.get_artifact_uri(best_run_id)
+# artifact_uri
+# # MISSING LINK !!!
+
+# mlflow.log_figure(fig, "test_confusion_matrix.png")
+# mlflow.end_run()
+
+# mlflow.set_tag("tag_test","test")
+mlflow.log_figure(fig, "test_confusion_matrix.png")
 
 # COMMAND ----------
 
