@@ -59,11 +59,13 @@ CD:
 
 * [Done] Add a folder to contain development notebooks
 
-* Finish the inference code; reading the model from MLflow
+* [Done] Finish the inference on test dataset; reading the model from MLflow. In the simplistic case, we will use the best artifact among ALL experiments tracked in mlflow (later, we need to capture the latest mlflow experiment built during the CI execution). So that is a strong simplification so far.
 
 * (optional) Get the name of the branch of the last commit (if in feature branch) as a tag in MLflow experiment. For the CI experiment, if passes tests, set the tag as "development"
 
 * (optional) Add step in the CI the captures all experiments of the branch that is PR'ed into the development branch, and compare the performance of the new experiment, produced during the training that happens within the CI, as a safeguard (the performance should not deviate "too much")
+
+* (optional) In the CD, load from MLflow the artifact from the experiment produced during the latest CI, and use it to perform validation test and schedule run in shadow mode
 
 * (optional) Automate the copy of the dag file to S3 bucket
 
