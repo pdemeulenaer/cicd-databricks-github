@@ -31,7 +31,8 @@ class SampleJob(Job):
         data_path = self.conf["data"]["data_path"]
         train_val_dataset = self.conf["data"]["train_val_dataset"]
         train_dataset = self.conf["data"]["train_dataset"]
-        val_dataset = self.conf["data"]["val_dataset"]   
+        val_dataset = self.conf["data"]["val_dataset"]  
+        test_dataset = self.conf["data"]["test_dataset"]         
         experiment = self.conf["model"]["experiment_name"] 
         output_path = self.conf["data"]["output_path"]
 
