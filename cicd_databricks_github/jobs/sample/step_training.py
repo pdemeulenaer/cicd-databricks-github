@@ -108,16 +108,6 @@ class SampleJob(Job):
             # Fit of the model on the training set
             model = clf.fit(x_train, y_train) 
             
-            # Log the model within the MLflow run
-            mlflow.log_param("max_depth", str(max_depth))
-            mlflow.log_param("n_estimators", str(n_estimators))  
-            mlflow.log_param("max_features", str(max_features))             
-            mlflow.log_param("criterion", str(criterion))  
-            mlflow.log_param("class_weight", str(class_weight))  
-            mlflow.log_param("bootstrap", str(bootstrap))  
-            mlflow.log_param("max_features", str(max_features)) 
-            mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
-
             # Inference on validation dataset
             y_val_pred = model.predict(x_val)    
 
@@ -142,10 +132,22 @@ class SampleJob(Job):
             plt.xlabel('Predicted')
             plt.ylabel('True')
             
+            # Log the model within the MLflow run
+            mlflow.log_param("max_depth", str(max_depth))
+            mlflow.log_param("n_estimators", str(n_estimators))  
+            mlflow.log_param("max_features", str(max_features))             
+            mlflow.log_param("criterion", str(criterion))  
+            mlflow.log_param("class_weight", str(class_weight))  
+            mlflow.log_param("bootstrap", str(bootstrap))  
+            mlflow.log_param("max_features", str(max_features)) 
+
             # Tracking performance metrics
             mlflow.log_metric("Accuracy", accuracy)
             mlflow.log_figure(fig, "validation_confusion_matrix.png")
-            mlflow.set_tag("type", "CI run")                                      
+            mlflow.set_tag("type", "CI run")   
+
+            # Log the model
+            mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")                                                 
 
         # print("Step 1.1 completed: model training and saved to MLFlow")  
         self.logger.info("Step 1.1 completed: model training and saved to MLFlow")                
