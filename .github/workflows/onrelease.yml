@@ -59,6 +59,16 @@ jobs:
       # - name: Deploy the job multi-tasks-job
       #   run: |
       #     dbx deploy --jobs=multi-tasks-job
+
+      # Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job    
+          
+      # # Deploy just the job (with scheduling) to have it triggered by Databricks' native Job scheduler
+      # - name: Deploy the inference job
+      #   run: |
+      #     dbx deploy --jobs=cd-infer-job-scheduled          
        
 
 

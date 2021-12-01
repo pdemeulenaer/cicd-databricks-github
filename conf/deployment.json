@@ -148,7 +148,46 @@
                     }                                      
                 ],
                 "format": "MULTI_TASK"
-            },                                
+            },  
+            {
+                "name": "cd-infer-job-scheduled",
+                "max_concurrent_runs": 1,    
+                "schedule": {
+                    "quartz_cron_expression": "0 0/30 * * * ?",
+                    "timezone_id": "Europe/Kiev",
+                    "pause_status": "UNPAUSED"
+                },                          
+                "tasks": [
+                    {
+                        "task_key": "step-infer-task",
+                        "description":"step inference task",
+                        "new_cluster": {
+                            "spark_version": "7.3.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2
+                        },                        
+                        "libraries": [],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "cicd_databricks_github/jobs/sample/step_inference.py",
+                            "parameters": [
+                                "--conf-file",
+                                "conf/model.json"
+                            ]                            
+                        }                       
+                    }                                      
+                ],
+                "format": "MULTI_TASK"
+            },                                           
             {
                 "name": "multi-tasks-job",
                 "max_concurrent_runs": 1,
