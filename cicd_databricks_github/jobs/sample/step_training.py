@@ -102,7 +102,7 @@ class SampleJob(Job):
                                     criterion=criterion,
                                     class_weight=class_weight,
                                     bootstrap=bootstrap,
-                                    random_state=21,
+                                    random_state=None,
                                     n_jobs=-1)          
             
             # Fit of the model on the training set
