@@ -40,7 +40,8 @@ class SampleJob(Job):
         train_val_dataset = self.conf["data"]["train_val_dataset"]
         train_dataset = self.conf["data"]["train_dataset"]
         val_dataset = self.conf["data"]["val_dataset"]  
-        test_dataset = self.conf["data"]["test_dataset"]         
+        test_dataset = self.conf["data"]["test_dataset"]      
+        model_name = self.conf["model"]["model_name"]            
         experiment = self.conf["model"]["experiment_name"] 
         output_path = self.conf["data"]["output_path"]
         minimal_threshold = self.conf["model"]["minimal_threshold"] 
@@ -152,8 +153,8 @@ class SampleJob(Job):
             if test_accuracy > 0.8: 
                 mlflow.set_tag("validation", "passed")
                 model_uri = "runs:/{}/model".format(best_run_id)
-                mv = mlflow.register_model(model_uri, "IrisClassificationRF")
-                client.transition_model_version_stage(name="IrisClassificationRF", version=mv.version, stage="Staging")
+                mv = mlflow.register_model(model_uri, model_name)
+                client.transition_model_version_stage(name=model_name, version=mv.version, stage="Staging")
                         
         # print("Step 1.2 completed: model inference")  
         self.logger.info("Step 1.1 completed: model validation")                

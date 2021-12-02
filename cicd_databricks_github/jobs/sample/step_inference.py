@@ -28,14 +28,12 @@ class SampleJob(Job):
         model_conf = self.conf["model"]
         self.logger.info("model configs: {0}".format(model_conf))
         print(model_conf)   
-        data_path = self.conf["data"]["data_path"]
-        train_val_dataset = self.conf["data"]["train_val_dataset"]
-        train_dataset = self.conf["data"]["train_dataset"]
-        val_dataset = self.conf["data"]["val_dataset"]  
-        test_dataset = self.conf["data"]["test_dataset"]         
-        experiment = self.conf["model"]["experiment_name"] 
+        data_path = self.conf["data"]["data_path"]         
+        inference_dataset = self.conf["data"]["inference_dataset"] 
+        scored_inference_dataset = self.conf["data"]["scored_inference_dataset"] 
         output_path = self.conf["data"]["output_path"]
-        minimal_threshold = self.conf["model"]["minimal_threshold"] 
+        model_name = self.conf["model"]["model_name"]                  
+        experiment = self.conf["model"]["experiment_name"]         
 
         # Define the MLFlow experiment location
         mlflow.set_experiment(experiment)       
@@ -51,15 +49,13 @@ class SampleJob(Job):
         # 1.0 Data Loading
         # ==============================
 
-        test_df = self.spark.read.format("delta").load(data_path+test_dataset) #"dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
-        test_pd = test_df.toPandas()
+        data_df = self.spark.read.format("delta").load(data_path+inference_dataset)
+        data_pd = data_df.toPandas()
 
         # Feature selection
-        feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-        target = 'label'   
+        feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']  
 
-        x_test = test_pd[feature_cols].values
-        y_test = test_pd[target].values
+        x_data = data_pd[feature_cols].values
 
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
         self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")   
@@ -80,15 +76,35 @@ class SampleJob(Job):
         # Initialize client
         client = mlflow.tracking.MlflowClient()
         
-        # Get experiment and runs 
-        exp  = client.get_experiment_by_name(experiment)
-        query = "tags.type = 'CI' and metrics.accuracy >= {0}".format(minimal_threshold)
-        runs = mlflow.search_runs([exp.experiment_id], filter_string=query, order_by=["metrics.accuracy DESC"], max_results=1)
-        best_run_id = runs["run_id"][0]
+        # Extract the model in Staging mode from Model Registry
+        for mv in client.search_model_versions("name='{0}'".format(model_name)):
+            if dict(mv)['current_stage'] == "Staging":
+                model_dict = dict(mv)
+                break   
 
-        model_path = "runs:/{0}/model".format(best_run_id)
+        print('Model extracted run_id: ', model_dict['run_id'])
+        print('Model extracted version number: ', model_dict['version'])
+        print('Model extracted stage: ', model_dict['current_stage']) 
+        print('Model path: ', model_dict['source'])            
+
+        # De-serialize the model
+        # mlflow_path = model_dict['source'] 
+        # model = mlflow.pyfunc.load_model(mlflow_path) # Load model as a PyFuncModel.                              
+        run_id = model_dict['run_id']
+        model_path = "runs:/{0}/model".format(run_id)
+        print('Model path from run_id: ', model_path)   
         model = mlflow.pyfunc.load_model(model_path)
-        y_test_pred = model.predict(pd.DataFrame(x_test))                    
+
+        # Prediction
+        y_data_pred = model.predict(pd.DataFrame(x_data)) 
+
+        # Save scored inference dataset
+        data_scored_pd = pd.DataFrame(data=np.column_stack((x_data,y_data_pred)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label_scored'])
+        data_scored_pd.loc[train_val_pd['label']==0,'species'] = 'setosa'
+        data_scored_pd.loc[train_val_pd['label']==1,'species'] = 'versicolor'
+        data_scored_pd.loc[train_val_pd['label']==2,'species'] = 'virginica'
+        data_scored_df = spark.createDataFrame(data_scored_pd)
+        data_scored_df.write.format("delta").mode("overwrite").save(output_path+scored_inference_dataset)                           
 
         # print("Step 1.1 completed: model inference")  
         self.logger.info("Step 1.1 completed: model inference")                

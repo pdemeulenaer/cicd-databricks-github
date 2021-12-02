@@ -7,10 +7,11 @@
         "train_dataset":"train_iris_dataset",
         "val_dataset":"val_iris_dataset",
         "test_dataset":"test_iris_dataset",
-        "inference_dataset":"full_iris_dataset"
+        "inference_dataset":"full_iris_dataset",
+        "scored_inference_dataset":"scored_full_iris_dataset"
     },    
     "model": {
-        "model_name": "cicd_databricks_github",
+        "model_name": "IrisClassificationRF",
         "experiment_name": "/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment",
         "hyperparameters": {
             "max_depth": "20",

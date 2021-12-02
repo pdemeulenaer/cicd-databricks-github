@@ -55,17 +55,19 @@ jobs:
       # Trigger validation job
       - name: Run the validation job
         run: |
-          dbx launch --job=cd-validation-job --as-run-submit --trace                          
-
-      # # Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
-      # - name: Deploy the inference job
-      #   run: |
-      #     dbx deploy --jobs=cd-infer-job    
+          dbx launch --job=cd-validation-job --as-run-submit --trace   
           
-      # # Deploy just the job (with scheduling) to have it triggered by Databricks' native Job scheduler
-      # - name: Deploy the inference job
-      #   run: |
-      #     dbx deploy --jobs=cd-infer-job-scheduled          
+      # Deploy just the job (with native scheduling) to have it triggered by Databricks' native Job scheduler
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job-scheduled           
+
+      # Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job    
+          
+         
        
 
 
