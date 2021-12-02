@@ -35,6 +35,7 @@ class SampleJob(Job):
         test_dataset = self.conf["data"]["test_dataset"]         
         experiment = self.conf["model"]["experiment_name"] 
         output_path = self.conf["data"]["output_path"]
+        minimal_threshold = self.conf["model"]["minimal_threshold"] 
 
         # Define the MLFlow experiment location
         mlflow.set_experiment(experiment)       
@@ -81,7 +82,8 @@ class SampleJob(Job):
         
         # Get experiment and runs 
         exp  = client.get_experiment_by_name(experiment)
-        runs = mlflow.search_runs([exp.experiment_id], "", order_by=["metrics.Accuracy DESC"], max_results=1)
+        query = "tags.type = 'CI' and metrics.accuracy >= {0}".format(minimal_threshold)
+        runs = mlflow.search_runs([exp.experiment_id], filter_string=query, order_by=["metrics.accuracy DESC"], max_results=1)
         best_run_id = runs["run_id"][0]
 
         model_path = "runs:/{0}/model".format(best_run_id)

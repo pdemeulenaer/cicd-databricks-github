@@ -143,7 +143,7 @@ class SampleJob(Job):
             mlflow.log_param("max_features", str(max_features)) 
 
             # Tracking performance metrics
-            mlflow.log_metric("Accuracy", accuracy)
+            mlflow.log_metric("accuracy", accuracy)
             mlflow.log_figure(fig, "validation_confusion_matrix.png")
             mlflow.set_tag("type", "CI run")   
 
