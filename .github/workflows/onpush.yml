@@ -48,7 +48,7 @@ jobs:
       - name: Run unit tests
         run: |
           echo "Launching unit tests"
-          pytest tests/unit
+          pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
 
       - name: Deploy the job TRAINING
         run: |
