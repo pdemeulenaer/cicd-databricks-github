@@ -39,6 +39,11 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
           pip install -e .
+        
+      - name: Run pylint code analysis
+        run: |
+          echo "Launching pylint code analysis"
+          pylint --exit-zero cicd_databricks_github/ tests/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > pylint_report.txt  
 
       - name: Run unit tests
         run: |
