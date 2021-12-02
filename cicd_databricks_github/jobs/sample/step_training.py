@@ -147,7 +147,7 @@ class SampleJob(Job):
             mlflow.log_figure(fig, "confusion_matrix.png")
             mlflow.set_tag("type", "CI run")   
 
-            # Log the model
+            # Log the model (not registering yet)
             mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")                                                 
 
         # print("Step 1.1 completed: model training and saved to MLFlow")  

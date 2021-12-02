@@ -30,15 +30,17 @@ jobs:
         with:
           python-version: 3.7
 
-      - name: Install pip
-        run: |
-          python -m pip install --upgrade pip
 
-      - name: Install dependencies and project in dev mode
-        run: |
-          pip install -r unit-requirements.txt
+      # - name: Install pip
+      #   run: |
+      #     python -m pip install --upgrade pip
+
+      # - name: Install dependencies and project in dev mode
+      #   run: |
+      #     pip install -r unit-requirements.txt
 
 
+      # # 1. Deploy & run integration tests
       # - name: Deploy integration test
       #   run: |
       #     dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
@@ -47,22 +49,23 @@ jobs:
       #   run: |
       #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
 
-      # Deploy validation job to be triggered during CD
+
+      # 2. Deploy & run validation test
       - name: Deploy the validation job
         run: |
           dbx deploy --jobs=cd-validation-job --files-only
 
-      # Trigger validation job
       - name: Run the validation job
         run: |
           dbx launch --job=cd-validation-job --as-run-submit --trace   
           
-      # Deploy just the job (with native scheduling) to have it triggered by Databricks' native Job scheduler
+
+      # 3a. Deploy just the job (with native scheduling) to have it triggered by Databricks' native Job scheduler
       - name: Deploy the inference job
         run: |
           dbx deploy --jobs=cd-infer-job-scheduled           
 
-      # Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
+      # 3b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
       - name: Deploy the inference job
         run: |
           dbx deploy --jobs=cd-infer-job    
