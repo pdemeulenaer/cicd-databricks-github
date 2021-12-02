@@ -85,7 +85,7 @@ class SampleJob(Job):
         
         # Get experiment and runs 
         exp  = client.get_experiment_by_name(experiment)
-        query = "tags.type = 'CI' and metrics.accuracy >= {0}".format(minimal_threshold)
+        query = "tags.type = 'CI run' and metrics.accuracy >= {0}".format(minimal_threshold)
         runs = mlflow.search_runs([exp.experiment_id], filter_string=query, order_by=["metrics.accuracy DESC"], max_results=1)
         best_run_id = runs["run_id"][0]
 
@@ -132,9 +132,10 @@ class SampleJob(Job):
         plt.ylabel('True')
         plt.savefig("confusion_matrix_TEST.png")    
 
-        # Tracking performance metrics on TEST dataset
+        
         with mlflow.start_run(best_run_id) as run:
-                     
+
+            # Tracking performance metrics on TEST dataset   
             mlflow.log_metric("accuracy_TEST", test_accuracy)
             mlflow.log_figure(fig, "confusion_matrix_TEST.png")  
 
