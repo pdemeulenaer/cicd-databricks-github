@@ -55,7 +55,7 @@ jobs:
       # Trigger validation job
       - name: Run the validation job
         run: |
-          dbx launch --job=cd-validation-job --as-run-submit --trace           
+          dbx launch --job=cd-validation-job --as-run-submit --trace                          
 
       # # Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
       # - name: Deploy the inference job

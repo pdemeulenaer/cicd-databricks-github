@@ -11,13 +11,21 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_iris
 
+# Import matplotlib packages
+from IPython.core.pylabtools import figsize
+from matplotlib import pyplot as plt
+import pylab
+from pylab import *
+import matplotlib.cm as cm
+import matplotlib.mlab as mlab
+
 
 class SampleJob(Job):
 
     # Custom function
     def validate(self, **kwargs):
 
-        self.logger.info("Launching TRAIN job")
+        self.logger.info("Launching VALIDATION")
 
         listing = self.dbutils.fs.ls("dbfs:/")
 
@@ -43,7 +51,7 @@ class SampleJob(Job):
         # try:
         print()
         print("-----------------------------------")
-        print("         Model Inference           ")
+        print("         Model Validation          ")
         print("-----------------------------------")
         print()
 

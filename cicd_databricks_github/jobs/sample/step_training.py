@@ -25,7 +25,7 @@ class SampleJob(Job):
     # Custom function
     def train(self, **kwargs):
 
-        self.logger.info("Launching TRAIN job")
+        self.logger.info("Launching TRAINING")
 
         listing = self.dbutils.fs.ls("dbfs:/")
 
