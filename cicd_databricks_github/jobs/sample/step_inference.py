@@ -15,7 +15,7 @@ from sklearn.datasets import load_iris
 class SampleJob(Job):
 
     # Custom function
-    def validate(self, **kwargs):
+    def train(self, **kwargs):
 
         self.logger.info("Launching TRAIN job")
 
@@ -72,13 +72,10 @@ class SampleJob(Job):
 
         # try:
         # ========================================
-        # 1.1 Load model from MLflow
+        # 1.1 Model inference
         # ========================================
         
         # Load model from MLflow experiment
-        # Conditions:
-        # - model accuracy should be higher than pre-defined threshold (defined in model.json)
-        # - it should have the tag.type = CI, meaning it was trained during a CI run
 
         # Initialize client
         client = mlflow.tracking.MlflowClient()
@@ -91,68 +88,16 @@ class SampleJob(Job):
 
         model_path = "runs:/{0}/model".format(best_run_id)
         model = mlflow.pyfunc.load_model(model_path)
-                                
-        # print("Step 1.1 completed: load model from MLflow")  
-        self.logger.info("Step 1.1 completed: load model from MLflow")                
+        y_test_pred = model.predict(pd.DataFrame(x_test))                    
+
+        # print("Step 1.1 completed: model inference")  
+        self.logger.info("Step 1.1 completed: model inference")                
 
         # except Exception as e:
         #     print("Errored on step 1.1: model training")
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
-        #     raise e      
-
-
-        # try:
-        # ========================================
-        # 1.2 Model validation
-        # ========================================
-        
-        # Derive accuracy on TEST dataset
-        y_test_pred = model.predict(pd.DataFrame(x_test)) 
-
-        # Accuracy and Confusion Matrix
-        test_accuracy = accuracy_score(y_test, y_test_pred)
-        print('TEST accuracy = ',test_accuracy)
-        print('TEST Confusion matrix:')
-        Classes = ['setosa','versicolor','virginica']
-        C = confusion_matrix(y_test, y_test_pred)
-        C_normalized = C / C.astype(np.float).sum()        
-        C_normalized_pd = pd.DataFrame(C_normalized,columns=Classes,index=Classes)
-        print(C_normalized_pd)   
-
-        # Figure plot
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        cax = ax.matshow(C,cmap='Blues')
-        plt.title('Confusion matrix of the classifier')
-        fig.colorbar(cax)
-        ax.set_xticklabels([''] + Classes)
-        ax.set_yticklabels([''] + Classes)
-        plt.xlabel('Predicted')
-        plt.ylabel('True')
-        plt.savefig("confusion_matrix_TEST.png")    
-
-        # Tracking performance metrics on TEST dataset
-        with mlflow.start_run(best_run_id) as run:
-                     
-            mlflow.log_metric("accuracy_TEST", test_accuracy)
-            mlflow.log_figure(fig, "confusion_matrix_TEST.png")  
-
-            # If we pass the validation, we register the model and push to Staging           
-            if test_accuracy > minimal_threshold: 
-                mlflow.set_tag("validation", "passed")
-                model_uri = "runs:/{}/model".format(best_run_id)
-                mv = mlflow.register_model(model_uri, "IrisClassificationRF")
-                client.transition_model_version_stage(name="IrisClassificationRF", version=mv.version, stage="Staging")
-                        
-        # print("Step 1.2 completed: model inference")  
-        self.logger.info("Step 1.1 completed: model validation")                
-
-        # except Exception as e:
-        #     print("Errored on step 1.1: model training")
-        #     print("Exception Trace: {0}".format(e))
-        #     print(traceback.format_exc())
-        #     raise e                       
+        #     raise e                  
 
 
     def launch(self):
@@ -174,4 +119,4 @@ class SampleJob(Job):
 
 if __name__ == "__main__":
     job = SampleJob()
-    job.validate()
+    job.train()

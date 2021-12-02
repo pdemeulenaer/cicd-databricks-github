@@ -116,12 +116,12 @@
                 "format": "MULTI_TASK"
             },  
             {
-                "name": "cd-infer-job",
+                "name": "cd-validation-job",
                 "max_concurrent_runs": 1,            
                 "tasks": [
                     {
-                        "task_key": "step-infer-task",
-                        "description":"step inference task",
+                        "task_key": "step-validation-task",
+                        "description":"step validation task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "node_type_id": "i3.xlarge",
@@ -139,7 +139,7 @@
                         },
                         "max_retries": 0,
                         "spark_python_task": {
-                            "python_file": "cicd_databricks_github/jobs/sample/step_inference.py",
+                            "python_file": "cicd_databricks_github/jobs/sample/step_validation.py",
                             "parameters": [
                                 "--conf-file",
                                 "conf/model.json"
