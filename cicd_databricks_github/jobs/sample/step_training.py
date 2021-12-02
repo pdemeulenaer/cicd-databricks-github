@@ -131,7 +131,7 @@ class SampleJob(Job):
             ax.set_yticklabels([''] + Classes)
             plt.xlabel('Predicted')
             plt.ylabel('True')
-            plt.savefig("validation_confusion_matrix.png")
+            plt.savefig("confusion_matrix.png")
             
             # Log the model within the MLflow run
             mlflow.log_param("max_depth", str(max_depth))
@@ -144,7 +144,7 @@ class SampleJob(Job):
 
             # Tracking performance metrics
             mlflow.log_metric("accuracy", accuracy)
-            mlflow.log_figure(fig, "validation_confusion_matrix.png")
+            mlflow.log_figure(fig, "confusion_matrix.png")
             mlflow.set_tag("type", "CI run")   
 
             # Log the model
