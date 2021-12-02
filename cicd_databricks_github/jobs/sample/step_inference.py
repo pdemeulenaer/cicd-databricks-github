@@ -100,9 +100,9 @@ class SampleJob(Job):
 
         # Save scored inference dataset
         data_scored_pd = pd.DataFrame(data=np.column_stack((x_data,y_data_pred)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label_scored'])
-        data_scored_pd.loc[data_scored_pd['label']==0,'species'] = 'setosa'
-        data_scored_pd.loc[data_scored_pd['label']==1,'species'] = 'versicolor'
-        data_scored_pd.loc[data_scored_pd['label']==2,'species'] = 'virginica'
+        data_scored_pd.loc[data_scored_pd['label_scored']==0,'species'] = 'setosa'
+        data_scored_pd.loc[data_scored_pd['label_scored']==1,'species'] = 'versicolor'
+        data_scored_pd.loc[data_scored_pd['label_scored']==2,'species'] = 'virginica'
         data_scored_df = spark.createDataFrame(data_scored_pd)
         data_scored_df.write.format("delta").mode("overwrite").save(output_path+scored_inference_dataset)                           
 
