@@ -39,14 +39,14 @@ jobs:
           pip install -r unit-requirements.txt
 
 
-      # # 1. Deploy & run integration tests
-      # - name: Deploy integration test
-      #   run: |
-      #     dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
+      # 1. Deploy & run integration tests
+      - name: Deploy integration test
+        run: |
+          dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
 
-      # - name: Run integration test
-      #   run: |
-      #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
+      - name: Run integration test
+        run: |
+          dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
 
 
       # 2. Deploy & run validation test
