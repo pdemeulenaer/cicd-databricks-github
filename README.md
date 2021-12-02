@@ -73,6 +73,8 @@ CD:
 
 * (optional) Put all functions into a utils.py module that we can refer to in any file. 
 
+* (optional) use Sonar and pylint within the CI part
+
 
 ## Original Readme (generated via cookiecutter)
 
