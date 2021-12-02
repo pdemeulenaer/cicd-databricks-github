@@ -147,8 +147,9 @@ class SampleJob(Job):
             mlflow.log_metric("accuracy_TEST", test_accuracy)
             mlflow.log_figure(fig, "confusion_matrix_TEST.png")  
 
-            # If we pass the validation, we register the model and push to Staging           
-            if test_accuracy > minimal_threshold: 
+            # If we pass the validation, we register the model and push to Staging 
+            print(minimal_threshold)          
+            if test_accuracy > 0.8: 
                 mlflow.set_tag("validation", "passed")
                 model_uri = "runs:/{}/model".format(best_run_id)
                 mv = mlflow.register_model(model_uri, "IrisClassificationRF")
