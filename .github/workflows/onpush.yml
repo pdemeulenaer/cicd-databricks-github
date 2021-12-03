@@ -39,19 +39,25 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
           pip install -e .
+        
+      - name: Run pylint code analysis
+        run: |
+          echo "Launching pylint code analysis"
+          pylint --exit-zero cicd_databricks_github/ tests/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > pylint_report.txt  
 
       - name: Run unit tests
         run: |
           echo "Launching unit tests"
-          pytest tests/unit
+          pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
 
-      - name: Deploy the job TRAINING
+      - name: Deploy the training job
         run: |
           dbx deploy --jobs=ci-train-job --files-only
        
-      - name: Run the job TRAINING
+      - name: Run the training job
         run: |
           dbx launch --job=ci-train-job --as-run-submit --trace     
+
 
       # TODO: deploy files to workspace
       # - name: Deploy notebooks
