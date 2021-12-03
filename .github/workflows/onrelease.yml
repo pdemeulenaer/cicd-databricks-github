@@ -38,33 +38,42 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
 
-      # - name: Deploy integration test
-      #   run: |
-      #     dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
 
-      # - name: Run integration test
-      #   run: |
-      #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace          
+      # 1. Deploy & run integration tests
+      - name: Deploy integration test
+        run: |
+          dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
+
+      - name: Run integration test
+        run: |
+          dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
 
 
-      
-      # - name: Deploy the job cicd-databricks-github-sample
-      #   run: |
-      #     dbx deploy --jobs=cicd-databricks-github-sample --files-only
+      # 2. Deploy & run validation test
+      - name: Deploy the validation job
+        run: |
+          dbx deploy --jobs=cd-validation-job --files-only
+
+      - name: Run the validation job
+        run: |
+          dbx launch --job=cd-validation-job --as-run-submit --trace   
+          
+
+      # 3a. Deploy just the job (with native scheduling) to have it triggered by Databricks' native Job scheduler
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job-scheduled           
+
+      # 3b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job    
+          
+         
        
-      # - name: Run the job cicd-databricks-github-sample
-      #   run: |
-      #     dbx launch --job=cicd-databricks-github-sample --as-run-submit --trace          
-
-      # - name: Deploy the job multi-tasks-job
-      #   run: |
-      #     dbx deploy --jobs=multi-tasks-job
-       
 
 
-      # - name: Run the job
-      #   run: |
-      #     dbx launch --job=multi-tasks-job --as-run-submit --trace              
+            
 
       # - name: Create Release
       #   id: create_release
@@ -78,5 +87,20 @@ jobs:
       #       Release for version ${{ github.ref }}.
       #     draft: false
       #     prerelease: false
+
+
+      # TODO : DISCARD
+      # - name: Deploy the job cicd-databricks-github-sample
+      #   run: |
+      #     dbx deploy --jobs=cicd-databricks-github-sample --files-only
+       
+      # - name: Run the job cicd-databricks-github-sample
+      #   run: |
+      #     dbx launch --job=cicd-databricks-github-sample --as-run-submit --trace          
+
+      # - name: Deploy the job multi-tasks-job
+      #   run: |
+      #     dbx deploy --jobs=multi-tasks-job   
+          
 
 

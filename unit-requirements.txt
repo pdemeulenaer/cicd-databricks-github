@@ -7,3 +7,4 @@ dbx
 scikit-learn
 pandas
 numpy
+pylint

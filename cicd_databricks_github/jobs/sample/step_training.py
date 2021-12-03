@@ -25,7 +25,7 @@ class SampleJob(Job):
     # Custom function
     def train(self, **kwargs):
 
-        self.logger.info("Launching TRAIN job")
+        self.logger.info("Launching TRAINING")
 
         listing = self.dbutils.fs.ls("dbfs:/")
 
@@ -108,16 +108,6 @@ class SampleJob(Job):
             # Fit of the model on the training set
             model = clf.fit(x_train, y_train) 
             
-            # Log the model within the MLflow run
-            mlflow.log_param("max_depth", str(max_depth))
-            mlflow.log_param("n_estimators", str(n_estimators))  
-            mlflow.log_param("max_features", str(max_features))             
-            mlflow.log_param("criterion", str(criterion))  
-            mlflow.log_param("class_weight", str(class_weight))  
-            mlflow.log_param("bootstrap", str(bootstrap))  
-            mlflow.log_param("max_features", str(max_features)) 
-            mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
-
             # Inference on validation dataset
             y_val_pred = model.predict(x_val)    
 
@@ -141,11 +131,24 @@ class SampleJob(Job):
             ax.set_yticklabels([''] + Classes)
             plt.xlabel('Predicted')
             plt.ylabel('True')
+            plt.savefig("confusion_matrix.png")
             
+            # Log the model within the MLflow run
+            mlflow.log_param("max_depth", str(max_depth))
+            mlflow.log_param("n_estimators", str(n_estimators))  
+            mlflow.log_param("max_features", str(max_features))             
+            mlflow.log_param("criterion", str(criterion))  
+            mlflow.log_param("class_weight", str(class_weight))  
+            mlflow.log_param("bootstrap", str(bootstrap))  
+            mlflow.log_param("max_features", str(max_features)) 
+
             # Tracking performance metrics
-            mlflow.log_metric("Accuracy", accuracy)
-            mlflow.log_figure(fig, "validation_confusion_matrix.png")
-            mlflow.set_tag("type", "CI run")                                      
+            mlflow.log_metric("accuracy", accuracy)
+            mlflow.log_figure(fig, "confusion_matrix.png")
+            mlflow.set_tag("type", "CI run")   
+
+            # Log the model (not registering yet)
+            mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")                                                 
 
         # print("Step 1.1 completed: model training and saved to MLFlow")  
         self.logger.info("Step 1.1 completed: model training and saved to MLFlow")                
