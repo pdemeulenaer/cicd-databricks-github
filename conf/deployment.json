@@ -51,6 +51,13 @@
                         "task_key": "step-data-prep-task",
                         "description":"step data preparation",
                         "new_cluster": {
+                            "spark_version": "9.1.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2,                            
                             "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9"
                         },                                                
                         "libraries": [],
@@ -77,6 +84,13 @@
                             }
                         ],                         
                         "new_cluster": {
+                            "spark_version": "9.1.x-cpu-ml-scala2.12",
+                            "node_type_id": "i3.xlarge",
+                            "aws_attributes": {
+                                "first_on_demand": 0,
+                                "availability": "SPOT"
+                            },
+                            "num_workers": 2,                            
                             "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9"
                         },                        
                         "libraries": [],
