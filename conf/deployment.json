@@ -53,8 +53,7 @@
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
+                                "first_on_demand": 0
                             },
                             "num_workers": 2,                            
                             "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9"
@@ -85,8 +84,7 @@
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
+                                "first_on_demand": 0
                             },
                             "num_workers": 2,                            
                             "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9"
