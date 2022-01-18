@@ -2,7 +2,7 @@
 [![Release pipeline](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onrelease.yml/badge.svg)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onrelease.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
+<!-- [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github) -->
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
 
 # cicd-databricks-github
@@ -64,8 +64,6 @@ CD:
 * [Done] Add a folder to contain development notebooks
 
 * [Done] Finish the inference on test dataset; reading the model from MLflow. In the simplistic case, we will use the best artifact among ALL experiments tracked in mlflow (later, we need to capture the latest mlflow experiment built during the CI execution). So that is a strong simplification so far.
-
-* [TODO] Git FLow: I need to finish the branching from release branch to master/main branch. And tag the version once it reaches master/main. When the PR to release branch is merged, the model should be deployed in PROD, and then code can go to master branch, and git tag created with version contained in VERSION file. 
 
 * (optional) Get the name of the branch of the last commit (if in feature branch) as a tag in MLflow experiment. For the CI experiment, if passes tests, set the tag as "development"
 
