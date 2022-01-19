@@ -52,9 +52,9 @@
                         "description":"step data preparation",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "num_workers": 2,                            
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9"
-                        },                                                
+                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
+                            "num_workers": 2
+                        },                                                                     
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],
