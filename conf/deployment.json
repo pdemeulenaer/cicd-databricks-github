@@ -5,10 +5,9 @@
                 "name": "cicd-databricks-github-sample",
                 "new_cluster": {
                     "spark_version": "9.1.x-cpu-ml-scala2.12",
-                    "node_type_id": "i3.xlarge",
+                    "node_type_id": "Standard_F4s",
                     "aws_attributes": {
-                        "first_on_demand": 0,
-                        "availability": "SPOT"
+                        "first_on_demand": 0
                     },
                     "num_workers": 2
                 },
@@ -212,10 +211,9 @@
                         "description":"Integration test task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
+                            "node_type_id": "Standard_F4s",
                             "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
+                                "first_on_demand": 0
                             },
                             "num_workers": 2
                         },                        
@@ -240,10 +238,9 @@
                         ],                         
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
+                            "node_type_id": "Standard_F4s",
                             "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
+                                "first_on_demand": 0   
                             },
                             "num_workers": 2
                         },                        
