@@ -50,13 +50,17 @@ jobs:
           echo "Launching unit tests"
           pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
 
-      - name: Deploy the training job
+      - name: Deploy the training job (as one-time job)
         run: |
           dbx deploy --jobs=ci-train-job --files-only
        
-      - name: Run the training job
+      - name: Run the training job (as one-time job)
         run: |
-          dbx launch --job=ci-train-job --as-run-submit --trace     
+          dbx launch --job=ci-train-job --as-run-submit --trace   
+
+      - name: Deploy the training job (as retraining pipeline job)
+        run: |
+          dbx deploy --jobs=ci-train-job            
 
       # This is deploying the retraining pipeline
       - name: Deploy the training job as a job in Jobs UI
