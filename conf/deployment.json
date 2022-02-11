@@ -31,13 +31,9 @@
                 "name": "cicd-databricks-github-sample-integration-test",
                 "new_cluster": {
                     "spark_version": "9.1.x-cpu-ml-scala2.12",
-                    "node_type_id": "i3.xlarge",
-                    "aws_attributes": {
-                        "first_on_demand": 0,
-                        "availability": "SPOT"
-                    },                    
-                    "num_workers": 1
-                },
+                    "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
+                    "num_workers": 2
+                }, 
                 "libraries": [],
                 "email_notifications": {
                     "on_start": [],
@@ -58,13 +54,9 @@
                         "description":"step data preparation",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
-                            "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
-                            },
+                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
                             "num_workers": 2
-                        },                        
+                        },                                                                     
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],
@@ -90,13 +82,9 @@
                         ],                         
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
-                            "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
-                            },
+                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
                             "num_workers": 2
-                        },                        
+                        },                       
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],
@@ -124,13 +112,9 @@
                         "description":"step validation task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
-                            "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
-                            },
+                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
                             "num_workers": 2
-                        },                        
+                        },                       
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],
@@ -158,13 +142,9 @@
                         "description":"step inference task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
-                            "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
-                            },
+                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
                             "num_workers": 2
-                        },                        
+                        },                      
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],
@@ -197,13 +177,9 @@
                         "description":"step inference task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
-                            "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
-                            },
+                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
                             "num_workers": 2
-                        },                        
+                        },                       
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],
