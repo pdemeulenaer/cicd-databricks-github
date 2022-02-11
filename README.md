@@ -2,7 +2,7 @@
 [![Release pipeline](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onrelease.yml/badge.svg)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/onrelease.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
+<!-- [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github) -->
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
 
 # cicd-databricks-github

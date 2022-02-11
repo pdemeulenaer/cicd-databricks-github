@@ -73,7 +73,7 @@ jobs:
        
 
 
-            
+      # TODO: Enabled the tag in git, following VERSION file            
 
       # - name: Create Release
       #   id: create_release
@@ -87,6 +87,8 @@ jobs:
       #       Release for version ${{ github.ref }}.
       #     draft: false
       #     prerelease: false
+
+
 
 
       # TODO : DISCARD
