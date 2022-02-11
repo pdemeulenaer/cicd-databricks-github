@@ -58,6 +58,11 @@ jobs:
         run: |
           dbx launch --job=ci-train-job --as-run-submit --trace     
 
+      # This is deploying the retraining pipeline
+      - name: Deploy the training job as a job in Jobs UI
+        run: |
+          dbx deploy --jobs=ci-train-job        
+
 
       # TODO: deploy files to workspace
       # - name: Deploy notebooks
