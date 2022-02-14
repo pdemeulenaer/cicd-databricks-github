@@ -30,7 +30,7 @@
                 "name": "cicd-databricks-github-sample-integration-test",
                 "new_cluster": {
                     "spark_version": "9.1.x-cpu-ml-scala2.12",
-                    "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
+                    "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
                     "num_workers": 2
                 }, 
                 "libraries": [],
@@ -53,7 +53,7 @@
                         "description":"step data preparation",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
                             "num_workers": 2
                         },                                                                     
                         "libraries": [],
@@ -81,7 +81,7 @@
                         ],                         
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
                             "num_workers": 2
                         },                       
                         "libraries": [],
@@ -111,7 +111,7 @@
                         "description":"step validation task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
                             "num_workers": 2
                         },                       
                         "libraries": [],
@@ -141,7 +141,7 @@
                         "description":"step inference task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
                             "num_workers": 2
                         },                      
                         "libraries": [],
@@ -176,7 +176,7 @@
                         "description":"step inference task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
                             "num_workers": 2
                         },                       
                         "libraries": [],

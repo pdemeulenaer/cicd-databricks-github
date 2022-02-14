@@ -79,6 +79,8 @@ CD:
 
 * (optional) use Sonar and pylint within the CI part
 
+* Add a feature store and register there the data for training and serving
+
 
 ## Original Readme (generated via cookiecutter)
 
