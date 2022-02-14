@@ -9,7 +9,7 @@
                     "aws_attributes": {
                         "first_on_demand": 0
                     },
-                    "num_workers": 2
+                    "num_workers": 1
                 },
                 "libraries": [],
                 "email_notifications": {
@@ -31,7 +31,7 @@
                 "new_cluster": {
                     "spark_version": "9.1.x-cpu-ml-scala2.12",
                     "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                    "num_workers": 2
+                    "num_workers": 1
                 }, 
                 "libraries": [],
                 "email_notifications": {
@@ -54,7 +54,7 @@
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 2
+                            "num_workers": 1
                         },                                                                     
                         "libraries": [],
                         "email_notifications": {
@@ -82,7 +82,7 @@
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 2
+                            "num_workers": 1
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -112,7 +112,7 @@
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 2
+                            "num_workers": 1
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -142,7 +142,7 @@
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 2
+                            "num_workers": 1
                         },                      
                         "libraries": [],
                         "email_notifications": {
@@ -177,7 +177,7 @@
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 2
+                            "num_workers": 1
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -215,7 +215,7 @@
                             "aws_attributes": {
                                 "first_on_demand": 0
                             },
-                            "num_workers": 2
+                            "num_workers": 1
                         },                        
                         "libraries": [],
                         "email_notifications": {
@@ -242,7 +242,7 @@
                             "aws_attributes": {
                                 "first_on_demand": 0   
                             },
-                            "num_workers": 2
+                            "num_workers": 1
                         },                        
                         "libraries": [],
                         "email_notifications": {
