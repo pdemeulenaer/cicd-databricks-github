@@ -46,16 +46,22 @@
             },    
             {
                 "name": "ci-train-job",
-                "max_concurrent_runs": 1,            
-                "tasks": [
+                "max_concurrent_runs": 1,   
+                "job_clusters": [
                     {
-                        "task_key": "step-data-prep-task",
-                        "description":"step data preparation",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
                             "num_workers": 1
-                        },                                                                     
+                        }, 
+                        "job_cluster_key": "pool-cluster"
+                    }
+                ],         
+                "tasks": [
+                    {
+                        "task_key": "step-data-prep-task",
+                        "description":"step data preparation",
+                        "job_cluster_key": "pool-cluster",                                                                   
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],
@@ -79,11 +85,7 @@
                               "task_key": "step-data-prep-task"
                             }
                         ],                         
-                        "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 1
-                        },                       
+                        "job_cluster_key": "pool-cluster",                     
                         "libraries": [],
                         "email_notifications": {
                             "on_start": [],

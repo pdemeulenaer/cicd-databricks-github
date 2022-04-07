@@ -39,6 +39,10 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
           pip install -e .
+
+      - name: Export Databricks jobs api 2.1
+        run: |
+          export DATABRICKS_JOBS_API_VERSION=2.1
         
       - name: Run pylint code analysis
         run: |
