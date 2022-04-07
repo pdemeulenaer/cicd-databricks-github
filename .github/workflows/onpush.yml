@@ -22,7 +22,7 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
-      DATABRICKS_JOBS_API_VERSION: 2.1
+      # DATABRICKS_JOBS_API_VERSION: 2.1
 
     steps:
       - uses: actions/checkout@v1
