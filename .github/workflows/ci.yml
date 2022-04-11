@@ -13,7 +13,7 @@ on:
       - 'v*' # this tag type is used for release pipelines
 
 jobs:
-  test-pipeline:
+  ci-pipeline:
 
     runs-on: ubuntu-latest
     strategy:
@@ -35,28 +35,19 @@ jobs:
         with:
           python-version: 3.7.9
 
-      - name: Install pip
+      - name: Install packages
         run: |
-          python -m pip install --upgrade pip
-
-      - name: Install dependencies and project in dev mode
-        run: |
-          pip install -r unit-requirements.txt
-          pip install -e .
-
-      # - name: Export Databricks jobs api 2.1
-      #   run: |
-      #     export DATABRICKS_JOBS_API_VERSION=2.1
+          make install
         
       - name: Run pylint code analysis
         run: |
           echo "Launching pylint code analysis"
-          pylint --exit-zero cicd_databricks_github/ tests/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > pylint_report.txt      
+          make lint    
 
       # - name: Run unit tests
       #   run: |
       #     echo "Launching unit tests"
-      #     make test   
+      #     make test  
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
