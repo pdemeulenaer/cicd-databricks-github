@@ -35,6 +35,7 @@ jobs:
         run: |
           make install
 
+
       # 1. Deploy & run integration tests
       - name: Deploy integration test
         run: |
@@ -73,6 +74,11 @@ jobs:
       - name: Run the validation job
         run: |
           dbx launch --job=cd-validation-job --as-run-submit --trace   
+
+      # TODO: CREATE THE TAG
+      # git tag -a v1.4 -m "my version 1.4" #(https://git-scm.com/book/en/v2/Git-Basics-Tagging)
+
+      # REGISTER THE MODEL TO MLFLOW ()
           
 
       # 4. Deploy the Inference Job to Staging 
@@ -84,11 +90,8 @@ jobs:
       # 4b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
       - name: Deploy the inference job
         run: |
-          dbx deploy --jobs=cd-infer-job    
-          
-         
+          dbx deploy --jobs=cd-infer-job             
        
-
 
       # TODO: Enabled the tag in git, following VERSION file            
 
