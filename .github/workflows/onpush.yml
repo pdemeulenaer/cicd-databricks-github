@@ -48,24 +48,7 @@ jobs:
       - name: Run pylint code analysis
         run: |
           echo "Launching pylint code analysis"
-          pylint --exit-zero cicd_databricks_github/ tests/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > pylint_report.txt  
-
-      - name: Run unit tests
-        run: |
-          echo "Launching unit tests"
-          pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
-
-      - name: Deploy the training job (as one-time job)
-        run: |
-          dbx deploy --jobs=ci-train-job --files-only
-       
-      - name: Run the training job (as one-time job)
-        run: |
-          dbx launch --job=ci-train-job --as-run-submit --trace   
-
-      - name: Deploy the training job (as retraining pipeline job)
-        run: |
-          dbx deploy --jobs=ci-train-job            
+          pylint --exit-zero cicd_databricks_github/ tests/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > pylint_report.txt      
 
 
       # TODO: deploy files to workspace
