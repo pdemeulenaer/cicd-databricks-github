@@ -25,12 +25,15 @@ jobs:
       # DATABRICKS_JOBS_API_VERSION: 2.1
 
     steps:
-      - uses: actions/checkout@v1
+      # - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis   
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7.5
+          python-version: 3.7.9
 
       - name: Install pip
         run: |
@@ -50,6 +53,16 @@ jobs:
           echo "Launching pylint code analysis"
           pylint --exit-zero cicd_databricks_github/ tests/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > pylint_report.txt      
 
+      # - name: Run unit tests
+      #   run: |
+      #     echo "Launching unit tests"
+      #     make test   
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # TODO: deploy files to workspace
       # - name: Deploy notebooks
