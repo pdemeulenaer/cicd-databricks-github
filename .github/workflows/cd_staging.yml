@@ -1,4 +1,4 @@
-name: CD pipeline
+name: CD to Staging
 
 on:
   # push:
@@ -10,7 +10,7 @@ on:
 
 
 jobs:
-  cd-pipeline:
+  cd-staging:
 
     runs-on: ubuntu-latest
     strategy:
