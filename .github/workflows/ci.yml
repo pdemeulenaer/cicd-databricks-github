@@ -1,0 +1,68 @@
+name: CI pipeline
+
+on:
+  # push:
+  #   branches:
+  #     - development
+  pull_request:
+    branches:
+      # - main  
+      - development   
+      # - 'release/**'       
+    tags-ignore:
+      - 'v*' # this tag type is used for release pipelines
+
+jobs:
+  ci-pipeline:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
+      # DATABRICKS_JOBS_API_VERSION: 2.1
+
+    steps:
+      # - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis   
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.9
+
+      - name: Install packages
+        run: |
+          make install
+        
+      - name: Run pylint code analysis
+        run: |
+          echo "Launching pylint code analysis"
+          make lint 
+          cat pylint_report.txt   
+
+      # - name: Run unit tests
+      #   run: |
+      #     echo "Launching unit tests"
+      #     make test 
+      #     # cat that file  
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # TODO: deploy files to workspace
+      # - name: Deploy notebooks
+      #   shell: bash
+      #   run: |
+      #     echo "Deploying notebooks"
+      #     databricks workspace import_dir --overwrite notebooks/ /Released/notebook/              
+
+
+
