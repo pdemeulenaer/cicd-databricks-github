@@ -5,12 +5,11 @@
                 "name": "cicd-databricks-github-sample",
                 "new_cluster": {
                     "spark_version": "9.1.x-cpu-ml-scala2.12",
-                    "node_type_id": "i3.xlarge",
+                    "node_type_id": "Standard_F4s",
                     "aws_attributes": {
-                        "first_on_demand": 0,
-                        "availability": "SPOT"
+                        "first_on_demand": 0
                     },
-                    "num_workers": 2
+                    "num_workers": 1
                 },
                 "libraries": [],
                 "email_notifications": {
@@ -31,8 +30,8 @@
                 "name": "cicd-databricks-github-sample-integration-test",
                 "new_cluster": {
                     "spark_version": "9.1.x-cpu-ml-scala2.12",
-                    "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
-                    "num_workers": 2
+                    "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
+                    "num_workers": 1
                 }, 
                 "libraries": [],
                 "email_notifications": {
@@ -54,8 +53,8 @@
                         "description":"step data preparation",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
-                            "num_workers": 2
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
+                            "num_workers": 1
                         },                                                                     
                         "libraries": [],
                         "email_notifications": {
@@ -82,8 +81,8 @@
                         ],                         
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
-                            "num_workers": 2
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
+                            "num_workers": 1
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -112,8 +111,8 @@
                         "description":"step validation task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
-                            "num_workers": 2
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
+                            "num_workers": 1
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -142,8 +141,8 @@
                         "description":"step inference task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
-                            "num_workers": 2
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
+                            "num_workers": 1
                         },                      
                         "libraries": [],
                         "email_notifications": {
@@ -177,8 +176,8 @@
                         "description":"step inference task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "1130-195615-sedan204-pool-ogdngvt9",
-                            "num_workers": 2
+                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
+                            "num_workers": 1
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -212,12 +211,11 @@
                         "description":"Integration test task",
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
+                            "node_type_id": "Standard_F4s",
                             "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
+                                "first_on_demand": 0
                             },
-                            "num_workers": 2
+                            "num_workers": 1
                         },                        
                         "libraries": [],
                         "email_notifications": {
@@ -240,12 +238,11 @@
                         ],                         
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "i3.xlarge",
+                            "node_type_id": "Standard_F4s",
                             "aws_attributes": {
-                                "first_on_demand": 0,
-                                "availability": "SPOT"
+                                "first_on_demand": 0   
                             },
-                            "num_workers": 2
+                            "num_workers": 1
                         },                        
                         "libraries": [],
                         "email_notifications": {

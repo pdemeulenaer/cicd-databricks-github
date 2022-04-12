@@ -7,7 +7,7 @@
 
 # cicd-databricks-github
 
-This repo is built on top of the cicd-templates from DatabricksLabs (https://github.com/databrickslabs/cicd-templates), generated via cookiecutter using an AWS platform context with Github Actions as CICD engine. 
+This repo is built on top of the cicd-templates from DatabricksLabs (Documentation herehttps://dbx.readthedocs.io/en/latest/templates/python_basic.html, originally in this Github repo: https://github.com/databrickslabs/cicd-templates), generated via cookiecutter using an Azure platform context with Github Actions as CICD engine. 
 
 It is adapted to flesh out the adoption of a git flow using Databricks. We take the example of a git flow where:
 

@@ -8,11 +8,17 @@ __pycache__/
 build
 dist
 
+# venv
+venv/
+
 # Unit test / coverage reports
 .coverage
 coverage.xml
 junit/*
 htmlcov/*
+html_cov/*
+junit/*
+pylint_report.txt
 
 # Caches
 .pytest_cache/
