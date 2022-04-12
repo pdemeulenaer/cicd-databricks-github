@@ -37,18 +37,18 @@ jobs:
 
 
       # 1. Deploy & run integration tests
-      - name: Deploy integration test
-        run: |
-          dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
+      # - name: Deploy integration test
+      #   run: |
+      #     dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
 
-      - name: Run integration test
-        run: |
-          dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
+      # - name: Run integration test
+      #   run: |
+      #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
 
-      - name: Run unit tests
-        run: |
-          echo "Launching unit tests"
-          pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
+      # - name: Run unit tests
+      #   run: |
+      #     echo "Launching unit tests"
+      #     pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
 
 
       # 2. Deploy & run training pipeline
@@ -56,73 +56,38 @@ jobs:
         run: |
           dbx deploy --jobs=ci-train-job --files-only
        
-      - name: Run the training job (as one-time job)
-        run: |
-          dbx launch --job=ci-train-job --as-run-submit --trace   
-
-      # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
-      # - name: Deploy the training job (as retraining pipeline job)
+      # - name: Run the training job (as one-time job)
       #   run: |
-      #     dbx deploy --jobs=ci-train-job  
+      #     dbx launch --job=ci-train-job --as-run-submit --trace   
+
+      # # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
+      # # - name: Deploy the training job (as retraining pipeline job)
+      # #   run: |
+      # #     dbx deploy --jobs=ci-train-job  
 
 
-      # 3. Deploy & run validation test for model trained in Step 2
-      - name: Deploy the validation job
-        run: |
-          dbx deploy --jobs=cd-validation-job --files-only
+      # # 3. Deploy & run validation test for model trained in Step 2
+      # - name: Deploy the validation job
+      #   run: |
+      #     dbx deploy --jobs=cd-validation-job --files-only
 
-      - name: Run the validation job
-        run: |
-          dbx launch --job=cd-validation-job --as-run-submit --trace   
+      # - name: Run the validation job
+      #   run: |
+      #     dbx launch --job=cd-validation-job --as-run-submit --trace   
 
-      # TODO: CREATE THE TAG
-      # git tag -a v1.4 -m "my version 1.4" #(https://git-scm.com/book/en/v2/Git-Basics-Tagging)
+      # # HERE THERE SHOULD BE A IF TEST: IF PERFORMANCE IS ACCEPTABLE, DO NEXT STEPS... 
 
-      # REGISTER THE MODEL TO MLFLOW ()
+      # # REGISTER THE MODEL TO MLFLOW ()
           
 
-      # 4. Deploy the Inference Job to Staging 
-      # 4a. Deploy just the job (with native scheduling) to have it triggered by Databricks' native Job scheduler
-      - name: Deploy the inference job
-        run: |
-          dbx deploy --jobs=cd-infer-job-scheduled           
+      # # 4. Deploy the Inference Job to Staging 
+      # # 4a. Deploy just the job (with native scheduling) to have it triggered by Databricks' native Job scheduler
+      # - name: Deploy the inference job
+      #   run: |
+      #     dbx deploy --jobs=cd-infer-job-scheduled           
 
-      # 4b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
-      - name: Deploy the inference job
-        run: |
-          dbx deploy --jobs=cd-infer-job             
+      # # 4b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
+      # - name: Deploy the inference job
+      #   run: |
+      #     dbx deploy --jobs=cd-infer-job             
        
-
-      # TODO: Enabled the tag in git, following VERSION file            
-
-      # - name: Create Release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions
-      #   with:
-      #     tag_name: ${{ github.ref }}
-      #     release_name: Release ${{ github.ref }}
-      #     body: |
-      #       Release for version ${{ github.ref }}.
-      #     draft: false
-      #     prerelease: false
-
-
-
-
-      # TODO : DISCARD
-      # - name: Deploy the job cicd-databricks-github-sample
-      #   run: |
-      #     dbx deploy --jobs=cicd-databricks-github-sample --files-only
-       
-      # - name: Run the job cicd-databricks-github-sample
-      #   run: |
-      #     dbx launch --job=cicd-databricks-github-sample --as-run-submit --trace          
-
-      # - name: Deploy the job multi-tasks-job
-      #   run: |
-      #     dbx deploy --jobs=multi-tasks-job   
-          
-
-

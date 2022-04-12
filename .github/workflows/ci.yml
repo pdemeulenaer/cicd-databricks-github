@@ -42,12 +42,14 @@ jobs:
       - name: Run pylint code analysis
         run: |
           echo "Launching pylint code analysis"
-          make lint    
+          make lint 
+          cat pylint_report.txt   
 
       # - name: Run unit tests
       #   run: |
       #     echo "Launching unit tests"
-      #     make test  
+      #     make test 
+      #     # cat that file  
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
