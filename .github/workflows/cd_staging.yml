@@ -15,12 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
-      matrix:
-        python-version: [ 3.7 ]
+      # matrix:
+      #   python-version: [ 3.7 ]
 
     env:
-      DATABRICKS_HOST_STAGING: ${{ secrets.DATABRICKS_HOST_STAGING }}
-      DATABRICKS_TOKEN_STAGING:  ${{ secrets.DATABRICKS_TOKEN_STAGING }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_STAGING }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN_STAGING }}
       # DATABRICKS_JOBS_API_VERSION: 2.1 # if jobs api 2.1 needed
 
     steps:
