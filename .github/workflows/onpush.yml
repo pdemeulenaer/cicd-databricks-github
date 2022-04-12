@@ -1,0 +1,79 @@
+name: Test pipeline
+
+on:
+  # push:
+  #   branches:
+  #     - development
+  pull_request:
+    branches:
+      # - main  
+      - development   
+      # - 'release/**'       
+    tags-ignore:
+      - 'v*' # this tag type is used for release pipelines
+
+jobs:
+  test-pipeline:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.5
+
+      - name: Install pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install dependencies and project in dev mode
+        run: |
+          pip install -r unit-requirements.txt
+          pip install -e .
+        
+      - name: Run pylint code analysis
+        run: |
+          echo "Launching pylint code analysis"
+          pylint --exit-zero cicd_databricks_github/ tests/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > pylint_report.txt  
+
+      - name: Run unit tests
+        run: |
+          echo "Launching unit tests"
+          pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
+
+      - name: Deploy the training job (as one-time job)
+        run: |
+          dbx deploy --jobs=ci-train-job --files-only
+       
+      - name: Run the training job (as one-time job)
+        run: |
+          dbx launch --job=ci-train-job --as-run-submit --trace   
+
+      - name: Deploy the training job (as retraining pipeline job)
+        run: |
+          dbx deploy --jobs=ci-train-job            
+
+      # This is deploying the retraining pipeline
+      - name: Deploy the training job as a job in Jobs UI
+        run: |
+          dbx deploy --jobs=ci-train-job        
+
+
+      # TODO: deploy files to workspace
+      # - name: Deploy notebooks
+      #   shell: bash
+      #   run: |
+      #     echo "Deploying notebooks"
+      #     databricks workspace import_dir --overwrite notebooks/ /Released/notebook/              
+
+
+
