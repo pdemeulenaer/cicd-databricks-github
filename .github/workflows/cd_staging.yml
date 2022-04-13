@@ -67,15 +67,6 @@ jobs:
       #     dbx deploy --jobs=ci-train-job  
 
 
-      # # 3. Deploy & run validation test for model trained in Step 2
-      # - name: Deploy the validation job
-      #   run: |
-      #     dbx deploy --jobs=cd-validation-job --files-only
-
-      # - name: Run the validation job
-      #   run: |
-      #     dbx launch --job=cd-validation-job --as-run-submit --trace   
-
       # # HERE THERE SHOULD BE A IF TEST: IF PERFORMANCE IS ACCEPTABLE, DO NEXT STEPS... 
 
       # # REGISTER THE MODEL TO MLFLOW ()
