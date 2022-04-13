@@ -156,7 +156,7 @@ class SampleJob(Job):
                 mv = mlflow.register_model(model_uri, model_name)
                 client.transition_model_version_stage(name=model_name, version=mv.version, stage="Staging")
 
-            else test_accuracy < minimal_threshold: 
+            else: 
                 mlflow.set_tag("validation", "failed")
                         
         # print("Step 1.2 completed: model inference")  
