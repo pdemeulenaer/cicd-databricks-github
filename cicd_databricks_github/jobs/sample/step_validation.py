@@ -113,7 +113,7 @@ class SampleJob(Job):
 
         # try:
         # ========================================
-        # 1.2 Model validation
+        # 1.2 Model validation (and registration to MLflow model registry)
         # ========================================
         
         # Derive accuracy on TEST dataset
@@ -148,13 +148,16 @@ class SampleJob(Job):
             mlflow.log_metric("accuracy_TEST", test_accuracy)
             mlflow.log_figure(fig, "confusion_matrix_TEST.png")  
 
-            # If we pass the validation, we register the model and push to Staging 
-            print(minimal_threshold)          
-            if test_accuracy > 0.8: 
+            # IF we pass the validation, we REGISTER the model and push to Staging 
+            print(f"Minimal accuracy threshold: {minimal_threshold:5.2f}")          
+            if test_accuracy >= minimal_threshold: 
                 mlflow.set_tag("validation", "passed")
                 model_uri = "runs:/{}/model".format(best_run_id)
                 mv = mlflow.register_model(model_uri, model_name)
                 client.transition_model_version_stage(name=model_name, version=mv.version, stage="Staging")
+
+            else: 
+                mlflow.set_tag("validation", "failed")
                         
         # print("Step 1.2 completed: model inference")  
         self.logger.info("Step 1.1 completed: model validation")                
