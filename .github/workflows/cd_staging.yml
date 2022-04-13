@@ -57,24 +57,24 @@ jobs:
         run: |
           dbx deploy --jobs=ci-train-job --files-only
        
-      # - name: Run the training job (as one-time job)
+      - name: Run the training job (as one-time job)
+        run: |
+          dbx launch --job=ci-train-job --as-run-submit --trace   
+
+      # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
+      # - name: Deploy the training job (as retraining pipeline job)
       #   run: |
-      #     dbx launch --job=ci-train-job --as-run-submit --trace   
-
-      # # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
-      # # - name: Deploy the training job (as retraining pipeline job)
-      # #   run: |
-      # #     dbx deploy --jobs=ci-train-job  
+      #     dbx deploy --jobs=ci-train-job  
 
 
-      # # 3. Deploy & run validation test for model trained in Step 2
-      # - name: Deploy the validation job
-      #   run: |
-      #     dbx deploy --jobs=cd-validation-job --files-only
+      # 3. Deploy & run validation test for model trained in Step 2
+      - name: Deploy the validation job
+        run: |
+          dbx deploy --jobs=cd-validation-job --files-only
 
-      # - name: Run the validation job
-      #   run: |
-      #     dbx launch --job=cd-validation-job --as-run-submit --trace   
+      - name: Run the validation job
+        run: |
+          dbx launch --job=cd-validation-job --as-run-submit --trace   
 
       # # HERE THERE SHOULD BE A IF TEST: IF PERFORMANCE IS ACCEPTABLE, DO NEXT STEPS... 
 
