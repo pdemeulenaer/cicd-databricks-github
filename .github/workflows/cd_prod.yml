@@ -7,26 +7,27 @@ on:
 
 
 jobs:
-  cd-prod:
+  cd-staging:
 
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
-      # matrix:
-      #   python-version: [ 3.7 ]
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }} 
       DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN_PROD }}
-      # DATABRICKS_JOBS_API_VERSION: 2.1 # if jobs api 2.1 needed
+      # DATABRICKS_JOBS_API_VERSION: 2.1
 
     steps:
-      - uses: actions/checkout@v1
+      # - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis   
 
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.7.9
 
       - name: Install packages
         run: |
