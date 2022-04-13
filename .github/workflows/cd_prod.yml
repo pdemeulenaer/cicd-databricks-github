@@ -32,6 +32,11 @@ jobs:
         run: |
           make install
 
+      # DUMMY DEPLOYMENT (to remove when ready)
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job --files-only
+
 
       # # 1. Deploy & run integration tests
       # - name: Deploy integration test
