@@ -1,3 +1,4 @@
+# Databricks notebook source
 from cicd_databricks_github.common import Job
 
 import pandas as pd
@@ -19,6 +20,7 @@ from pylab import *
 import matplotlib.cm as cm
 import matplotlib.mlab as mlab
 
+# COMMAND ----------
 
 class SampleJob(Job):
 
@@ -175,6 +177,7 @@ class SampleJob(Job):
 
         self.logger.info("Sample job finished!")       
 
+# COMMAND ----------
 
 if __name__ == "__main__":
     job = SampleJob()
