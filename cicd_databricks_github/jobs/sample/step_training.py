@@ -1,3 +1,4 @@
+# Databricks notebook source
 from cicd_databricks_github.common import Job
 
 import pandas as pd
@@ -19,6 +20,7 @@ from pylab import *
 import matplotlib.cm as cm
 import matplotlib.mlab as mlab
 
+# COMMAND ----------
 
 class SampleJob(Job):
 
@@ -87,26 +89,42 @@ class SampleJob(Job):
         # 1.1 Model training
         # ========================================
         
-        with mlflow.start_run() as run:          
+        with mlflow.start_run() as run:    
+            mlflow.sklearn.autolog()
 
             # Model definition
-            max_depth = int(model_conf['hyperparameters']['max_depth'])
-            n_estimators = int(model_conf['hyperparameters']['n_estimators'])
-            max_features = model_conf['hyperparameters']['max_features']
-            criterion = model_conf['hyperparameters']['criterion']
-            class_weight = model_conf['hyperparameters']['class_weight']
-            bootstrap = bool(model_conf['hyperparameters']['bootstrap'])
-            clf = RandomForestClassifier(max_depth=max_depth,
-                                    n_estimators=n_estimators,
-                                    max_features=max_features,
-                                    criterion=criterion,
-                                    class_weight=class_weight,
-                                    bootstrap=bootstrap,
-                                    random_state=21,
-                                    n_jobs=-1)          
+#             max_depth = int(model_conf['hyperparameters']['max_depth'])
+#             n_estimators = int(model_conf['hyperparameters']['n_estimators'])
+#             max_features = model_conf['hyperparameters']['max_features']
+#             criterion = model_conf['hyperparameters']['criterion']
+#             class_weight = model_conf['hyperparameters']['class_weight']
+#             bootstrap = bool(model_conf['hyperparameters']['bootstrap'])
+#             clf = RandomForestClassifier(max_depth=max_depth,
+#                                     n_estimators=n_estimators,
+#                                     max_features=max_features,
+#                                     criterion=criterion,
+#                                     class_weight=class_weight,
+#                                     bootstrap=bootstrap,
+#                                     random_state=21,
+#                                     n_jobs=-1)          
             
-            # Fit of the model on the training set
-            model = clf.fit(x_train, y_train) 
+#             # Fit of the model on the training set
+#             model = clf.fit(x_train, y_train) 
+
+            base_estimator = RandomForestClassifier(oob_score = True,
+                                                    random_state=21,
+                                                    n_jobs=-1)   
+
+            CV_rfc = GridSearchCV(estimator=base_estimator, 
+                                  param_grid=model_conf['hyperparameters_grid'],
+                                  cv=5)
+
+            CV_rfc.fit(x_train, y_train)
+            print(CV_rfc.best_params_)
+            print(CV_rfc.best_score_)
+            print(CV_rfc.best_estimator_)
+
+            model = CV_rfc.best_estimator_
             
             # Inference on validation dataset
             y_val_pred = model.predict(x_val)    
@@ -134,13 +152,13 @@ class SampleJob(Job):
             plt.savefig("confusion_matrix.png")
             
             # Log the model within the MLflow run
-            mlflow.log_param("max_depth", str(max_depth))
-            mlflow.log_param("n_estimators", str(n_estimators))  
-            mlflow.log_param("max_features", str(max_features))             
-            mlflow.log_param("criterion", str(criterion))  
-            mlflow.log_param("class_weight", str(class_weight))  
-            mlflow.log_param("bootstrap", str(bootstrap))  
-            mlflow.log_param("max_features", str(max_features)) 
+#             mlflow.log_param("max_depth", str(max_depth))
+#             mlflow.log_param("n_estimators", str(n_estimators))  
+#             mlflow.log_param("max_features", str(max_features))             
+#             mlflow.log_param("criterion", str(criterion))  
+#             mlflow.log_param("class_weight", str(class_weight))  
+#             mlflow.log_param("bootstrap", str(bootstrap))  
+#             mlflow.log_param("max_features", str(max_features)) 
 
             # Tracking performance metrics
             mlflow.log_metric("accuracy", accuracy)
@@ -175,7 +193,12 @@ class SampleJob(Job):
 
         self.logger.info("Sample job finished!")       
 
+# COMMAND ----------
 
 if __name__ == "__main__":
     job = SampleJob()
     job.train()
+
+# COMMAND ----------
+
+

@@ -13,16 +13,17 @@
     "model": {
         "model_name": "IrisClassificationRF",
         "experiment_name": "/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment",
-        "hyperparameters": {
-            "max_depth": "20",
-            "n_estimators": "100",
-            "max_features": "auto",
-            "criterion": "gini",
+        "hyperparameters_grid": {
+            "max_depth": [3,10],
+            "n_estimators": [30,50],
+            "max_features": ["auto"],
+            "criterion": ["gini","entropy"]      
+        },
+        "hyperparameters_fixed": {
             "class_weight": "balanced",
             "bootstrap": "True",
             "random_state": "21"        
         },
         "minimal_threshold": "0.8"
     }
-
 }
