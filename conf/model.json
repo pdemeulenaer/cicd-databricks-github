@@ -1,4 +1,30 @@
 {
+    "workspace": {
+        "dev": {
+          "azure-storage-account-name": "datalakeblobstorage",
+          "storage-secret-scope": "connection-to-datalakeblobstorage",
+          "storage-secret-scope-key": "datalakeblobstorage",
+          "data-lake": "data-lake-blob-dev"
+        },
+        "staging": {
+          "azure-storage-account-name": "datalakeblobstorage",
+          "storage-secret-scope": "connection-to-datalakeblobstorage",
+          "storage-secret-scope-key": "datalakeblobstorage",
+          "data-lake": "data-lake-blob-dev"
+        },
+        "qa": {
+          "azure-storage-account-name": "datalakeblobstorage",
+          "storage-secret-scope": "connection-to-datalakeblobstorage",
+          "storage-secret-scope-key": "datalakeblobstorage",
+          "data-lake": "data-lake-blob-dev"
+        },
+        "prod": {
+          "azure-storage-account-name": "datalakeblobstorage",
+          "storage-secret-scope": "connection-to-datalakeblobstorage",
+          "storage-secret-scope-key": "datalakeblobstorage",
+          "data-lake": "data-lake-blob-prod"
+        }
+    },
     "data": {
         "output_format": "delta",
         "data_path": "dbfs:/dbx/tmp/cicd_databricks_github/data/",

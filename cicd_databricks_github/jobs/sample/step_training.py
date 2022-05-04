@@ -6,11 +6,23 @@ import numpy as np
 import mlflow
 import json
 
+from pyspark.sql.functions import *
+
+# Import of Feature Store
+from databricks import feature_store
+from databricks.feature_store import FeatureLookup
+
 # Import of Sklearn packages
 from sklearn.metrics import accuracy_score, roc_curve, auc, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import load_iris
+from sklearn.model_selection import GridSearchCV
+
+# Import MLflow 
+from mlflow.tracking import MlflowClient
+import mlflow
+import mlflow.sklearn #mlflow.lightgbm
+from mlflow.models.signature import infer_signature
 
 # Import matplotlib packages
 from IPython.core.pylabtools import figsize
@@ -44,11 +56,19 @@ class SampleJob(Job):
         val_dataset = self.conf["data"]["val_dataset"]   
         experiment = self.conf["model"]["experiment_name"] 
         output_path = self.conf["data"]["output_path"]
-
+        
+        # Configuration of direct connection to Azure Blob storage (no mount needed)
+        environment = "dev"  # ATTENTION !!!!
+        blob_name = self.conf['workspace'][environment]['data-lake']
+        account_name = self.conf['workspace'][environment]['azure-storage-account-name']
+        storage_key = dbutils.secrets.get(scope = self.conf['workspace'][environment]['storage-secret-scope'], 
+                                          key = self.conf['workspace'][environment]['storage-secret-scope-key'])
+        spark.conf.set("fs.azure.account.key."+account_name+".blob.core.windows.net", storage_key)
+        cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
+        
         # Define the MLFlow experiment location
         mlflow.set_experiment(experiment)    
 
-        # try:
         print()
         print("-----------------------------------")
         print("         Model Training            ")
@@ -58,39 +78,154 @@ class SampleJob(Job):
         # ==============================
         # 1.0 Data Loading
         # ==============================
-
-        train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
-        train_pd = train_df.toPandas()
-
-        val_df = self.spark.read.format("delta").load(data_path+val_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
-        val_pd = val_df.toPandas()        
-
-        # Feature selection
-        feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-        target = 'label'   
-
-        x_train = train_pd[feature_cols].values
-        y_train = train_pd[target].values
-
-        x_val = val_pd[feature_cols].values
-        y_val = val_pd[target].values        
-
-        # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
-        self.logger.info("Step 1.0 completed: Loaded Iris dataset in Pandas")   
+        # try:
+        
+        # Load the raw data and associated label tables
+        raw_data = spark.read.format('delta').load(cwd + 'raw_data')
+        labels = spark.read.format('delta').load(cwd + 'labels')
+        
+        # Joining raw_data and labels
+        raw_data_with_labels = raw_data.join(labels, ['Id','hour'])
+        display(raw_data_with_labels)
+        
+        # Selection of the data and labels until last LARGE time step (e.g. day or week let's say)
+        # Hence we will remove the last large timestep of the data
+        # max_hour = raw_data_with_labels.select("hour").rdd.max()[0]
+        max_date = raw_data_with_labels.select("date").rdd.max()[0]
+        print(max_date)
+        # raw_data_with_labels = raw_data_with_labels.withColumn("filter_out", when((col("hour")==max_hour) & (col("date")==max_date),"1").otherwise(0)) # don't take last hour of last day of data
+        raw_data_with_labels = raw_data_with_labels.withColumn("filter_out", when(col("date")==max_date,"1").otherwise(0)) # don't take last day of data
+        raw_data_with_labels = raw_data_with_labels.filter("filter_out==0").drop("filter_out")
+        display(raw_data_with_labels)
+        
+        self.logger.info("Step 1.0 completed: Loaded historical raw data and labels")   
           
         # except Exception as e:
         #     print("Errored on 1.0: data loading")
         #     print("Exception Trace: {0}".format(e))
         #     # print(traceback.format_exc())
+        #     raise e  
+        
+        # ==================================
+        # 1.1 Building the training dataset
+        # ==================================
+        # try:
+        
+        # Initialize the Feature Store client
+        fs = feature_store.FeatureStoreClient()
+
+        # Declaration of the Feature Store
+        scaled_features_table = "feature_store_iris_example.scaled_features"
+
+        # Declaration of the features, in a "feature lookup" object
+        scaled_feature_lookups = [
+            FeatureLookup( 
+              table_name = scaled_features_table,
+              feature_names = ["sl_norm","sw_norm","pl_norm","pw_norm"],
+              lookup_key = ["Id","hour"],
+            ),
+        ]
+
+        # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
+        exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # should I exclude the 'Id', 'hour','date'? 
+        training_set = fs.create_training_set(
+          raw_data_with_labels,
+          feature_lookups = scaled_feature_lookups,
+          label = "target",
+          exclude_columns = exclude_columns
+        )
+
+        # Load the training dataset into a dataframe which can be passed into model training algo
+        training_df = training_set.load_df()
+        display(training_df)
+
+#         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
+#         train_pd = train_df.toPandas()
+
+#         val_df = self.spark.read.format("delta").load(data_path+val_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
+#         val_pd = val_df.toPandas()        
+
+#         # Feature selection
+#         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+#         target = 'label'   
+
+#         x_train = train_pd[feature_cols].values
+#         y_train = train_pd[target].values
+
+#         x_val = val_pd[feature_cols].values
+#         y_val = val_pd[target].values        
+ 
+        self.logger.info("Step 1.1 completed: Loaded features from the Feature Store")   
+          
+        # except Exception as e:
+        #     print("Errored on 1.1: loading features from the feature store")
+        #     print("Exception Trace: {0}".format(e))
+        #     # print(traceback.format_exc())
         #     raise e    
 
+        # ADD A TASK AROUND BUILDING AND SAVING TRAIN-TEST (SPLIT)
+        # ==================================
+        # 1.2 Create Train-Test data
+        # ==================================
         # try:
+        
+        training_df = training_set.load_df()
+        display(training_df)
+        
+        features_and_label = training_df.columns
+
+        # Collect data into a Pandas array for training
+        data_pd = training_df.toPandas()[features_and_label]
+
+        train, test = train_test_split(data_pd, train_size=0.7, stratify=y, random_state=123)
+        x_train = train.drop(["target"], axis=1)
+        x_test = test.drop(["target"], axis=1)
+        y_train = train.target
+        y_test = test.target
+        
+        # Save train dataset
+        train_pd = pd.DataFrame(data=np.column_stack((x_train,y_train)), columns=[features_and_label])
+        train_df = spark.createDataFrame(train_pd)
+        train_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"train_iris_dataset")
+        
+        # Save test dataset
+        test_pd = pd.DataFrame(data=np.column_stack((x_test,y_test)), columns=[features_and_label])
+        test_df = spark.createDataFrame(test_pd)
+        test_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"test_iris_dataset")
+
+#         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
+#         train_pd = train_df.toPandas()
+
+#         val_df = self.spark.read.format("delta").load(data_path+val_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
+#         val_pd = val_df.toPandas()        
+
+#         # Feature selection
+#         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+#         target = 'label'   
+
+#         x_train = train_pd[feature_cols].values
+#         y_train = train_pd[target].values
+
+#         x_val = val_pd[feature_cols].values
+#         y_val = val_pd[target].values        
+ 
+        self.logger.info("Step 1.2 completed: Create and save the train and test data")   
+          
+        # except Exception as e:
+        #     print("Errored on 1.2: create and save the train and test data")
+        #     print("Exception Trace: {0}".format(e))
+        #     # print(traceback.format_exc())
+        #     raise e  
+
         # ========================================
-        # 1.1 Model training
+        # 1.3 Model training
         # ========================================
+        # try:
         
         with mlflow.start_run() as run:    
             mlflow.sklearn.autolog()
+            print("Active run_id: {}".format(run.info.run_id))
+            self.logger.info("Active run_id: {}".format(run.info.run_id))
 
             # Model definition
 #             max_depth = int(model_conf['hyperparameters']['max_depth'])
@@ -165,18 +300,27 @@ class SampleJob(Job):
             mlflow.log_figure(fig, "confusion_matrix.png")
             mlflow.set_tag("type", "CI run")   
 
-            # Log the model (not registering yet)
-            mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")                                                 
+            # Log the model (not registering in DEV !!!)
+#             mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
+            
+            # Register the model to MLflow MR as well as FS MR (not registering in DEV !!!!l!!!)
+            fs.log_model(
+              model,
+              artifact_path="iris_model_packaged",
+              flavor=mlflow.sklearn,
+              training_set=training_set,
+              registered_model_name="iris_model_packaged"
+            ) 
 
-        # print("Step 1.1 completed: model training and saved to MLFlow")  
-        self.logger.info("Step 1.1 completed: model training and saved to MLFlow")                
+        self.logger.info("Step 1.3 completed: model training and saved to MLFlow")                
 
         # except Exception as e:
-        #     print("Errored on step 1.1: model training")
+        #     print("Errored on step 1.3: model training")
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
         #     raise e                  
 
+        
     def launch(self):
         self.logger.info("Launching sample job")
 
