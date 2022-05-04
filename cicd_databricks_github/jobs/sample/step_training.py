@@ -184,12 +184,12 @@ class SampleJob(Job):
         # Save train dataset
         train_pd = pd.DataFrame(data=np.column_stack((x_train,y_train)), columns=[features_and_label])
         train_df = spark.createDataFrame(train_pd)
-        train_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"train_iris_dataset")
+        # train_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"train_iris_dataset")
         
         # Save test dataset
         test_pd = pd.DataFrame(data=np.column_stack((x_test,y_test)), columns=[features_and_label])
         test_df = spark.createDataFrame(test_pd)
-        test_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"test_iris_dataset")
+        # test_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"test_iris_dataset")
 
 #         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
 #         train_pd = train_df.toPandas()
