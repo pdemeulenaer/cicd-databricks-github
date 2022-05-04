@@ -52,8 +52,8 @@
                         "task_key": "step-training-task",
                         "description":"Step Training",                       
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0413-122447-punch30-pool-zo2a2ml2",
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
                             "num_workers": 1
                         },                       
                         "libraries": [],
@@ -80,8 +80,8 @@
                             }
                         ], 
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0413-122447-punch30-pool-zo2a2ml2",
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
                             "num_workers": 1
                         },                       
                         "libraries": [],
