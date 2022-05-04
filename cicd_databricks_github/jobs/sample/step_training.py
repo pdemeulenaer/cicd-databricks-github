@@ -175,7 +175,7 @@ class SampleJob(Job):
         # Collect data into a Pandas array for training
         data_pd = training_df.toPandas()[features_and_label]
 
-        train, test = train_test_split(data_pd, train_size=0.7, stratify=y, random_state=123)
+        train, test = train_test_split(data_pd, train_size=0.7, random_state=123)   #, stratify=y not working now
         x_train = train.drop(["target"], axis=1)
         x_test = test.drop(["target"], axis=1)
         y_train = train.target
