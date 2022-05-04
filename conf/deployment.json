@@ -50,12 +50,7 @@
                 "tasks": [
                     {
                         "task_key": "step-training-task",
-                        "description":"Step Training",
-                        "depends_on": [
-                            {
-                              "task_key": "step-data-prep-task"
-                            }
-                        ],                         
+                        "description":"Step Training",                       
                         "new_cluster": {
                             "spark_version": "9.1.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0413-122447-punch30-pool-zo2a2ml2",
