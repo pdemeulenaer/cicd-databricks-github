@@ -17,8 +17,8 @@ jobs:
       max-parallel: 4
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_STAGING }} 
-      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN_STAGING }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }} 
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
       # DATABRICKS_JOBS_API_VERSION: 2.1
 
     steps:
@@ -53,6 +53,10 @@ jobs:
 
 
       # 2. Deploy & run training pipeline
+      - name: Deploy the training job (as job in the UI)
+        run: |
+          dbx deploy --jobs=ci-train-job
+
       - name: Deploy the training job (as one-time job)
         run: |
           dbx deploy --jobs=ci-train-job --files-only
