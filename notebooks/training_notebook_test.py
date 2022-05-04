@@ -99,13 +99,23 @@ model_conf
 
 # COMMAND ----------
 
+#EXAMPLE OF DIRECT CONNECTION TO BLOB STORAGE (no mount needed)
+environment = "dev"
+blob_name = conf['workspace'][environment]['data-lake']
+account_name = conf['workspace'][environment]['azure-storage-account-name']
+storage_key = dbutils.secrets.get(scope = conf['workspace'][environment]['storage-secret-scope'], 
+                                  key = conf['workspace'][environment]['storage-secret-scope-key'])
+spark.conf.set("fs.azure.account.key."+account_name+".blob.core.windows.net", storage_key)
+cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
+
+# COMMAND ----------
+
 # Load the raw data and associated label tables
 
-raw_data = spark.table("iris_data.raw_data")
-labels = spark.table("iris_data.labels")
-
-# display(raw_data)
-# display(labels)
+# raw_data = spark.table("iris_data.raw_data")
+# labels = spark.table("iris_data.labels")
+raw_data = spark.read.format('delta').load(cwd + 'raw_data')
+labels = spark.read.format('delta').load(cwd + 'labels')
 
 # Joining raw_data and labels
 raw_data_with_labels = raw_data.join(labels, ['Id','hour'])
@@ -141,7 +151,7 @@ scaled_feature_lookups = [
     ),
 ]
 
-exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date']
+exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # should I exclude the 'Id', 'hour','date'? 
 
 # Create the training set that includes the raw input data merged with corresponding features from both feature tables
 training_set = fs.create_training_set(
@@ -156,6 +166,8 @@ training_df = training_set.load_df()
 display(training_df)
 
 # COMMAND ----------
+
+# Actual Model training
 
 # End any existing runs (in the case this notebook is being run for a second time)
 mlflow.end_run()
@@ -209,6 +221,10 @@ fs.log_model(
   training_set=training_set,
   registered_model_name="iris_model_packaged"
 ) 
+
+# COMMAND ----------
+
+print('t')
 
 # COMMAND ----------
 
