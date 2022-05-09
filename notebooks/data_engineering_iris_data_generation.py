@@ -27,6 +27,28 @@ from cicd_databricks_github import module
 
 # COMMAND ----------
 
+# #EXAMPLE OF DIRECT CONNECTION (no mount)
+# blob_name_prod = "data-lake-blob-prod"
+# blob_name_dev = "data-lake-blob-dev"
+# account_name = "datalakeblobstorage"
+# storageKey1 = dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "datalakeblobstorage")
+# spark.conf.set("fs.azure.account.key."+account_name+".blob.core.windows.net", storageKey1)
+# cwd_prod = "wasbs://"+blob_name_prod+"@"+account_name+".blob.core.windows.net/"
+# cwd_dev = "wasbs://"+blob_name_dev+"@"+account_name+".blob.core.windows.net/"
+
+try: 
+  dbutils.fs.mount(
+    source = "wasbs://data-lake-blob-dev@datalakeblobstorage.blob.core.windows.net",
+    mount_point = "/mnt/datalake-dev",
+    extra_configs = {"fs.azure.account.key.datalakeblobstorage.blob.core.windows.net":dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "datalakeblobstorage")})
+  print('Mounted now!')
+except:
+  print('Already mounted!')
+# cwd = "/dbfs/mnt/test/"
+cwd_dev = "/mnt/datalake-dev"
+
+# COMMAND ----------
+
 def scaled_features_fn(df):
     """
     Computes the scaled_features feature group.
@@ -75,7 +97,7 @@ iris_generated_all = pd.DataFrame(columns = iris.feature_names)
 
 # Generate 50 sample randomly out of each target class
 for target_class in [0,1,2]:
-  iris_generated = module.iris_data_generator(target_class=str(target_class),n_samples=50)
+  iris_generated = module.iris_data_generator(target_class=str(target_class),n_samples=50) #module.iris_data_generator...
   iris_generated_all = pd.concat([iris_generated_all, iris_generated], axis=0, ignore_index=True)
 
 data_batch = spark.createDataFrame(iris_generated_all)
@@ -98,8 +120,8 @@ data_batch.show(3) # IMPORTANT AS THIS ENFORCES THE COMPUTATION (e.g. forces the
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC CREATE SCHEMA IF NOT EXISTS iris_data;
+# %sql
+# CREATE SCHEMA IF NOT EXISTS iris_data;
 
 # COMMAND ----------
 
@@ -109,13 +131,27 @@ data_batch.show(3) # IMPORTANT AS THIS ENFORCES THE COMPUTATION (e.g. forces the
 
 # COMMAND ----------
 
+# raw_data_batch = data_batch.drop('target')
+# label_batch = data_batch.select('Id','hour','target')
+# display(raw_data_batch)
+# display(label_batch)
+
+# raw_data_batch.write.format("delta").mode("append").saveAsTable("iris_data.raw_data")
+# label_batch.write.format("delta").mode("append").saveAsTable("iris_data.labels")
+
 raw_data_batch = data_batch.drop('target')
 label_batch = data_batch.select('Id','hour','target')
 display(raw_data_batch)
 display(label_batch)
 
-raw_data_batch.write.format("delta").mode("append").saveAsTable("iris_data.raw_data")
-label_batch.write.format("delta").mode("append").saveAsTable("iris_data.labels")
+# raw_data_batch.write.format("delta").mode("append").saveAsTable("iris_data.raw_data")
+# label_batch.write.format("delta").mode("append").saveAsTable("iris_data.labels")
+
+raw_data_batch.write.option("header", "true").format("delta").mode("append").save(cwd_dev+"raw_data")
+# raw_data_batch.write.option("header", "true").format("delta").mode("append").save(cwd_prod+"raw_data")
+
+label_batch.write.option("header", "true").format("delta").mode("append").save(cwd_dev+"labels")
+# label_batch.write.option("header", "true").format("delta").mode("append").save(cwd_prod+"labels")
 
 # COMMAND ----------
 
@@ -130,17 +166,38 @@ label_batch.write.format("delta").mode("append").saveAsTable("iris_data.labels")
 
 # COMMAND ----------
 
+# MAGIC %sql
+# MAGIC CREATE SCHEMA IF NOT EXISTS feature_store_iris_example4
+# MAGIC LOCATION "/mnt/datalake-dev"
+
+# COMMAND ----------
+
+# MAGIC %fs ls /mnt/datalake-dev
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC DESCRIBE SCHEMA EXTENDED feature_store_iris_example4;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM feature_store_iris_example4.scaled_features;
+
+# COMMAND ----------
+
 spark.conf.set("spark.sql.shuffle.partitions", "5")
 
 # Initialize the Feature Store client
-fs = feature_store.FeatureStoreClient()
+registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
+fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri)
 
 # Creation of the features
 features_df = scaled_features_fn(raw_data_batch)
 display(features_df)
 
 # Feature store table name
-fs_table = "feature_store_iris_example.scaled_features"
+fs_table = "feature_store_iris_example4.scaled_features"
 
 # If the table does not exists, create it
 if not spark.catalog._jcatalog.tableExists(fs_table): 
@@ -163,8 +220,8 @@ else:
 
 # COMMAND ----------
 
-# %sql
-# SELECT * FROM feature_store_iris_example.scaled_features VERSION AS OF 2
+# MAGIC %sql
+# MAGIC SELECT * FROM feature_store_iris_example4.scaled_features --_from_prod_ws --VERSION AS OF 2
 
 # COMMAND ----------
 
