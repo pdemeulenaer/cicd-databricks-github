@@ -46,6 +46,19 @@ class SampleJob(Job):
         output_path = self.conf["data"]["output_path"]
         minimal_threshold = self.conf["model"]["minimal_threshold"] 
 
+        # Configuration of direct connection to Azure Blob storage (no mount needed)
+        environment = "dev"  # TODO: needs to be dynamically changed depending on platform !!!!
+        blob_name = self.conf['workspace'][environment]['data-lake']
+        account_name = self.conf['workspace'][environment]['azure-storage-account-name']
+        storage_key = dbutils.secrets.get(scope = self.conf['workspace'][environment]['storage-secret-scope'], 
+                                          key = self.conf['workspace'][environment]['storage-secret-scope-key'])
+        spark.conf.set("fs.azure.account.key."+account_name+".blob.core.windows.net", storage_key)
+        cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
+
+        # Define the centralized registry
+        registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
+        mlflow.set_registry_uri(registry_uri) # BUG: is this working here?
+
         # Define the MLFlow experiment location
         mlflow.set_experiment(experiment)       
 
@@ -60,11 +73,12 @@ class SampleJob(Job):
         # 1.0 Data Loading
         # ==============================
 
-        test_df = self.spark.read.format("delta").load(data_path+test_dataset) #"dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
+        # test_df = self.spark.read.format("delta").load(data_path+test_dataset) #"dbfs:/dbx/tmp/test/{0}".format('test_data_sklearn_rf'))
+        test_df = self.spark.read.format('delta').load(cwd+"test_iris_dataset")
         test_pd = test_df.toPandas()
 
         # Feature selection
-        feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+        feature_cols = ["sl_norm","sw_norm","pl_norm","pw_norm"] #['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         target = 'label'   
 
         x_test = test_pd[feature_cols].values
@@ -90,16 +104,22 @@ class SampleJob(Job):
         # - it should have the tag.type = CI, meaning it was trained during a CI run
 
         # Initialize client
-        client = mlflow.tracking.MlflowClient()
+        # client = mlflow.tracking.MlflowClient()
+        client = mlflow.tracking.MlflowClient(tracking_uri=None, registry_uri=registry_uri)
+        model_names = [m.name for m in client.list_registered_models() if m.name.startswith(prefix)]
+        print(model_names)
         
-        # Get experiment and runs 
-        exp  = client.get_experiment_by_name(experiment)
-        query = "tags.type = 'CI run' and metrics.accuracy >= {0}".format(minimal_threshold)
-        runs = mlflow.search_runs([exp.experiment_id], filter_string=query, order_by=["metrics.accuracy DESC"], max_results=1)
-        best_run_id = runs["run_id"][0]
+        # # Get experiment and runs # NOT CONSIDERED SINCE ONLY LOCAL MODEL
+        # exp  = client.get_experiment_by_name(experiment)
+        # query = "tags.type = 'CI run' and metrics.accuracy >= {0}".format(minimal_threshold)
+        # runs = mlflow.search_runs([exp.experiment_id], filter_string=query, order_by=["metrics.accuracy DESC"], max_results=1)
+        # best_run_id = runs["run_id"][0]
+        # model_path = "runs:/{0}/model".format(best_run_id)
+        # model = mlflow.pyfunc.load_model(model_path)
 
-        model_path = "runs:/{0}/model".format(best_run_id)
-        model = mlflow.pyfunc.load_model(model_path)
+        # model = mlflow.pyfunc.load_model(f'models://{scope}:{key}@databricks/{model3_name}/Staging')
+        model = mlflow.pyfunc.load_model(f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None')  
+        # model = mlflow.pyfunc.load_model(model_path)
                                 
         # print("Step 1.1 completed: load model from MLflow")  
         self.logger.info("Step 1.1 completed: load model from MLflow")                
