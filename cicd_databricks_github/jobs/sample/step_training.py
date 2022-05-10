@@ -91,7 +91,7 @@ class SampleJob(Job):
         raw_data_with_labels = raw_data.join(labels, ['Id','hour'])
         display(raw_data_with_labels)
         
-        Selection of the data and labels until last LARGE time step (e.g. day or week let's say)
+        # Selection of the data and labels until last LARGE time step (e.g. day or week let's say)
         # Hence we will remove the last large timestep of the data
         # max_hour = raw_data_with_labels.select("hour").rdd.max()[0]
         max_date = raw_data_with_labels.select("date").rdd.max()[0]

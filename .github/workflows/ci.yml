@@ -57,12 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # TODO: deploy files to workspace
-      # - name: Deploy notebooks
-      #   shell: bash
-      #   run: |
-      #     echo "Deploying notebooks"
-      #     databricks workspace import_dir --overwrite notebooks/ /Released/notebook/              
+             
 
 
 
