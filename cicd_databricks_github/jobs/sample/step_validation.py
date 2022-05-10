@@ -79,7 +79,7 @@ class SampleJob(Job):
 
         # Feature selection
         feature_cols = ["sl_norm","sw_norm","pl_norm","pw_norm"] #['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-        target = 'label'   
+        target = 'target'   
 
         x_test = test_pd[feature_cols].values
         y_test = test_pd[target].values
