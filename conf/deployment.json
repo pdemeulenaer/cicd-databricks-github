@@ -54,7 +54,12 @@
                         "new_cluster": {
                             "spark_version": "10.4.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
-                            "num_workers": 1
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -82,7 +87,12 @@
                         "new_cluster": {
                             "spark_version": "10.4.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
-                            "num_workers": 1
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                       
                         "libraries": [],
                         "email_notifications": {

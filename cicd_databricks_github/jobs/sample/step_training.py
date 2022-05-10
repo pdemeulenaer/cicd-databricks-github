@@ -1,3 +1,4 @@
+# Model training code
 
 from cicd_databricks_github.common import Job
 
@@ -5,7 +6,6 @@ import pandas as pd
 import numpy as np
 import mlflow
 import json
-
 from pyspark.sql.functions import *
 
 # Import of Feature Store
@@ -23,6 +23,7 @@ from mlflow.tracking import MlflowClient
 import mlflow
 import mlflow.sklearn #mlflow.lightgbm
 from mlflow.models.signature import infer_signature
+from mlflow.tracking.artifact_utils import get_artifact_uri
 
 # Import matplotlib packages
 from IPython.core.pylabtools import figsize
@@ -56,16 +57,20 @@ class SampleJob(Job):
         output_path = self.conf["data"]["output_path"]
         
         # Configuration of direct connection to Azure Blob storage (no mount needed)
-        environment = "dev"  # ATTENTION !!!!
+        environment = "dev"  # TODO: needs to be dynamically changed depending on platform !!!!
         blob_name = self.conf['workspace'][environment]['data-lake']
         account_name = self.conf['workspace'][environment]['azure-storage-account-name']
         storage_key = dbutils.secrets.get(scope = self.conf['workspace'][environment]['storage-secret-scope'], 
                                           key = self.conf['workspace'][environment]['storage-secret-scope-key'])
         spark.conf.set("fs.azure.account.key."+account_name+".blob.core.windows.net", storage_key)
         cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
+
+        # Define the centralized registry
+        registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
+        mlflow.set_registry_uri(registry_uri) # BUG: is this working here?
         
         # Define the MLFlow experiment location
-        mlflow.set_experiment(experiment)    
+        mlflow.set_experiment(experiment)    # note: the experiment will STILL be recorded to local MLflow instance!
 
         print()
         print("-----------------------------------")
@@ -86,7 +91,7 @@ class SampleJob(Job):
         raw_data_with_labels = raw_data.join(labels, ['Id','hour'])
         display(raw_data_with_labels)
         
-        # Selection of the data and labels until last LARGE time step (e.g. day or week let's say)
+        Selection of the data and labels until last LARGE time step (e.g. day or week let's say)
         # Hence we will remove the last large timestep of the data
         # max_hour = raw_data_with_labels.select("hour").rdd.max()[0]
         max_date = raw_data_with_labels.select("date").rdd.max()[0]
@@ -110,22 +115,23 @@ class SampleJob(Job):
         # try:
         
         # Initialize the Feature Store client
-        fs = feature_store.FeatureStoreClient()
+        # fs = feature_store.FeatureStoreClient()
+        fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri)
 
         # Declaration of the Feature Store
-        scaled_features_table = "feature_store_iris_example.scaled_features"
+        fs_table = "feature_store_iris_prod.scaled_features"
 
         # Declaration of the features, in a "feature lookup" object
         scaled_feature_lookups = [
             FeatureLookup( 
-              table_name = scaled_features_table,
+              table_name = fs_table,
               feature_names = ["sl_norm","sw_norm","pl_norm","pw_norm"],
               lookup_key = ["Id","hour"],
             ),
         ]
 
         # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
-        exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # should I exclude the 'Id', 'hour','date'? 
+        exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # BUG should I exclude the 'Id', 'hour','date'? 
         training_set = fs.create_training_set(
           raw_data_with_labels,
           feature_lookups = scaled_feature_lookups,
@@ -170,12 +176,11 @@ class SampleJob(Job):
         training_df = training_set.load_df()
         display(training_df)
         
-        features_and_label = training_df.columns
-
         # Collect data into a Pandas array for training
+        features_and_label = training_df.columns
         data_pd = training_df.toPandas()[features_and_label]
 
-        train, test = train_test_split(data_pd, train_size=0.7, random_state=123)   #, stratify=y not working now
+        train, test = train_test_split(data_pd, train_size=0.7, random_state=123)   # BUG: stratify=y not working now
         x_train = train.drop(["target"], axis=1)
         x_test = test.drop(["target"], axis=1)
         y_train = train.target
@@ -256,61 +261,69 @@ class SampleJob(Job):
             print(CV_rfc.best_params_)
             print(CV_rfc.best_score_)
             print(CV_rfc.best_estimator_)
-
             model = CV_rfc.best_estimator_
+
+            signature = infer_signature(x_train, model.predict(x_train))
             
-            # Inference on validation dataset
-            y_val_pred = model.predict(x_val)    
+            # # Inference on validation dataset
+            # y_val_pred = model.predict(x_val)    
 
-            # Accuracy and Confusion Matrix
-            accuracy = accuracy_score(y_val, y_val_pred)
-            print('Accuracy = ',accuracy)
-            print('Confusion matrix:')
-            Classes = ['setosa','versicolor','virginica']
-            C = confusion_matrix(y_val, y_val_pred)
-            C_normalized = C / C.astype(np.float).sum()        
-            C_normalized_pd = pd.DataFrame(C_normalized,columns=Classes,index=Classes)
-            print(C_normalized_pd)   
+            # # Accuracy and Confusion Matrix
+            # accuracy = accuracy_score(y_val, y_val_pred)
+            # print('Accuracy = ',accuracy)
+            # print('Confusion matrix:')
+            # Classes = ['setosa','versicolor','virginica']
+            # C = confusion_matrix(y_val, y_val_pred)
+            # C_normalized = C / C.astype(np.float).sum()        
+            # C_normalized_pd = pd.DataFrame(C_normalized,columns=Classes,index=Classes)
+            # print(C_normalized_pd)   
 
-            # Figure plot
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
-            cax = ax.matshow(C,cmap='Blues')
-            plt.title('Confusion matrix of the classifier')
-            fig.colorbar(cax)
-            ax.set_xticklabels([''] + Classes)
-            ax.set_yticklabels([''] + Classes)
-            plt.xlabel('Predicted')
-            plt.ylabel('True')
-            plt.savefig("confusion_matrix.png")
+            # # Figure plot
+            # fig = plt.figure()
+            # ax = fig.add_subplot(111)
+            # cax = ax.matshow(C,cmap='Blues')
+            # plt.title('Confusion matrix of the classifier')
+            # fig.colorbar(cax)
+            # ax.set_xticklabels([''] + Classes)
+            # ax.set_yticklabels([''] + Classes)
+            # plt.xlabel('Predicted')
+            # plt.ylabel('True')
+            # plt.savefig("confusion_matrix.png")
             
-            # Log the model within the MLflow run
-#             mlflow.log_param("max_depth", str(max_depth))
-#             mlflow.log_param("n_estimators", str(n_estimators))  
-#             mlflow.log_param("max_features", str(max_features))             
-#             mlflow.log_param("criterion", str(criterion))  
-#             mlflow.log_param("class_weight", str(class_weight))  
-#             mlflow.log_param("bootstrap", str(bootstrap))  
-#             mlflow.log_param("max_features", str(max_features)) 
+            # # Tracking performance metrics
+            # mlflow.log_metric("accuracy", accuracy)
+            # mlflow.log_figure(fig, "confusion_matrix.png")
+            # mlflow.set_tag("type", "CI run")   
 
-            # Tracking performance metrics
-            mlflow.log_metric("accuracy", accuracy)
-            mlflow.log_figure(fig, "confusion_matrix.png")
-            mlflow.set_tag("type", "CI run")   
-
-            # Log the model (not registering in DEV !!!)
-#             mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
+            # # Log the model (not registering in DEV !!!)
+            # # mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
             
-            # Register the model to MLflow MR as well as FS MR (not registering in DEV !!!!l!!!)
+            input_example = {
+            "sepal_length": 5.1,
+            "sepal_width": 3.5,
+            "petal_length": 1.4,
+            "petal_width": 0.2
+            }
+            
+            # Register the model to MLflow MR as well as FS MR (should not register in DEV !!!!!!)
             fs.log_model(
-              model,
-              artifact_path="iris_model_packaged",
-              flavor=mlflow.sklearn,
-              training_set=training_set,
-              registered_model_name="iris_model_packaged"
-            ) 
+            model,
+            artifact_path=model_conf['model_name'],
+            flavor=mlflow.sklearn,
+            training_set=training_set,
+            # registered_model_name=model_conf['model_name'],
+            )
+            
+            # Register the model to the CENTRALIZED MLflow MR
+            mlflow.set_registry_uri(registry_uri)
+            print(mlflow.get_registry_uri())
+            mlflow.sklearn.log_model(model, 
+                                    model_conf['model_name'],
+                                    registered_model_name=model_conf['model_name'],
+                                    signature=signature,
+                                    input_example=input_example)           
 
-        self.logger.info("Step 1.3 completed: model training and saved to MLFlow")                
+            self.logger.info("Step 1.3 completed: model training and saved to MLFlow")                
 
         # except Exception as e:
         #     print("Errored on step 1.3: model training")
