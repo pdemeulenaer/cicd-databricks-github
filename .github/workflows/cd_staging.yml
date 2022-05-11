@@ -64,7 +64,7 @@ jobs:
 
       - name: Run the training job (as one-time job)
         run: |
-          dbx launch --job=ci-train-job  --trace
+          dbx launch --job=ci-train-job --trace
 
 
       # # HERE THERE SHOULD BE A IF TEST: IF PERFORMANCE IS ACCEPTABLE, DO NEXT STEPS... 
