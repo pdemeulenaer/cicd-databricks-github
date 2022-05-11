@@ -49,18 +49,22 @@ jobs:
 
 
       # 2. Deploy & run training pipeline
-      - name: Deploy the training job (as one-time job)
-        run: |
-          dbx deploy --jobs=ci-train-job --files-only
+      # - name: Deploy the training job (as one-time job)
+      #   run: |
+      #     dbx deploy --jobs=ci-train-job --files-only
        
-      - name: Run the training job (as one-time job)
-        run: |
-          dbx launch --job=ci-train-job --as-run-submit --trace   
+      # - name: Run the training job (as one-time job)
+      #   run: |
+      #     dbx launch --job=ci-train-job --as-run-submit --trace   
 
       # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
       - name: Deploy the training job (as retraining pipeline job)
         run: |
           dbx deploy --jobs=ci-train-job  
+
+      - name: Run the training job (as one-time job)
+        run: |
+          dbx launch --job=ci-train-job  --trace
 
 
       # # HERE THERE SHOULD BE A IF TEST: IF PERFORMANCE IS ACCEPTABLE, DO NEXT STEPS... 
