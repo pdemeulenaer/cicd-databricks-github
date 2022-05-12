@@ -96,3 +96,16 @@ def iris_data_generator(target_class='all',n_samples=10):
     final_data_generated = pd.concat([final_data_generated, data_generated_per_class], axis=0, ignore_index=True)
 
   return final_data_generated
+
+
+  def get_latest_model_version(model_name):
+    '''
+    This function identifies the latest version of a model registered in the Model Registry
+    '''
+    latest_version = 1
+    mlflow_client = MlflowClient()
+    for mv in mlflow_client.search_model_versions(f"name='{model_name}'"):
+      version_int = int(mv.version)
+      if version_int > latest_version:
+        latest_version = version_int
+    return latest_version

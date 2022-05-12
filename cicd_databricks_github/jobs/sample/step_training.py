@@ -115,7 +115,6 @@ class SampleJob(Job):
         # try:
         
         # Initialize the Feature Store client
-        # fs = feature_store.FeatureStoreClient()
         fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri)
 
         # Declaration of the Feature Store
