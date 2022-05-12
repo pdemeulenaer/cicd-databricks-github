@@ -78,10 +78,14 @@ jobs:
       #   run: |
       #     dbx deploy --jobs=cd-infer-job-scheduled-staging          
 
-      # # 4b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
-      # - name: Deploy the inference job
-      #   run: |
-      #     dbx deploy --jobs=cd-infer-job-staging    
+      # 4b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job-staging 
+
+      - name: Run the training job (as one-time job)
+        run: |
+          dbx launch --job=ci-train-job --trace   
 
 
 
