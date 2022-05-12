@@ -11,6 +11,8 @@ import seaborn as sns
 import pandas as pd
 import random
 
+from mlflow.tracking import MlflowClient
+
 def iris_data_generator(target_class='all',n_samples=10):
   '''
   This function is meant to generate random samples from a PDF fitted on Iris dataset using Bayesian GMM
