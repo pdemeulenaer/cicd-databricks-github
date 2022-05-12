@@ -50,6 +50,6 @@
             "bootstrap": "True",
             "random_state": "21"        
         },
-        "minimal_threshold": "0.8"
+        "minimal_threshold": 0.8
     }
 }
