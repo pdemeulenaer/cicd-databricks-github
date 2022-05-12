@@ -117,9 +117,12 @@ class SampleJob(Job):
         # model = mlflow.pyfunc.load_model(model_path)
 
         # model = mlflow.pyfunc.load_model(f'models://{scope}:{key}@databricks/{model3_name}/Staging')
-        model_uri = f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None'
-        model = mlflow.pyfunc.load_model(model_uri)  
+        model = mlflow.pyfunc.load_model(f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None')  
         # model = mlflow.pyfunc.load_model(model_path)
+
+        version = client.get_latest_versions(model_conf['model_name'], ['None'])[0].version
+        model_uri = client.get_model_version_download_uri(model_conf['model_name'], version)
+        print(model_uri, version)
                                 
         # print("Step 1.1 completed: load model from MLflow")  
         self.logger.info("Step 1.1 completed: load model from MLflow")                
