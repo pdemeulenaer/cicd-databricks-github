@@ -117,7 +117,8 @@ class SampleJob(Job):
         # model = mlflow.pyfunc.load_model(model_path)
 
         # model = mlflow.pyfunc.load_model(f'models://{scope}:{key}@databricks/{model3_name}/Staging')
-        model = mlflow.pyfunc.load_model(f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None')  
+        model_uri = f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None'
+        model = mlflow.pyfunc.load_model(model_uri)  
         # model = mlflow.pyfunc.load_model(model_path)
                                 
         # print("Step 1.1 completed: load model from MLflow")  
@@ -170,7 +171,8 @@ class SampleJob(Job):
         plt.savefig("confusion_matrix_TEST.png")    
 
         
-        with mlflow.start_run(best_run_id) as run:
+        # with mlflow.start_run(best_run_id) as run:
+        with mlflow.start_run() as run:
 
             # Tracking performance metrics on TEST dataset   
             mlflow.log_metric("accuracy_TEST", test_accuracy)
@@ -180,7 +182,7 @@ class SampleJob(Job):
             print(f"Minimal accuracy threshold: {minimal_threshold:5.2f}")          
             if test_accuracy >= minimal_threshold: 
                 mlflow.set_tag("validation", "passed")
-                model_uri = "runs:/{}/model".format(best_run_id)
+                # model_uri = "runs:/{}/model".format(best_run_id)
                 mv = mlflow.register_model(model_uri, model_name)
                 client.transition_model_version_stage(name=model_name, version=mv.version, stage="Staging")
 
