@@ -121,7 +121,7 @@ class SampleJob(Job):
         # model = mlflow.pyfunc.load_model(model_path)
 
         # Extracting model information
-        mv = client.get_latest_versions(model_conf['model_name'], ['None'])[0].version
+        mv = client.get_latest_versions(model_conf['model_name'], ['None'])[0]
         version = mv.version
         run_id = mv.run_id
         artifact_uri = client.get_model_version_download_uri(model_conf['model_name'], version)
