@@ -12,5 +12,8 @@ format:
 test:
 	python -m pytest -vv --disable-warnings tests/ --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml --cov-report term #--cov-report html:cov_html #--doctest-modules #--cov=hello test_hello.py
 	
-	
+validate:
+	dbx deploy --jobs=validation --deployment-file=./conf/deployment-validation.json
+	dbx launch --job=validation --trace
+
 all: install lint test
