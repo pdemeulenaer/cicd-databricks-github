@@ -124,7 +124,7 @@ class SampleJob(Job):
         artifact_uri = client.get_model_version_download_uri(model_conf['model_name'], version)
         run_id = artifact_uri.lstrip("runs:/")
         run_id = run_id.lstrip("/"+model_conf['model_name'])
-        print(model_uri, version, artifact_uri, run_id)
+        print(version, artifact_uri, run_id)
                                 
         # print("Step 1.1 completed: load model from MLflow")  
         self.logger.info("Step 1.1 completed: load model from MLflow")                
