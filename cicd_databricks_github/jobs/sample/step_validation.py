@@ -122,7 +122,10 @@ class SampleJob(Job):
 
         version = client.get_latest_versions(model_conf['model_name'], ['None'])[0].version
         model_uri = client.get_model_version_download_uri(model_conf['model_name'], version)
-        print(model_uri, version)
+        artifact_uri = client.get_model_version_download_uri(name, mv.version)
+        run_id = artifact_uri.lstrip("runs:/")
+        run_id = run_id.lstrip("/"+model_conf['model_name'])
+        print(model_uri, version, artifact_uri, run_id)
                                 
         # print("Step 1.1 completed: load model from MLflow")  
         self.logger.info("Step 1.1 completed: load model from MLflow")                
@@ -174,8 +177,7 @@ class SampleJob(Job):
         plt.savefig("confusion_matrix_TEST.png")    
 
         
-        # with mlflow.start_run(best_run_id) as run:
-        with mlflow.start_run() as run:
+        with mlflow.start_run(run_id) as run:
 
             # Tracking performance metrics on TEST dataset   
             mlflow.log_metric("accuracy_TEST", test_accuracy)
