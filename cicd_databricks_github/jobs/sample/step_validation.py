@@ -186,8 +186,8 @@ class SampleJob(Job):
             if test_accuracy >= minimal_threshold: 
                 mlflow.set_tag("validation", "passed")
                 # model_uri = "runs:/{}/model".format(best_run_id)
-                mv = mlflow.register_model(model_uri, model_name)
-                client.transition_model_version_stage(name=model_name, version=mv.version, stage="Staging")
+                # mv = mlflow.register_model(model_uri, model_name)
+                client.transition_model_version_stage(name=model_name, version=version, stage="Staging")
 
             else: 
                 mlflow.set_tag("validation", "failed")
