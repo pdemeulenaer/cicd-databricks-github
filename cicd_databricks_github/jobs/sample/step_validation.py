@@ -81,7 +81,6 @@ class SampleJob(Job):
         feature_cols = ["sl_norm","sw_norm","pl_norm","pw_norm"] #['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         target = 'target'   
 
-        x_test = test_pd[feature_cols].values
         y_test = test_pd[target].values
 
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
@@ -135,9 +134,18 @@ class SampleJob(Job):
         # ========================================
         # 1.2 Model validation (and registration to MLflow model registry)
         # ========================================
+
+        # # Note: Sparkish way of loading the model and doing the inference on a spark df. Put here for comparison
+        # logged_model = f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None'
+        # loaded_model = mlflow.pyfunc.spark_udf(spark, model_uri=logged_model, result_type='double')
+
+        # # Predict on a Spark DataFrame.
+        # columns = ['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm'] #list(test_df.columns)
+        # test_df = test_df.withColumn('predictions', loaded_model(*columns))
+        
         
         # Derive accuracy on TEST dataset
-        y_test_pred = model.predict(pd.DataFrame(x_test)) 
+        y_test_pred = model.predict(test_pd[feature_cols]) 
 
         # Accuracy and Confusion Matrix
         test_accuracy = accuracy_score(y_test, y_test_pred)
