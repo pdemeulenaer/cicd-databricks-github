@@ -121,8 +121,7 @@ class SampleJob(Job):
         # model = mlflow.pyfunc.load_model(model_path)
 
         version = client.get_latest_versions(model_conf['model_name'], ['None'])[0].version
-        model_uri = client.get_model_version_download_uri(model_conf['model_name'], version)
-        artifact_uri = client.get_model_version_download_uri(name, mv.version)
+        artifact_uri = client.get_model_version_download_uri(model_conf['model_name'], version)
         run_id = artifact_uri.lstrip("runs:/")
         run_id = run_id.lstrip("/"+model_conf['model_name'])
         print(model_uri, version, artifact_uri, run_id)
