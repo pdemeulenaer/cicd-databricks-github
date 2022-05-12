@@ -8,7 +8,16 @@
                                         {
                         "task_key": "step-validation-task",
                         "description":"step validation task",
-                        "existing_cluster_id": "0429-194903-65g29xi8",                       
+                        "new_cluster": {
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
+                        },                        
                         "spark_python_task": {
                             "python_file": "cicd_databricks_github/jobs/sample/step_validation.py",
                             "parameters": [
