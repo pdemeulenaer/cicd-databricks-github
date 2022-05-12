@@ -120,10 +120,11 @@ class SampleJob(Job):
         model = mlflow.pyfunc.load_model(f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None')  
         # model = mlflow.pyfunc.load_model(model_path)
 
-        version = client.get_latest_versions(model_conf['model_name'], ['None'])[0].version
+        # Extracting model information
+        mv = client.get_latest_versions(model_conf['model_name'], ['None'])[0].version
+        version = mv.version
+        run_id = mv.run_id
         artifact_uri = client.get_model_version_download_uri(model_conf['model_name'], version)
-        run_id = artifact_uri.lstrip("runs:/")
-        run_id = run_id.lstrip("/"+model_conf['model_name'])
         print(version, artifact_uri, run_id)
                                 
         # print("Step 1.1 completed: load model from MLflow")  
@@ -175,7 +176,6 @@ class SampleJob(Job):
         plt.ylabel('True')
         plt.savefig("confusion_matrix_TEST.png")    
 
-        
         with mlflow.start_run(run_id) as run:
 
             # Tracking performance metrics on TEST dataset   

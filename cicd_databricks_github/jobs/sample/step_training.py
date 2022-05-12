@@ -299,10 +299,10 @@ class SampleJob(Job):
             # # mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
             
             input_example = {
-            "sepal_length": 5.1,
-            "sepal_width": 3.5,
-            "petal_length": 1.4,
-            "petal_width": 0.2
+                "sepal_length": 5.1,
+                "sepal_width": 3.5,
+                "petal_length": 1.4,
+                "petal_width": 0.2
             }
             
             # Register the model to MLflow MR as well as FS MR (should not register in DEV !!!!!!)
