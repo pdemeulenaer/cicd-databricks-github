@@ -145,7 +145,7 @@ class SampleJob(Job):
         fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri, model_registry_uri=registry_uri)
 
         # Get the model URI
-        latest_model_version = module.get_latest_model_version(model_name)
+        latest_model_version = get_latest_model_version(model_name)
         model_uri = f"models:/"+model_name+"/{latest_model_version}"
 
         # Call score_batch to get the predictions from the model
@@ -162,7 +162,20 @@ class SampleJob(Job):
         #     print("Errored on step 1.1: model training")
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
-        #     raise e                  
+        #     raise e    
+
+
+    def get_latest_model_version(model_name):
+      '''
+      This function identifies the latest version of a model registered in the Model Registry
+      '''
+      latest_version = 1
+      mlflow_client = MlflowClient()
+      for mv in mlflow_client.search_model_versions(f"name='{model_name}'"):
+        version_int = int(mv.version)
+        if version_int > latest_version:
+          latest_version = version_int
+      return latest_version              
 
 
     def launch(self):
