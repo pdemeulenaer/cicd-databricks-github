@@ -21,9 +21,7 @@ class SampleJob(Job):
         listing = self.dbutils.fs.ls("dbfs:/")
 
         for l in listing:
-            self.logger.info(f"DBFS directory: {l}")  
-
-        print(help(module))      
+            self.logger.info(f"DBFS directory: {l}")     
 
         # Read config file and necessary config fields
         model_conf = self.conf["model"]
@@ -65,12 +63,6 @@ class SampleJob(Job):
 
         # data_df = self.spark.read.format("delta").load(data_path+inference_dataset)
         # data_pd = data_df.toPandas()
-
-        # # Feature selection
-        # feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']  
-
-        # x_data = data_pd[feature_cols].values
-
 
         # Load the raw data and associated label tables
         raw_data = spark.read.format('delta').load(cwd + 'raw_data')
