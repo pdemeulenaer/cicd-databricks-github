@@ -20,7 +20,9 @@ class SampleJob(Job):
         listing = self.dbutils.fs.ls("dbfs:/")
 
         for l in listing:
-            self.logger.info(f"DBFS directory: {l}")        
+            self.logger.info(f"DBFS directory: {l}")  
+
+        print(help(module))      
 
         # Read config file and necessary config fields
         model_conf = self.conf["model"]
