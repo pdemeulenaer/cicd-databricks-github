@@ -145,7 +145,7 @@ class SampleJob(Job):
         fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri, model_registry_uri=registry_uri)
 
         # Get the model URI
-        latest_model_version = get_latest_model_version(model_name)
+        latest_model_version = self.get_latest_model_version(model_name)
         model_uri = f"models:/"+model_name+"/{latest_model_version}"
 
         # Call score_batch to get the predictions from the model
