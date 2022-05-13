@@ -115,7 +115,8 @@ class SampleJob(Job):
         # try:
         
         # Initialize the Feature Store client
-        fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri)
+        # fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri)
+        fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri, model_registry_uri=registry_uri)
 
         # Declaration of the Feature Store
         fs_table = "feature_store_iris_prod.scaled_features"

@@ -146,7 +146,7 @@ class SampleJob(Job):
         # data_scored_df.write.format("delta").mode("overwrite").save(output_path+scored_inference_dataset)      
 
         # Initialize the Feature Store client
-        fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri)
+        fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri, model_registry_uri=registry_uri)
 
         # Get the model URI
         latest_model_version = module.get_latest_model_version(model_name)
