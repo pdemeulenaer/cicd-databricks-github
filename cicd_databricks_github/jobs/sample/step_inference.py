@@ -165,7 +165,7 @@ class SampleJob(Job):
         #     raise e    
 
 
-    def get_latest_model_version(model_name):
+    def get_latest_model_version(self,model_name):
       '''
       This function identifies the latest version of a model registered in the Model Registry
       '''
