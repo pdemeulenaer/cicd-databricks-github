@@ -7,12 +7,6 @@ import mlflow
 import json
 from pyspark.sql.functions import *
 
-# Import of Sklearn packages
-from sklearn.metrics import accuracy_score, roc_curve, auc, confusion_matrix
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import load_iris
-
 from databricks import feature_store
 
 
@@ -153,11 +147,11 @@ class SampleJob(Job):
         model_uri = f"models:/"+model_name+"/{latest_model_version}"
 
         # Call score_batch to get the predictions from the model
-        with_predictions = fs.score_batch(model_uri, raw_data)
-        display(with_predictions)    
+        df_with_predictions = fs.score_batch(model_uri, raw_data)
+        display(df_with_predictions)    
 
         # Write scored data
-        # data_scored_df.write.format("delta").mode("overwrite").save(output_path+scored_inference_dataset)                  
+        df_with_predictions.write.format("delta").mode("overwrite").save(cwd+scored_inference_dataset)                  
 
         # print("Step 1.1 completed: model inference")  
         self.logger.info("Step 1.1 completed: model inference")                
