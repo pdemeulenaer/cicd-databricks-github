@@ -147,7 +147,7 @@ class SampleJob(Job):
 
         # Get the model URI
         latest_model_version = self.get_latest_model_version(model_name)
-        model_uri = f"models:/"+model_name+"/{latest_model_version}"
+        model_uri = f"models:/" + model_name + f"/{latest_model_version}"
 
         # Call score_batch to get the predictions from the model
         df_with_predictions = fs.score_batch(model_uri, raw_data)
