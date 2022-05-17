@@ -7,6 +7,7 @@ import numpy as np
 import mlflow
 import json
 from pyspark.sql.functions import *
+from delta.tables import DeltaTable
 
 # Import of Feature Store
 from databricks import feature_store
