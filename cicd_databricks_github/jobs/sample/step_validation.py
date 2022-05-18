@@ -24,6 +24,9 @@ class SampleJob(Job):
 
     # Custom function
     def validate(self, **kwargs):
+        """
+        Model validation function
+        """
 
         self.logger.info("Launching VALIDATION")
 

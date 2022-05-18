@@ -15,6 +15,9 @@ class SampleJob(Job):
 
     # Custom function
     def inference(self, **kwargs):
+        """
+        Model inference function
+        """
 
         self.logger.info("Launching INFERENCE")
 
@@ -156,7 +159,46 @@ class SampleJob(Job):
         #     print("Errored on step 1.1: model inference")
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
-        #     raise e    
+        #     raise e   y
+
+        # try:
+        # ========================================
+        # 1.2 Data monitoring
+        # ========================================
+        
+        # print("Step 1.2 completed: data monitoring")  
+        logger.info("Step 1.2 completed: data monitoring")                
+
+        # Extract the right version of the training dataset (as logged in MLflow) # BUG: will this work in PROD ?
+        run = mlflow.get_run(latest_model.run_id)
+        train_dataset_version = run.data.tags['train_dataset_version']
+        train_dataset_path = run.data.tags['train_dataset_path']
+        # test_dataset_version = run.data.tags['test_dataset_version']
+        # fs_table_version = run.data.tags['fs_table_version']
+        train_dataset = spark.read.format("delta").option("versionAsOf", train_dataset_version).load(train_dataset_path)
+        train_dataset_pd = train_dataset.toPandas()
+        
+        # Data drift calculation
+        data_columns = ColumnMapping()
+        data_columns.numerical_features = ['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
+
+        data_drift_profile = Profile(sections=[DataDriftProfileSection()])
+        df_with_predictions_pd = df_with_predictions.toPandas()
+        data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
+        data_drift_profile_dict = json.loads(data_drift_profile.json())
+        # print(data_drift_profile_dict['data_drift'])
+        
+        # Save the data monitoring to data lake 
+        data_monitor_json = json.dumps(data_drift_profile_dict['data_drift'])
+        data_monitor_df = spark.read.json(sc.parallelize([data_monitor_json]))
+        display(data_monitor_df)
+        data_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"data_monitoring")
+
+        # except Exception as e:
+        #     print("Errored on step 1.2: data monitoring")
+        #     print("Exception Trace: {0}".format(e))
+        #     print(traceback.format_exc())
+        #     raise e  
 
 
     def get_latest_model_version(self,model_name,registry_uri):

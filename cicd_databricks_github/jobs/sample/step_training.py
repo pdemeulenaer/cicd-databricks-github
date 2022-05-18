@@ -38,6 +38,9 @@ class SampleJob(Job):
 
     # Custom function
     def train(self, **kwargs):
+        """
+        Model training function
+        """
 
         self.logger.info("Launching TRAINING")
 
