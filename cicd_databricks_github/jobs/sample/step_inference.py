@@ -153,13 +153,13 @@ class SampleJob(Job):
         self.logger.info("Step 1.1 completed: model inference")                
 
         # except Exception as e:
-        #     print("Errored on step 1.1: model training")
+        #     print("Errored on step 1.1: model inference")
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
         #     raise e    
 
 
-    def get_latest_model_version(model_name,registry_uri):
+    def get_latest_model_version(self,model_name,registry_uri):
         '''
         This function identifies the latest version of a model registered in the Model Registry
 
