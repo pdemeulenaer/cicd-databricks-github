@@ -167,7 +167,7 @@ class SampleJob(Job):
         # ========================================
         
         # print("Step 1.2 completed: data monitoring")  
-        logger.info("Step 1.2 completed: data monitoring")                
+        self.logger.info("Step 1.2 completed: data monitoring")                
 
         # Extract the right version of the training dataset (as logged in MLflow) # BUG: will this work in PROD ?
         run = mlflow.get_run(latest_model.run_id)
@@ -193,6 +193,8 @@ class SampleJob(Job):
         data_monitor_df = spark.read.json(sc.parallelize([data_monitor_json]))
         display(data_monitor_df)
         data_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"data_monitoring")
+.
+        self.logger.info("Step 1.2 completed: data monitoring")  
 
         # except Exception as e:
         #     print("Errored on step 1.2: data monitoring")
