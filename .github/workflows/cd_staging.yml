@@ -85,7 +85,7 @@ jobs:
 
       - name: Run the training job (as one-time job)
         run: |
-          dbx launch --job=ci-train-job --trace   
+          dbx launch --job=cd-infer-job-staging --trace   
 
 
 
