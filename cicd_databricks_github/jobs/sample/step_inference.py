@@ -141,7 +141,7 @@ class SampleJob(Job):
         fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri, model_registry_uri=registry_uri)
 
         # Get the model URI
-        latest_model = self.get_latest_model_version(model_name)
+        latest_model = self.get_latest_model_version(model_name,registry_uri)
         latest_model_version = int(latest_model.version)
         model_uri = f"models:/" + model_name + f"/{latest_model_version}"
 
