@@ -31,7 +31,6 @@
         "output_path":"dbfs:/dbx/tmp/cicd_databricks_github/output_data/",
         "train_val_dataset":"train_val_iris_dataset",
         "train_dataset":"train_iris_dataset",
-        "val_dataset":"val_iris_dataset",
         "test_dataset":"test_iris_dataset",
         "inference_dataset":"full_iris_dataset",
         "scored_inference_dataset":"scored_full_iris_dataset"
@@ -50,6 +49,6 @@
             "bootstrap": "True",
             "random_state": "21"        
         },
-        "minimal_threshold": "0.8"
+        "minimal_threshold": 0.8
     }
 }

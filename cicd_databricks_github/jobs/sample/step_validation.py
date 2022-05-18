@@ -24,6 +24,9 @@ class SampleJob(Job):
 
     # Custom function
     def validate(self, **kwargs):
+        """
+        Model validation function
+        """
 
         self.logger.info("Launching VALIDATION")
 
@@ -39,7 +42,6 @@ class SampleJob(Job):
         data_path = self.conf["data"]["data_path"]
         train_val_dataset = self.conf["data"]["train_val_dataset"]
         train_dataset = self.conf["data"]["train_dataset"]
-        val_dataset = self.conf["data"]["val_dataset"]  
         test_dataset = self.conf["data"]["test_dataset"]      
         model_name = self.conf["model"]["model_name"]            
         experiment = self.conf["model"]["experiment_name"] 
@@ -81,7 +83,6 @@ class SampleJob(Job):
         feature_cols = ["sl_norm","sw_norm","pl_norm","pw_norm"] #['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         target = 'target'   
 
-        x_test = test_pd[feature_cols].values
         y_test = test_pd[target].values
 
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")   
@@ -120,6 +121,13 @@ class SampleJob(Job):
         # model = mlflow.pyfunc.load_model(f'models://{scope}:{key}@databricks/{model3_name}/Staging')
         model = mlflow.pyfunc.load_model(f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None')  
         # model = mlflow.pyfunc.load_model(model_path)
+
+        # Extracting model information
+        mv = client.get_latest_versions(model_conf['model_name'], ['None'])[0]
+        version = mv.version
+        run_id = mv.run_id
+        artifact_uri = client.get_model_version_download_uri(model_conf['model_name'], version)
+        print(version, artifact_uri, run_id)
                                 
         # print("Step 1.1 completed: load model from MLflow")  
         self.logger.info("Step 1.1 completed: load model from MLflow")                
@@ -135,9 +143,18 @@ class SampleJob(Job):
         # ========================================
         # 1.2 Model validation (and registration to MLflow model registry)
         # ========================================
+
+        # # Note: Sparkish way of loading the model and doing the inference on a spark df. Put here for comparison
+        # logged_model = f'models://connection-to-data-workspace:data-workspace@databricks/'+model_conf['model_name']+'/None'
+        # loaded_model = mlflow.pyfunc.spark_udf(spark, model_uri=logged_model, result_type='double')
+
+        # # Predict on a Spark DataFrame.
+        # columns = ['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm'] #list(test_df.columns)
+        # test_df = test_df.withColumn('predictions', loaded_model(*columns))
+        
         
         # Derive accuracy on TEST dataset
-        y_test_pred = model.predict(pd.DataFrame(x_test)) 
+        y_test_pred = model.predict(test_pd[feature_cols]) 
 
         # Accuracy and Confusion Matrix
         test_accuracy = accuracy_score(y_test, y_test_pred)
@@ -161,8 +178,7 @@ class SampleJob(Job):
         plt.ylabel('True')
         plt.savefig("confusion_matrix_TEST.png")    
 
-        
-        with mlflow.start_run(best_run_id) as run:
+        with mlflow.start_run(run_id) as run:
 
             # Tracking performance metrics on TEST dataset   
             mlflow.log_metric("accuracy_TEST", test_accuracy)
@@ -172,9 +188,9 @@ class SampleJob(Job):
             print(f"Minimal accuracy threshold: {minimal_threshold:5.2f}")          
             if test_accuracy >= minimal_threshold: 
                 mlflow.set_tag("validation", "passed")
-                model_uri = "runs:/{}/model".format(best_run_id)
-                mv = mlflow.register_model(model_uri, model_name)
-                client.transition_model_version_stage(name=model_name, version=mv.version, stage="Staging")
+                # model_uri = "runs:/{}/model".format(best_run_id)
+                # mv = mlflow.register_model(model_uri, model_name)
+                client.transition_model_version_stage(name=model_name, version=version, stage="Staging")
 
             else: 
                 mlflow.set_tag("validation", "failed")

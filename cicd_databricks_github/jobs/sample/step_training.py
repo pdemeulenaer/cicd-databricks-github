@@ -7,6 +7,7 @@ import numpy as np
 import mlflow
 import json
 from pyspark.sql.functions import *
+from delta.tables import DeltaTable
 
 # Import of Feature Store
 from databricks import feature_store
@@ -37,6 +38,9 @@ class SampleJob(Job):
 
     # Custom function
     def train(self, **kwargs):
+        """
+        Model training function
+        """
 
         self.logger.info("Launching TRAINING")
 
@@ -52,7 +56,6 @@ class SampleJob(Job):
         data_path = self.conf["data"]["data_path"]
         train_val_dataset = self.conf["data"]["train_val_dataset"]
         train_dataset = self.conf["data"]["train_dataset"]
-        val_dataset = self.conf["data"]["val_dataset"]   
         experiment = self.conf["model"]["experiment_name"] 
         output_path = self.conf["data"]["output_path"]
         
@@ -115,8 +118,8 @@ class SampleJob(Job):
         # try:
         
         # Initialize the Feature Store client
-        # fs = feature_store.FeatureStoreClient()
-        fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri)
+        # fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri)
+        fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri, model_registry_uri=registry_uri)
 
         # Declaration of the Feature Store
         fs_table = "feature_store_iris_prod.scaled_features"
@@ -293,16 +296,28 @@ class SampleJob(Job):
             # # Tracking performance metrics
             # mlflow.log_metric("accuracy", accuracy)
             # mlflow.log_figure(fig, "confusion_matrix.png")
-            # mlflow.set_tag("type", "CI run")   
+            mlflow.set_tag("type", "CI run")  
 
-            # # Log the model (not registering in DEV !!!)
-            # # mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
+            # Tracking the data
+            train_dataset_version = self.get_delta_version(cwd+"train_iris_dataset")
+            test_dataset_version = self.get_delta_version(cwd+"test_iris_dataset")
+            fs_table_version = self.get_table_version(fs_table)
+            mlflow.set_tag("train_dataset_version", train_dataset_version)
+            mlflow.set_tag("test_dataset_version", test_dataset_version)
+            mlflow.set_tag("fs_table_version", fs_table_version)
+            mlflow.set_tag("train_dataset_path", cwd+"train_iris_dataset")
+            mlflow.set_tag("test_dataset_path", cwd+"test_iris_dataset")
+            mlflow.set_tag("raw_data_path", cwd + 'raw_data')
+            mlflow.set_tag("raw_labels_path", cwd + 'labels')            
+
+            # Log the model (not registering in DEV !!!)
+            # mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
             
             input_example = {
-            "sepal_length": 5.1,
-            "sepal_width": 3.5,
-            "petal_length": 1.4,
-            "petal_width": 0.2
+                "sepal_length": 5.1,
+                "sepal_width": 3.5,
+                "petal_length": 1.4,
+                "petal_width": 0.2
             }
             
             # Register the model to MLflow MR as well as FS MR (should not register in DEV !!!!!!)
@@ -330,6 +345,36 @@ class SampleJob(Job):
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
         #     raise e                  
+
+
+    def get_delta_version(self,delta_path):
+        """
+        Function to get the most recent version of a Delta table give the path to the Delta table
+        
+        :param delta_path: (str) path to Delta table
+        :return: Delta version (int)
+        """
+        # DeltaTable is the main class for programmatically interacting with Delta tables
+        delta_table = DeltaTable.forPath(spark, delta_path)
+        # Get the information of the latest commits on this table as a Spark DataFrame. 
+        # The information is in reverse chronological order.
+        delta_table_history = delta_table.history() 
+        
+        # Retrieve the lastest Delta version - this is the version loaded when reading from delta_path
+        delta_version = delta_table_history.first()["version"]
+        
+        return delta_version
+
+
+    def get_table_version(self,table):
+        """
+        Function to get the most recent version of a Delta table (present in Hive metastore) given the path to the Delta table
+        
+        :param table: (str) Delta table name
+        :return: Delta version (int)
+        """
+        delta_version = spark.sql(f"SELECT MAX(version) as maxval FROM (DESCRIBE HISTORY {table})").first()[0]
+        return delta_version
 
         
     def launch(self):
