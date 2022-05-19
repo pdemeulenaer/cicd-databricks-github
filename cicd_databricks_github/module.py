@@ -97,3 +97,6 @@ def iris_data_generator(target_class='all',n_samples=10):
     final_data_generated = pd.concat([final_data_generated, data_generated_per_class], axis=0, ignore_index=True)
 
   return final_data_generated
+
+  def dummy_function(a):
+    return print(a)
