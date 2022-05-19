@@ -140,7 +140,7 @@ def get_latest_model_version(model_name,registry_uri):
     return latest_model  
 
 
-def get_delta_version(delta_path):
+def get_delta_version(spark,delta_path):
     """
     Function to get the most recent version of a Delta table give the path to the Delta table
     
@@ -159,7 +159,7 @@ def get_delta_version(delta_path):
     return delta_version
 
 
-def get_table_version(table):
+def get_table_version(spark,table):
     """
     Function to get the most recent version of a Delta table (present in Hive metastore) given the path to the Delta table
     

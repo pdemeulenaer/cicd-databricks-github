@@ -300,9 +300,9 @@ class SampleJob(Job):
             mlflow.set_tag("type", "CI run")  
 
             # Tracking the data
-            train_dataset_version = module.get_delta_version(cwd+"train_iris_dataset")
-            test_dataset_version = module.get_delta_version(cwd+"test_iris_dataset")
-            fs_table_version = module.get_table_version(fs_table)
+            train_dataset_version = module.get_delta_version(spark,cwd+"train_iris_dataset")
+            test_dataset_version = module.get_delta_version(spark,cwd+"test_iris_dataset")
+            fs_table_version = module.get_table_version(spark,fs_table)
             mlflow.set_tag("train_dataset_version", train_dataset_version)
             mlflow.set_tag("test_dataset_version", test_dataset_version)
             mlflow.set_tag("fs_table_version", fs_table_version)
