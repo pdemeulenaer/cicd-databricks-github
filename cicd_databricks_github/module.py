@@ -2,14 +2,16 @@
 # https://www.stats.ox.ac.uk/~sejdinov/teaching/dmml17/Mixtures.html
 # https://scikit-learn.org/stable/modules/generated/sklearn.mixture.BayesianGaussianMixture.html#sklearn.mixture.BayesianGaussianMixture
 
-from sklearn import cluster, datasets
-from sklearn.mixture import BayesianGaussianMixture
+
 import numpy as np
+import pandas as pd
+import random
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
-import pandas as pd
-import random
+from sklearn import cluster, datasets
+from sklearn.mixture import BayesianGaussianMixture
+from mlflow.tracking import MlflowClient
 
 
 def iris_data_generator(target_class='all',n_samples=10):
@@ -97,6 +99,44 @@ def iris_data_generator(target_class='all',n_samples=10):
     final_data_generated = pd.concat([final_data_generated, data_generated_per_class], axis=0, ignore_index=True)
 
   return final_data_generated
+
+
+def get_latest_model_version(model_name,registry_uri):
+    '''
+    This function identifies the latest version of a model registered in the Model Registry
+    :param model_name: (str) model name saved in Model Registry
+    :param registry_uri: (str) uri of the Model Registry
+    :return: latest_model: (object) The last mlflow model registered to the Model Registry. Its parameters can be accessed such as:
+    
+    - latest_model.creation_timestamp
+    - latest_model.current_stage
+    - latest_model.description
+    - latest_model.last_updated_timestamp
+    - latest_model.name
+    - latest_model.run_id
+    - latest_model.run_link
+    - latest_model.source
+    - latest_model.status
+    - latest_model.status_message
+    - latest_model.tags
+    - latest_model.user_id
+    - latest_model.version
+    '''
+    latest_version = 1
+    mlflow_client = MlflowClient(registry_uri=registry_uri)
+    
+    # Find last model version
+    for mv in mlflow_client.search_model_versions(f"name='{model_name}'"):
+        version_int = int(mv.version)
+        if version_int > latest_version:
+            latest_version = version_int
+        
+    # Extract model of last version
+    for mv in mlflow_client.search_model_versions(f"name='{model_name}'"):
+        if latest_version == int(mv.version):
+            latest_model = mv
+        
+    return latest_model  
 
 
 def dummy_function(a):
