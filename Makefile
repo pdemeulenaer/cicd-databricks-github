@@ -12,7 +12,7 @@ format:
 test:
 	python -m pytest -vv --disable-warnings tests/ --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml --cov-report term #--cov-report html:cov_html #--doctest-modules #--cov=hello test_hello.py
 
-train:
+training:
 	dbx deploy --jobs=training --deployment-file=./conf/deployment-training.json
 	dbx launch --job=training --trace
 
