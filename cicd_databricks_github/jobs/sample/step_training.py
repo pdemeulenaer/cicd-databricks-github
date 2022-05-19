@@ -1,30 +1,14 @@
 # Model training code
 
 from cicd_databricks_github.common import Job
+from cicd_databricks_github import module
 
+# General packages
 import pandas as pd
 import numpy as np
 import mlflow
 import json
 from pyspark.sql.functions import *
-from delta.tables import DeltaTable
-
-# Import of Feature Store
-from databricks import feature_store
-from databricks.feature_store import FeatureLookup
-
-# Import of Sklearn packages
-from sklearn.metrics import accuracy_score, roc_curve, auc, confusion_matrix
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-
-# Import MLflow 
-from mlflow.tracking import MlflowClient
-import mlflow
-import mlflow.sklearn #mlflow.lightgbm
-from mlflow.models.signature import infer_signature
-from mlflow.tracking.artifact_utils import get_artifact_uri
 
 # Import matplotlib packages
 from IPython.core.pylabtools import figsize
@@ -33,6 +17,23 @@ import pylab
 from pylab import *
 import matplotlib.cm as cm
 import matplotlib.mlab as mlab
+
+# Sklearn packages
+from sklearn.metrics import accuracy_score, roc_curve, auc, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+
+# Databricks packages
+from mlflow.tracking import MlflowClient
+import mlflow
+import mlflow.sklearn #mlflow.lightgbm
+from mlflow.models.signature import infer_signature
+from mlflow.tracking.artifact_utils import get_artifact_uri
+from databricks import feature_store
+from databricks.feature_store import FeatureLookup
+# from delta.tables import DeltaTable
+
 
 class SampleJob(Job):
 
@@ -299,9 +300,9 @@ class SampleJob(Job):
             mlflow.set_tag("type", "CI run")  
 
             # Tracking the data
-            train_dataset_version = self.get_delta_version(cwd+"train_iris_dataset")
-            test_dataset_version = self.get_delta_version(cwd+"test_iris_dataset")
-            fs_table_version = self.get_table_version(fs_table)
+            train_dataset_version = module.get_delta_version(spark,cwd+"train_iris_dataset")
+            test_dataset_version = module.get_delta_version(spark,cwd+"test_iris_dataset")
+            fs_table_version = module.get_table_version(spark,fs_table)
             mlflow.set_tag("train_dataset_version", train_dataset_version)
             mlflow.set_tag("test_dataset_version", test_dataset_version)
             mlflow.set_tag("fs_table_version", fs_table_version)
@@ -345,36 +346,6 @@ class SampleJob(Job):
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
         #     raise e                  
-
-
-    def get_delta_version(self,delta_path):
-        """
-        Function to get the most recent version of a Delta table give the path to the Delta table
-        
-        :param delta_path: (str) path to Delta table
-        :return: Delta version (int)
-        """
-        # DeltaTable is the main class for programmatically interacting with Delta tables
-        delta_table = DeltaTable.forPath(spark, delta_path)
-        # Get the information of the latest commits on this table as a Spark DataFrame. 
-        # The information is in reverse chronological order.
-        delta_table_history = delta_table.history() 
-        
-        # Retrieve the lastest Delta version - this is the version loaded when reading from delta_path
-        delta_version = delta_table_history.first()["version"]
-        
-        return delta_version
-
-
-    def get_table_version(self,table):
-        """
-        Function to get the most recent version of a Delta table (present in Hive metastore) given the path to the Delta table
-        
-        :param table: (str) Delta table name
-        :return: Delta version (int)
-        """
-        delta_version = spark.sql(f"SELECT MAX(version) as maxval FROM (DESCRIBE HISTORY {table})").first()[0]
-        return delta_version
 
         
     def launch(self):

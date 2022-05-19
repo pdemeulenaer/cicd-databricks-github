@@ -129,7 +129,11 @@
                                 }
                               } ]
                         },                    
-                        "libraries": [],
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
                         "email_notifications": {
                             "on_start": [],
                             "on_success": [],
