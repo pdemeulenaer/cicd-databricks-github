@@ -99,7 +99,7 @@ def iris_data_generator(target_class='all',n_samples=10):
   return final_data_generated
 
   def dummy_function(a):
-  '''
-  This function is doing nothing
-  '''
+    '''
+    This function is doing nothing
+    '''
     return print(a)
