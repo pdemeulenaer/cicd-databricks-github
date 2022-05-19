@@ -129,7 +129,7 @@
                                 }
                               } ]
                         },                    
-                        "libraries": [],
+                        "libraries": ["evidently"],
                         "email_notifications": {
                             "on_start": [],
                             "on_success": [],
