@@ -5,6 +5,7 @@ pytest
 pytest-cov
 dbx
 scikit-learn<1.1.0
+statsmodels
 pandas
 numpy
 pylint
