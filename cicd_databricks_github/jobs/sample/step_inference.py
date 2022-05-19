@@ -148,7 +148,6 @@ class SampleJob(Job):
         fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri, model_registry_uri=registry_uri)
 
         # Get the model URI
-        # latest_model = self.get_latest_model_version(model_name,registry_uri)
         latest_model = module.get_latest_model_version(model_name,registry_uri)
         latest_model_version = int(latest_model.version)
         model_uri = f"models:/" + model_name + f"/{latest_model_version}"
@@ -208,46 +207,7 @@ class SampleJob(Job):
         #     print("Errored on step 1.2: data monitoring")
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
-        #     raise e  
-
-
-    # def get_latest_model_version(self,model_name,registry_uri):
-    #     '''
-    #     This function identifies the latest version of a model registered in the Model Registry
-
-    #     :param model_name: (str) model name saved in Model Registry
-    #     :param registry_uri: (str) uri of the Model Registry
-    #     :return: latest_model: (object) The last mlflow model registered to the Model Registry. Its parameters can be accessed such as:
-        
-    #     - latest_model.creation_timestamp
-    #     - latest_model.current_stage
-    #     - latest_model.description
-    #     - latest_model.last_updated_timestamp
-    #     - latest_model.name
-    #     - latest_model.run_id
-    #     - latest_model.run_link
-    #     - latest_model.source
-    #     - latest_model.status
-    #     - latest_model.status_message
-    #     - latest_model.tags
-    #     - latest_model.user_id
-    #     - latest_model.version
-    #     '''
-    #     latest_version = 1
-    #     mlflow_client = MlflowClient(registry_uri=registry_uri)
-        
-    #     # Find last model version
-    #     for mv in mlflow_client.search_model_versions(f"name='{model_name}'"):
-    #         version_int = int(mv.version)
-    #         if version_int > latest_version:
-    #             latest_version = version_int
-            
-    #     # Extract model of last version
-    #     for mv in mlflow_client.search_model_versions(f"name='{model_name}'"):
-    #         if latest_version == int(mv.version):
-    #             latest_model = mv
-            
-    #     return latest_model             
+        #     raise e              
 
 
     def launch(self):
