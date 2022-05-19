@@ -12,6 +12,7 @@ import seaborn as sns
 from sklearn import cluster, datasets
 from sklearn.mixture import BayesianGaussianMixture
 from mlflow.tracking import MlflowClient
+from delta.tables import DeltaTable
 
 
 def iris_data_generator(target_class='all',n_samples=10):
@@ -139,8 +140,38 @@ def get_latest_model_version(model_name,registry_uri):
     return latest_model  
 
 
-def dummy_function(a):
-  '''
-  This function is doing nothing
-  '''
-  return print(a)
+def get_delta_version(delta_path):
+    """
+    Function to get the most recent version of a Delta table give the path to the Delta table
+    
+    :param delta_path: (str) path to Delta table
+    :return: Delta version (int)
+    """
+    # DeltaTable is the main class for programmatically interacting with Delta tables
+    delta_table = DeltaTable.forPath(spark, delta_path)
+    # Get the information of the latest commits on this table as a Spark DataFrame. 
+    # The information is in reverse chronological order.
+    delta_table_history = delta_table.history() 
+    
+    # Retrieve the lastest Delta version - this is the version loaded when reading from delta_path
+    delta_version = delta_table_history.first()["version"]
+    
+    return delta_version
+
+
+def get_table_version(table):
+    """
+    Function to get the most recent version of a Delta table (present in Hive metastore) given the path to the Delta table
+    
+    :param table: (str) Delta table name
+    :return: Delta version (int)
+    """
+    delta_version = spark.sql(f"SELECT MAX(version) as maxval FROM (DESCRIBE HISTORY {table})").first()[0]
+    return delta_version
+
+
+# def dummy_function(a):
+#   '''
+#   This function is doing nothing
+#   '''
+#   return print(a)
