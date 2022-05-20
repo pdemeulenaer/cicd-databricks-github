@@ -48,8 +48,9 @@ class SampleJob(Job):
         experiment = self.conf["model"]["experiment_name"]         
 
         # Configuration of direct connection to Azure Blob storage (no mount needed)
+        # Workspace should be one of "dev", "staging", "prod"
         # workspace = "dev"  # This is dynamically changed depending on workspace !!!!
-        # workspace = self.detect_workspace()
+        # workspace = self.detect_workspace() # done at the Job class level
         blob_name = self.conf['workspace'][self.workspace]['data-lake']
         account_name = self.conf['workspace'][self.workspace]['azure-storage-account-name']
         storage_key = dbutils.secrets.get(scope = self.conf['workspace'][self.workspace]['storage-secret-scope'], 
