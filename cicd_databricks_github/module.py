@@ -102,12 +102,31 @@ def iris_data_generator(target_class='all',n_samples=10):
   return final_data_generated
 
 
+def detect_environment():
+    """
+    This function detects in which workspace the code is running. It uses secrets stored in Azure KeyVault (following this tutorial: https://microsoft-bitools.blogspot.com/2020/02/use-azure-key-vault-for-azure-databricks.html)
+    
+    :returns environment: (Str) the environment detected (either "dev", "staging", or "prod"). "Null" is returned in case of no workspace detection.
+    """
+    if dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "dev") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"): 
+      environment = 'dev'
+    elif dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "staging") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
+      environment = 'staging'
+    elif dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "prod") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
+      environment = 'prod'
+    else:
+      print('NO WORKSPACE FOUND !!! ERROR')
+      environment = 'Null'
+      
+    return environment
+
+
 def get_latest_model_version(model_name,registry_uri):
     '''
     This function identifies the latest version of a model registered in the Model Registry
     :param model_name: (str) model name saved in Model Registry
     :param registry_uri: (str) uri of the Model Registry
-    :return: latest_model: (object) The last mlflow model registered to the Model Registry. Its parameters can be accessed such as:
+    :return latest_model: (object) The last mlflow model registered to the Model Registry. Its parameters can be accessed such as:
     
     - latest_model.creation_timestamp
     - latest_model.current_stage
@@ -145,7 +164,7 @@ def get_delta_version(spark,delta_path):
     Function to get the most recent version of a Delta table give the path to the Delta table
     
     :param delta_path: (str) path to Delta table
-    :return: Delta version (int)
+    :return delta_version: (int) Delta version
     """
     # DeltaTable is the main class for programmatically interacting with Delta tables
     delta_table = DeltaTable.forPath(spark, delta_path)
@@ -164,7 +183,7 @@ def get_table_version(spark,table):
     Function to get the most recent version of a Delta table (present in Hive metastore) given the path to the Delta table
     
     :param table: (str) Delta table name
-    :return: Delta version (int)
+    :return delta_version: (int) Delta table version
     """
     delta_version = spark.sql(f"SELECT MAX(version) as maxval FROM (DESCRIBE HISTORY {table})").first()[0]
     return delta_version
