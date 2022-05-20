@@ -102,7 +102,7 @@ def iris_data_generator(target_class='all',n_samples=10):
   return final_data_generated
 
 
-def detect_environment():
+def detect_workspace():
     """
     This function detects in which workspace the code is running. It uses secrets stored in Azure KeyVault (following this tutorial: https://microsoft-bitools.blogspot.com/2020/02/use-azure-key-vault-for-azure-databricks.html)
     

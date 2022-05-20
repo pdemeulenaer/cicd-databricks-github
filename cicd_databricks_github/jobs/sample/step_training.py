@@ -61,11 +61,12 @@ class SampleJob(Job):
         output_path = self.conf["data"]["output_path"]
         
         # Configuration of direct connection to Azure Blob storage (no mount needed)
-        environment = "dev"  # TODO: needs to be dynamically changed depending on platform !!!!
-        blob_name = self.conf['workspace'][environment]['data-lake']
-        account_name = self.conf['workspace'][environment]['azure-storage-account-name']
-        storage_key = dbutils.secrets.get(scope = self.conf['workspace'][environment]['storage-secret-scope'], 
-                                          key = self.conf['workspace'][environment]['storage-secret-scope-key'])
+        # workspace = "dev"  # TODO: needs to be dynamically changed depending on platform !!!!
+        workspace = module.detect_workspace()
+        blob_name = self.conf['workspace'][workspace]['data-lake']
+        account_name = self.conf['workspace'][workspace]['azure-storage-account-name']
+        storage_key = dbutils.secrets.get(scope = self.conf['workspace'][workspace]['storage-secret-scope'], 
+                                          key = self.conf['workspace'][workspace]['storage-secret-scope-key'])
         spark.conf.set("fs.azure.account.key."+account_name+".blob.core.windows.net", storage_key)
         cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
 
