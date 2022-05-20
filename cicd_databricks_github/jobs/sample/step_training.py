@@ -61,7 +61,7 @@ class SampleJob(Job):
         output_path = self.conf["data"]["output_path"]
         
         # Configuration of direct connection to Azure Blob storage (no mount needed)
-        # workspace = "dev"  # TODO: needs to be dynamically changed depending on platform !!!!
+        # workspace = "dev"  # This is dynamically changed depending on workspace !!!!
         workspace = module.detect_workspace()
         blob_name = self.conf['workspace'][workspace]['data-lake']
         account_name = self.conf['workspace'][workspace]['azure-storage-account-name']
