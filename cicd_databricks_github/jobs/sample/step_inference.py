@@ -21,14 +21,6 @@ from evidently.pipeline.column_mapping import ColumnMapping
 class SampleJob(Job):
 
     def __init__(self):
-        # self.spark = self._prepare_spark(spark)
-        # self.logger = self._prepare_logger()
-        # self.dbutils = self.get_dbutils()
-        # if init_conf:
-        #     self.conf = init_conf
-        # else:
-        #     self.conf = self._provide_config()
-        # self._log_conf()
         self.workspace = self.detect_workspace()
 
     # Custom function

@@ -96,14 +96,14 @@ class Job(ABC):
         :returns environment: (Str) the environment detected (either "dev", "staging", or "prod"). "Null" is returned in case of no workspace detection.
         """
         if self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "dev") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"): 
-        environment = 'dev'
+            environment = 'dev'
         elif self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "staging") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
-        environment = 'staging'
+            environment = 'staging'
         elif self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "prod") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
-        environment = 'prod'
+            environment = 'prod'
         else:
-        print('NO WORKSPACE FOUND !!! ERROR')
-        environment = 'Null'
+            print('NO WORKSPACE FOUND !!! ERROR')
+            environment = 'Null'
         
         return environment
 
