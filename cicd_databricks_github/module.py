@@ -102,23 +102,23 @@ def iris_data_generator(target_class='all',n_samples=10):
   return final_data_generated
 
 
-def detect_workspace():
-    """
-    This function detects in which workspace the code is running. It uses secrets stored in Azure KeyVault (following this tutorial: https://microsoft-bitools.blogspot.com/2020/02/use-azure-key-vault-for-azure-databricks.html)
+# def detect_workspace(spark):
+#     """
+#     This function detects in which workspace the code is running. It uses secrets stored in Azure KeyVault (following this tutorial: https://microsoft-bitools.blogspot.com/2020/02/use-azure-key-vault-for-azure-databricks.html)
     
-    :returns environment: (Str) the environment detected (either "dev", "staging", or "prod"). "Null" is returned in case of no workspace detection.
-    """
-    if dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "dev") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"): 
-      environment = 'dev'
-    elif dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "staging") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
-      environment = 'staging'
-    elif dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "prod") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
-      environment = 'prod'
-    else:
-      print('NO WORKSPACE FOUND !!! ERROR')
-      environment = 'Null'
+#     :returns environment: (Str) the environment detected (either "dev", "staging", or "prod"). "Null" is returned in case of no workspace detection.
+#     """
+#     if dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "dev") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"): 
+#       environment = 'dev'
+#     elif dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "staging") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
+#       environment = 'staging'
+#     elif dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "prod") == spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
+#       environment = 'prod'
+#     else:
+#       print('NO WORKSPACE FOUND !!! ERROR')
+#       environment = 'Null'
       
-    return environment
+#     return environment
 
 
 def get_latest_model_version(model_name,registry_uri):
