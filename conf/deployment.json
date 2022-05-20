@@ -111,7 +111,46 @@
                     }                                    
                 ],
                 "format": "MULTI_TASK"
-            },  
+            }, 
+            {
+                "name": "cd-infer-job-dev",
+                "max_concurrent_runs": 1,                             
+                "tasks": [
+                    {
+                        "task_key": "step-infer-task",
+                        "description":"step inference task",
+                        "new_cluster": {
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
+                        },                    
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "cicd_databricks_github/jobs/sample/step_inference.py",
+                            "parameters": [
+                                "--conf-file",
+                                "conf/model.json"
+                            ]                            
+                        }                       
+                    }                                      
+                ],
+                "format": "MULTI_TASK"
+            }, 
             {
                 "name": "cd-infer-job-staging",
                 "max_concurrent_runs": 1,                             
@@ -121,7 +160,7 @@
                         "description":"step inference task",
                         "new_cluster": {
                             "spark_version": "10.4.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
+                            "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
                             "num_workers": 1,
                             "init_scripts": [ {
                                 "dbfs": {
@@ -159,11 +198,15 @@
                         "task_key": "step-infer-task",
                         "description":"step inference task",
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0413-123519-reedy47-pool-upnb4ywi",
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103936-jokes3-pool-46dtg4oi",
                             "num_workers": 1
                         },                      
-                        "libraries": [],
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
                         "email_notifications": {
                             "on_start": [],
                             "on_success": [],
