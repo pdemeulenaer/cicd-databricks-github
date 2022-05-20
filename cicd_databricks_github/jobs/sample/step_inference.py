@@ -20,6 +20,9 @@ from evidently.pipeline.column_mapping import ColumnMapping
 
 class SampleJob(Job):
 
+    # def __init__(self):
+    #     self.workspace = self.detect_workspace()
+
     # Custom function
     def inference(self, **kwargs):
         """
@@ -45,11 +48,13 @@ class SampleJob(Job):
         experiment = self.conf["model"]["experiment_name"]         
 
         # Configuration of direct connection to Azure Blob storage (no mount needed)
-        environment = "dev"  # TODO: needs to be dynamically changed depending on platform !!!!
-        blob_name = self.conf['workspace'][environment]['data-lake']
-        account_name = self.conf['workspace'][environment]['azure-storage-account-name']
-        storage_key = dbutils.secrets.get(scope = self.conf['workspace'][environment]['storage-secret-scope'], 
-                                          key = self.conf['workspace'][environment]['storage-secret-scope-key'])
+        # Workspace should be one of "dev", "staging", "prod"
+        # workspace = "dev"  # This is dynamically changed depending on workspace !!!!
+        # workspace = self.detect_workspace() # done at the Job class level: self.workspace
+        blob_name = self.conf['workspace'][self.workspace]['data-lake']
+        account_name = self.conf['workspace'][self.workspace]['azure-storage-account-name']
+        storage_key = dbutils.secrets.get(scope = self.conf['workspace'][self.workspace]['storage-secret-scope'], 
+                                          key = self.conf['workspace'][self.workspace]['storage-secret-scope-key'])
         spark.conf.set("fs.azure.account.key."+account_name+".blob.core.windows.net", storage_key)
         cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
 

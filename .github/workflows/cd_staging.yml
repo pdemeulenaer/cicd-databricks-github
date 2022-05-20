@@ -83,7 +83,7 @@ jobs:
         run: |
           dbx deploy --jobs=cd-infer-job-staging 
 
-      - name: Run the training job (as one-time job)
+      - name: Run the inference job (as one-time job)
         run: |
           dbx launch --job=cd-infer-job-staging --trace   
 
