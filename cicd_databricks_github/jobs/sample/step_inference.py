@@ -20,8 +20,8 @@ from evidently.pipeline.column_mapping import ColumnMapping
 
 class SampleJob(Job):
 
-    def __init__(self):
-        self.workspace = self.detect_workspace()
+    # def __init__(self):
+    #     self.workspace = self.detect_workspace()
 
     # Custom function
     def inference(self, **kwargs):

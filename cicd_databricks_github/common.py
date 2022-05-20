@@ -20,6 +20,7 @@ class Job(ABC):
         else:
             self.conf = self._provide_config()
         self._log_conf()
+        self.workspace = self.detect_workspace()
 
     @staticmethod
     def _prepare_spark(spark) -> SparkSession:
@@ -95,11 +96,11 @@ class Job(ABC):
         
         :returns environment: (Str) the environment detected (either "dev", "staging", or "prod"). "Null" is returned in case of no workspace detection.
         """
-        if dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "dev") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"): 
+        if self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "dev") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"): 
             environment = 'dev'
-        elif dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "staging") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
+        elif self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "staging") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
             environment = 'staging'
-        elif dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "prod") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
+        elif self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "prod") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
             environment = 'prod'
         else:
             print('NO WORKSPACE FOUND !!! ERROR')
