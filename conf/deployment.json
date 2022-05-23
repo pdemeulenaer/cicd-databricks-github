@@ -4,7 +4,7 @@
             {
                 "name": "cicd-databricks-github-sample",
                 "new_cluster": {
-                    "spark_version": "9.1.x-cpu-ml-scala2.12",
+                    "spark_version": "10.4.x-cpu-ml-scala2.12",
                     "node_type_id": "Standard_F4s",
                     "aws_attributes": {
                         "first_on_demand": 0
@@ -29,7 +29,7 @@
             {
                 "name": "cicd-databricks-github-sample-integration-test",
                 "new_cluster": {
-                    "spark_version": "9.1.x-cpu-ml-scala2.12",
+                    "spark_version": "10.4.x-cpu-ml-scala2.12",
                     "instance_pool_id": "0413-122447-punch30-pool-zo2a2ml2", 
                     "num_workers": 1
                 }, 
@@ -237,11 +237,15 @@
                         "task_key": "step-infer-task",
                         "description":"step inference task",
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
                             "num_workers": 1
                         },                       
-                        "libraries": [],
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
                         "email_notifications": {
                             "on_start": [],
                             "on_success": [],
@@ -272,11 +276,15 @@
                         "task_key": "step-infer-task",
                         "description":"step inference task",
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0413-123519-reedy47-pool-upnb4ywi",
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103936-jokes3-pool-46dtg4oi",
                             "num_workers": 1
                         },                       
-                        "libraries": [],
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
                         "email_notifications": {
                             "on_start": [],
                             "on_success": [],
