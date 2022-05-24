@@ -185,7 +185,9 @@ class SampleJob(Job):
         self.logger.info("Step 1.2 completed: data monitoring")                
 
         # Extract the right version of the training dataset (as logged in MLflow) # BUG: will this work in PROD ?
-        run = mlflow.get_run(latest_model.run_id)
+        # run = mlflow.get_run(latest_model.run_id)
+        client = mlflow.tracking.MlflowClient(tracking_uri=tracking_uri, registry_uri=registry_uri)
+        run = client.get_run(latest_model.run_id)
         train_dataset_version = run.data.tags['train_dataset_version']
         train_dataset_path = run.data.tags['train_dataset_path']
         # test_dataset_version = run.data.tags['test_dataset_version']
