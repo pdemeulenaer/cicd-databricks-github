@@ -44,8 +44,10 @@ class SampleJob(Job):
         inference_dataset = self.conf["data"]["inference_dataset"] 
         scored_inference_dataset = self.conf["data"]["scored_inference_dataset"] 
         output_path = self.conf["data"]["output_path"]
-        model_name = self.conf["model"]["model_name"]                  
-        experiment = self.conf["model"]["experiment_name"]         
+        model_name = self.conf["model"]["model_name"] 
+        experiment = self.conf["model"]["experiment_name"] 
+        registry_uri = self.conf['workspace'][self.workspace]['registry-uri']
+        tracking_uri = self.conf['workspace'][self.workspace]['tracking-uri']       
 
         # Configuration of direct connection to Azure Blob storage (no mount needed)
         # Workspace should be one of "dev", "staging", "prod"
@@ -59,7 +61,7 @@ class SampleJob(Job):
         cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
 
         # Define the centralized registry
-        registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
+        # registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
         mlflow.set_registry_uri(registry_uri) # BUG: is this working here?
         
         # Define the MLFlow experiment location

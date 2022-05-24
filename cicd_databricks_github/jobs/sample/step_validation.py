@@ -43,8 +43,10 @@ class SampleJob(Job):
         train_val_dataset = self.conf["data"]["train_val_dataset"]
         train_dataset = self.conf["data"]["train_dataset"]
         test_dataset = self.conf["data"]["test_dataset"]      
-        model_name = self.conf["model"]["model_name"]            
+        model_name = self.conf["model"]["model_name"] 
         experiment = self.conf["model"]["experiment_name"] 
+        registry_uri = self.conf['workspace'][self.workspace]['registry-uri']
+        tracking_uri = self.conf['workspace'][self.workspace]['tracking-uri']
         output_path = self.conf["data"]["output_path"]
         minimal_threshold = self.conf["model"]["minimal_threshold"] 
 
@@ -60,7 +62,7 @@ class SampleJob(Job):
         cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
 
         # Define the centralized registry
-        registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
+        # registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
         mlflow.set_registry_uri(registry_uri) # BUG: is this working here?
 
         # Define the MLFlow experiment location
