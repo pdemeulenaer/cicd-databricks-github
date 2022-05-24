@@ -21,7 +21,7 @@ validate:
 	dbx launch --job=validation --trace
 
 inference:
-	dbx deploy --jobs=cd-infer-job-dev --deployment-file=./conf/deployment.json
-	dbx launch --job=cd-infer-job-dev --trace
+	dbx deploy --jobs=cd-infer-job-prod --deployment-file=./conf/deployment.json
+	dbx launch --job=cd-infer-job-prod --trace
 
 all: install lint test
