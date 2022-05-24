@@ -62,7 +62,6 @@ class SampleJob(Job):
 
         # Define the centralized registry
         # registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
-        tracking_uri = f'databricks://connection-to-staging-workspace:staging-workspace' # BUG: TEMPORARY !!!
         mlflow.set_tracking_uri(tracking_uri) # BUG: is this working here?
         mlflow.set_registry_uri(registry_uri) # BUG: is this working here?
         
