@@ -10,7 +10,7 @@
                         "description":"step validation task",
                         "new_cluster": {
                             "spark_version": "10.4.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
+                            "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
                             "num_workers": 1,
                             "init_scripts": [ {
                                 "dbfs": {

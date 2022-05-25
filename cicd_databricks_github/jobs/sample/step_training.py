@@ -57,7 +57,10 @@ class SampleJob(Job):
         data_path = self.conf["data"]["data_path"]
         train_val_dataset = self.conf["data"]["train_val_dataset"]
         train_dataset = self.conf["data"]["train_dataset"]
+        model_name = self.conf["model"]["model_name"] 
         experiment = self.conf["model"]["experiment_name"] 
+        registry_uri = self.conf['workspace'][self.workspace]['registry-uri']
+        tracking_uri = self.conf['workspace'][self.workspace]['tracking-uri']
         output_path = self.conf["data"]["output_path"]
         
         # Configuration of direct connection to Azure Blob storage (no mount needed)
@@ -72,7 +75,7 @@ class SampleJob(Job):
         cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
 
         # Define the centralized registry
-        registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
+        # registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
         mlflow.set_registry_uri(registry_uri) # BUG: is this working here?
         
         # Define the MLFlow experiment location
@@ -326,18 +329,18 @@ class SampleJob(Job):
             # Register the model to MLflow MR as well as FS MR (should not register in DEV !!!!!!)
             fs.log_model(
             model,
-            artifact_path=model_conf['model_name'],
+            artifact_path=model_name,
             flavor=mlflow.sklearn,
             training_set=training_set,
-            # registered_model_name=model_conf['model_name'],
+            # registered_model_name=model_name,
             )
             
             # Register the model to the CENTRALIZED MLflow MR
             mlflow.set_registry_uri(registry_uri)
             print(mlflow.get_registry_uri())
             mlflow.sklearn.log_model(model, 
-                                    model_conf['model_name'],
-                                    registered_model_name=model_conf['model_name'],
+                                    model_name,
+                                    registered_model_name=model_name,
                                     signature=signature,
                                     input_example=input_example)           
 
