@@ -7,7 +7,7 @@ on:
 
 
 jobs:
-  cd-staging:
+  cd-prod:
 
     runs-on: ubuntu-latest
     strategy:
@@ -37,6 +37,10 @@ jobs:
       - name: Deploy the inference job
         run: |
           dbx deploy --jobs=cd-infer-job-prod
+
+      - name: Run the inference job (as one-time job)
+        run: |
+          dbx launch --job=cd-infer-job-prod --trace   
 
 
 
