@@ -20,6 +20,7 @@ class Job(ABC):
         else:
             self.conf = self._provide_config()
         self._log_conf()
+        self.workspace = self.detect_workspace()
 
     @staticmethod
     def _prepare_spark(spark) -> SparkSession:
@@ -88,6 +89,24 @@ class Job(ABC):
         self.logger.info("Launching job with configuration parameters:")
         for key, item in self.conf.items():
             self.logger.info("\t Parameter: %-30s with value => %-30s" % (key, item))
+
+    def detect_workspace(self):
+        """
+        This function detects in which workspace the code is running. It uses secrets stored in Azure KeyVault (following this tutorial: https://microsoft-bitools.blogspot.com/2020/02/use-azure-key-vault-for-azure-databricks.html)
+        
+        :returns environment: (Str) the environment detected (either "dev", "staging", or "prod"). "Null" is returned in case of no workspace detection.
+        """
+        if self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "dev") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"): 
+            environment = 'dev'
+        elif self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "staging") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
+            environment = 'staging'
+        elif self.dbutils.secrets.get(scope = "connection-to-datalakeblobstorage", key = "prod") == self.spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId"):
+            environment = 'prod'
+        else:
+            print('NO WORKSPACE FOUND !!! ERROR')
+            environment = 'Null'
+        
+        return environment
 
     @abstractmethod
     def launch(self):

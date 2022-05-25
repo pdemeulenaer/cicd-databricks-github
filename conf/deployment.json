@@ -2,35 +2,10 @@
     "default": {
         "jobs": [
             {
-                "name": "cicd-databricks-github-sample",
-                "new_cluster": {
-                    "spark_version": "9.1.x-cpu-ml-scala2.12",
-                    "node_type_id": "Standard_F4s",
-                    "aws_attributes": {
-                        "first_on_demand": 0
-                    },
-                    "num_workers": 1
-                },
-                "libraries": [],
-                "email_notifications": {
-                    "on_start": [],
-                    "on_success": [],
-                    "on_failure": []
-                },
-                "max_retries": 0,
-                "spark_python_task": {
-                    "python_file": "cicd_databricks_github/jobs/sample/entrypoint.py",
-                    "parameters": [
-                        "--conf-file",
-                        "conf/test/sample.json"
-                    ]
-                }
-            },                      
-            {
                 "name": "cicd-databricks-github-sample-integration-test",
                 "new_cluster": {
-                    "spark_version": "9.1.x-cpu-ml-scala2.12",
-                    "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
+                    "spark_version": "10.4.x-cpu-ml-scala2.12",
+                    "instance_pool_id": "0413-122447-punch30-pool-zo2a2ml2", 
                     "num_workers": 1
                 }, 
                 "libraries": [],
@@ -49,40 +24,17 @@
                 "max_concurrent_runs": 1,            
                 "tasks": [
                     {
-                        "task_key": "step-data-prep-task",
-                        "description":"step data preparation",
-                        "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 1
-                        },                                                                     
-                        "libraries": [],
-                        "email_notifications": {
-                            "on_start": [],
-                            "on_success": [],
-                            "on_failure": []
-                        },
-                        "max_retries": 0,
-                        "spark_python_task": {
-                            "python_file": "cicd_databricks_github/jobs/sample/step_data_prep.py",
-                            "parameters": [
-                                "--conf-file",
-                                "conf/model.json"
-                            ]                            
-                        }                       
-                    },                     
-                    {
                         "task_key": "step-training-task",
-                        "description":"Step Training",
-                        "depends_on": [
-                            {
-                              "task_key": "step-data-prep-task"
-                            }
-                        ],                         
+                        "description":"Step Training",                       
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 1
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -98,21 +50,24 @@
                                 "conf/model.json"
                             ]
                         }
-                    }                                      
-                ],
-                "format": "MULTI_TASK"
-            },  
-            {
-                "name": "cd-validation-job",
-                "max_concurrent_runs": 1,            
-                "tasks": [
+                    },
                     {
                         "task_key": "step-validation-task",
                         "description":"step validation task",
+                        "depends_on": [
+                            {
+                              "task_key": "step-training-task"
+                            }
+                        ], 
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 1
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                       
                         "libraries": [],
                         "email_notifications": {
@@ -128,23 +83,110 @@
                                 "conf/model.json"
                             ]                            
                         }                       
-                    }                                      
+                    }                                    
                 ],
                 "format": "MULTI_TASK"
-            },  
+            }, 
             {
-                "name": "cd-infer-job",
+                "name": "cd-infer-job-dev",
                 "max_concurrent_runs": 1,                             
                 "tasks": [
                     {
                         "task_key": "step-infer-task",
                         "description":"step inference task",
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 1
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0504-155324-goon210-pool-p1whoqep",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
+                        },                    
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "cicd_databricks_github/jobs/sample/step_inference.py",
+                            "parameters": [
+                                "--conf-file",
+                                "conf/model.json"
+                            ]                            
+                        }                       
+                    }                                      
+                ],
+                "format": "MULTI_TASK"
+            }, 
+            {
+                "name": "cd-infer-job-staging",
+                "max_concurrent_runs": 1,                             
+                "tasks": [
+                    {
+                        "task_key": "step-infer-task",
+                        "description":"step inference task",
+                        "new_cluster": {
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
+                        },                    
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
+                        "email_notifications": {
+                            "on_start": [],
+                            "on_success": [],
+                            "on_failure": []
+                        },
+                        "max_retries": 0,
+                        "spark_python_task": {
+                            "python_file": "cicd_databricks_github/jobs/sample/step_inference.py",
+                            "parameters": [
+                                "--conf-file",
+                                "conf/model.json"
+                            ]                            
+                        }                       
+                    }                                      
+                ],
+                "format": "MULTI_TASK"
+            },
+            {
+                "name": "cd-infer-job-prod",
+                "max_concurrent_runs": 1,                             
+                "tasks": [
+                    {
+                        "task_key": "step-infer-task",
+                        "description":"step inference task",
+                        "new_cluster": {
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103936-jokes3-pool-46dtg4oi",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                      
-                        "libraries": [],
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
                         "email_notifications": {
                             "on_start": [],
                             "on_success": [],
@@ -163,7 +205,7 @@
                 "format": "MULTI_TASK"
             },              
             {
-                "name": "cd-infer-job-scheduled",
+                "name": "cd-infer-job-scheduled-staging",
                 "max_concurrent_runs": 1,    
                 "schedule": {
                     "quartz_cron_expression": "0 0/30 * * * ?",
@@ -175,11 +217,20 @@
                         "task_key": "step-infer-task",
                         "description":"step inference task",
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "instance_pool_id": "0214-143349-slat162-pool-qexldzg1",
-                            "num_workers": 1
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                       
-                        "libraries": [],
+                        "libraries": [
+                            {
+                                "pypi": {"package":  "evidently"}
+                            }
+                        ],
                         "email_notifications": {
                             "on_start": [],
                             "on_success": [],
@@ -196,55 +247,34 @@
                     }                                      
                 ],
                 "format": "MULTI_TASK"
-            },                                           
+            },
             {
-                "name": "multi-tasks-job",
-                "max_concurrent_runs": 1,
+                "name": "cd-infer-job-scheduled-prod",
+                "max_concurrent_runs": 1,    
                 "schedule": {
                     "quartz_cron_expression": "0 0/30 * * * ?",
                     "timezone_id": "Europe/Kiev",
                     "pause_status": "UNPAUSED"
-                },                
+                },                          
                 "tasks": [
                     {
-                        "task_key": "task1",
-                        "description":"Integration test task",
+                        "task_key": "step-infer-task",
+                        "description":"step inference task",
                         "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "Standard_F4s",
-                            "aws_attributes": {
-                                "first_on_demand": 0
-                            },
-                            "num_workers": 1
-                        },                        
-                        "libraries": [],
-                        "email_notifications": {
-                            "on_start": [],
-                            "on_success": [],
-                            "on_failure": []
-                        },
-                        "max_retries": 0,
-                        "spark_python_task": {
-                            "python_file": "tests/integration/sample_test.py"
-                        }                       
-                    },                     
-                    {
-                        "task_key": "task2",
-                        "description":"Training task",
-                        "depends_on": [
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103936-jokes3-pool-46dtg4oi",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
+                        },                       
+                        "libraries": [
                             {
-                              "task_key": "task1"
+                                "pypi": {"package":  "evidently"}
                             }
-                        ],                         
-                        "new_cluster": {
-                            "spark_version": "9.1.x-cpu-ml-scala2.12",
-                            "node_type_id": "Standard_F4s",
-                            "aws_attributes": {
-                                "first_on_demand": 0   
-                            },
-                            "num_workers": 1
-                        },                        
-                        "libraries": [],
+                        ],
                         "email_notifications": {
                             "on_start": [],
                             "on_success": [],
@@ -252,16 +282,16 @@
                         },
                         "max_retries": 0,
                         "spark_python_task": {
-                            "python_file": "cicd_databricks_github/jobs/sample/entrypoint.py",
+                            "python_file": "cicd_databricks_github/jobs/sample/step_inference.py",
                             "parameters": [
                                 "--conf-file",
-                                "conf/test/sample.json"
-                            ]
-                        }
-                    }                   
+                                "conf/model.json"
+                            ]                            
+                        }                       
+                    }                                      
                 ],
                 "format": "MULTI_TASK"
-            }            
+            }           
         ]
     }
 }

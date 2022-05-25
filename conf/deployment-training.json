@@ -1,0 +1,34 @@
+{
+    "default": {
+        "jobs": [
+            {
+                "name": "training",
+                "max_concurrent_runs": 1,            
+                "tasks": [
+                                        {
+                        "task_key": "step-training-task",
+                        "description":"step training task",
+                        "new_cluster": {
+                            "spark_version": "10.4.x-cpu-ml-scala2.12",
+                            "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
+                        },                        
+                        "spark_python_task": {
+                            "python_file": "cicd_databricks_github/jobs/sample/step_training.py",
+                            "parameters": [
+                                "--conf-file",
+                                "conf/model.json"
+                            ]                            
+                        }                       
+                    }                                    
+                ],
+                "format": "MULTI_TASK"
+            }           
+        ]
+    }
+}

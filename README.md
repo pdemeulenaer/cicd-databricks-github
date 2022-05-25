@@ -1,6 +1,6 @@
-[![CI pipeline](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/ci.yml/badge.svg)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/ci.yml)
+[![CI pipeline](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/ci.yml)
 [![CD to Staging](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/cd_staging.yml/badge.svg)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/cd_staging.yml)
-[![CD to Prod](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/cd_prod.yml/badge.svg)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/cd_prod.yml)
+[![CD to Prod](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/cd_prod.yml/badge.svg?branch=main)](https://github.com/pdemeulenaer/cicd-databricks-github/actions/workflows/cd_prod.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_cicd-databricks-github&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_cicd-databricks-github)

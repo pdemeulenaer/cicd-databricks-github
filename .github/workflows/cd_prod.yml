@@ -7,26 +7,27 @@ on:
 
 
 jobs:
-  cd-prod:
+  cd-staging:
 
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
-      # matrix:
-      #   python-version: [ 3.7 ]
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }} 
       DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN_PROD }}
-      # DATABRICKS_JOBS_API_VERSION: 2.1 # if jobs api 2.1 needed
+      # DATABRICKS_JOBS_API_VERSION: 2.1
 
     steps:
-      - uses: actions/checkout@v1
+      # - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis   
 
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.7.9
 
       - name: Install packages
         run: |
@@ -35,65 +36,29 @@ jobs:
       # DUMMY DEPLOYMENT (to remove when ready)
       - name: Deploy the inference job
         run: |
-          dbx deploy --jobs=cd-infer-job
+          dbx deploy --jobs=cd-infer-job-prod
 
 
-      # # 1. Deploy & run integration tests
-      # - name: Deploy integration test
-      #   run: |
-      #     dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
 
-      # - name: Run integration test
-      #   run: |
-      #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
-
-      # - name: Run unit tests
-      #   run: |
-      #     echo "Launching unit tests"
-      #     pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
-
-
-      # # 2. Deploy & run training pipeline
-      # - name: Deploy the training job (as one-time job)
-      #   run: |
-      #     dbx deploy --jobs=ci-train-job --files-only
-       
-      # - name: Run the training job (as one-time job)
-      #   run: |
-      #     dbx launch --job=ci-train-job --as-run-submit --trace   
-
-      # # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
-      # # - name: Deploy the training job (as retraining pipeline job)
-      # #   run: |
-      # #     dbx deploy --jobs=ci-train-job  
-
-
-      # # 3. Deploy & run validation test for model trained in Step 2
-      # - name: Deploy the validation job
-      #   run: |
-      #     dbx deploy --jobs=cd-validation-job --files-only
-
-      # - name: Run the validation job
-      #   run: |
-      #     dbx launch --job=cd-validation-job --as-run-submit --trace   
 
       # # TODO: CREATE THE TAG
       # # git tag -a v1.4 -m "my version 1.4" #(https://git-scm.com/book/en/v2/Git-Basics-Tagging)
-
-      # # REGISTER THE MODEL TO MLFLOW ()
           
 
       # # 4. Deploy the Inference Job to Staging 
       # # 4a. Deploy just the job (with native scheduling) to have it triggered by Databricks' native Job scheduler
       # - name: Deploy the inference job
       #   run: |
-      #     dbx deploy --jobs=cd-infer-job-scheduled           
+      #     dbx deploy --jobs=cd-infer-job-scheduled-prod          
 
       # # 4b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
       # - name: Deploy the inference job
       #   run: |
-      #     dbx deploy --jobs=cd-infer-job             
+      #     dbx deploy --jobs=cd-infer-job-prod      
        
+
+
+
 
       # # TODO: Enabled the tag in git, following VERSION file            
 
@@ -111,20 +76,6 @@ jobs:
       # #     prerelease: false
 
 
-
-
-      # # TODO : DISCARD
-      # # - name: Deploy the job cicd-databricks-github-sample
-      # #   run: |
-      # #     dbx deploy --jobs=cicd-databricks-github-sample --files-only
-       
-      # # - name: Run the job cicd-databricks-github-sample
-      # #   run: |
-      # #     dbx launch --job=cicd-databricks-github-sample --as-run-submit --trace          
-
-      # # - name: Deploy the job multi-tasks-job
-      # #   run: |
-      # #     dbx deploy --jobs=multi-tasks-job   
           
 
 

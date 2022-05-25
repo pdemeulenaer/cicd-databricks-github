@@ -17,8 +17,8 @@ jobs:
       max-parallel: 4
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }} 
-      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN_PROD }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_STAGING }} 
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN_STAGING }}
       # DATABRICKS_JOBS_API_VERSION: 2.1
 
     steps:
@@ -46,35 +46,26 @@ jobs:
       #   run: |
       #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
 
-      # - name: Run unit tests
-      #   run: |
-      #     echo "Launching unit tests"
-      #     pytest tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml
 
 
       # 2. Deploy & run training pipeline
-      - name: Deploy the training job (as one-time job)
-        run: |
-          dbx deploy --jobs=ci-train-job --files-only
+      # - name: Deploy the training job (as one-time job)
+      #   run: |
+      #     dbx deploy --jobs=ci-train-job --files-only
        
       # - name: Run the training job (as one-time job)
       #   run: |
       #     dbx launch --job=ci-train-job --as-run-submit --trace   
 
-      # # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
-      # # - name: Deploy the training job (as retraining pipeline job)
-      # #   run: |
-      # #     dbx deploy --jobs=ci-train-job  
+      # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
+      - name: Deploy the training job (as retraining pipeline job)
+        run: |
+          dbx deploy --jobs=ci-train-job  
 
+      - name: Run the training job (as one-time job)
+        run: |
+          dbx launch --job=ci-train-job --trace
 
-      # # 3. Deploy & run validation test for model trained in Step 2
-      # - name: Deploy the validation job
-      #   run: |
-      #     dbx deploy --jobs=cd-validation-job --files-only
-
-      # - name: Run the validation job
-      #   run: |
-      #     dbx launch --job=cd-validation-job --as-run-submit --trace   
 
       # # HERE THERE SHOULD BE A IF TEST: IF PERFORMANCE IS ACCEPTABLE, DO NEXT STEPS... 
 
@@ -85,10 +76,25 @@ jobs:
       # # 4a. Deploy just the job (with native scheduling) to have it triggered by Databricks' native Job scheduler
       # - name: Deploy the inference job
       #   run: |
-      #     dbx deploy --jobs=cd-infer-job-scheduled           
+      #     dbx deploy --jobs=cd-infer-job-scheduled-staging          
 
-      # # 4b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
-      # - name: Deploy the inference job
+      # 4b. Deploy just the job (no scheduling) to have it triggered by AWS Managed Airflow
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job-staging 
+
+      - name: Run the inference job (as one-time job)
+        run: |
+          dbx launch --job=cd-infer-job-staging --trace   
+
+
+
+# rubbish
+
+     # TODO: deploy files to workspace
+      # - name: Deploy notebooks
+      #   shell: bash
       #   run: |
-      #     dbx deploy --jobs=cd-infer-job             
+      #     echo "Deploying notebooks"
+      #     databricks workspace import_dir --overwrite notebooks/ /Released/notebook/ 
        
