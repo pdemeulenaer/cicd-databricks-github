@@ -2,31 +2,6 @@
     "default": {
         "jobs": [
             {
-                "name": "cicd-databricks-github-sample",
-                "new_cluster": {
-                    "spark_version": "10.4.x-cpu-ml-scala2.12",
-                    "node_type_id": "Standard_F4s",
-                    "aws_attributes": {
-                        "first_on_demand": 0
-                    },
-                    "num_workers": 1
-                },
-                "libraries": [],
-                "email_notifications": {
-                    "on_start": [],
-                    "on_success": [],
-                    "on_failure": []
-                },
-                "max_retries": 0,
-                "spark_python_task": {
-                    "python_file": "cicd_databricks_github/jobs/sample/entrypoint.py",
-                    "parameters": [
-                        "--conf-file",
-                        "conf/test/sample.json"
-                    ]
-                }
-            },                      
-            {
                 "name": "cicd-databricks-github-sample-integration-test",
                 "new_cluster": {
                     "spark_version": "10.4.x-cpu-ml-scala2.12",
@@ -200,7 +175,12 @@
                         "new_cluster": {
                             "spark_version": "10.4.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0520-103936-jokes3-pool-46dtg4oi",
-                            "num_workers": 1
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                      
                         "libraries": [
                             {
@@ -239,7 +219,12 @@
                         "new_cluster": {
                             "spark_version": "10.4.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0520-103527-swamp3-pool-8kkbt5ma",
-                            "num_workers": 1
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                       
                         "libraries": [
                             {
@@ -278,7 +263,12 @@
                         "new_cluster": {
                             "spark_version": "10.4.x-cpu-ml-scala2.12",
                             "instance_pool_id": "0520-103936-jokes3-pool-46dtg4oi",
-                            "num_workers": 1
+                            "num_workers": 1,
+                            "init_scripts": [ {
+                                "dbfs": {
+                                    "destination": "dbfs:/databricks/scripts/external-metastore.sh"
+                                }
+                              } ]
                         },                       
                         "libraries": [
                             {
