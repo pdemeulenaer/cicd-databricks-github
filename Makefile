@@ -24,4 +24,7 @@ inference:
 	dbx deploy --jobs=cd-infer-job-prod --deployment-file=./conf/deployment.json
 	dbx launch --job=cd-infer-job-prod --trace
 
+message:
+	echo hello $(foo)
+
 all: install lint test
