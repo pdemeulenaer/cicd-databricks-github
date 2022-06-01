@@ -38,28 +38,12 @@ class SampleJob(Job):
         # Read config file and necessary config fields
         model_conf = self.conf["model"]
         self.logger.info("model configs: {0}".format(model_conf))
-        print(model_conf)   
-        data_path = self.conf["data"]["data_path"]
-        train_val_dataset = self.conf["data"]["train_val_dataset"]
-        train_dataset = self.conf["data"]["train_dataset"]
-        test_dataset = self.conf["data"]["test_dataset"]      
+        print(model_conf)    
         model_name = self.conf["model"]["model_name"] 
         experiment = self.conf["model"]["experiment_name"] 
         registry_uri = self.conf['workspace'][self.workspace]['registry-uri']
         tracking_uri = self.conf['workspace'][self.workspace]['tracking-uri']
         output_path = self.conf["data"]["output_path"]
-        minimal_threshold = self.conf["model"]["minimal_threshold"] 
-
-        # Configuration of direct connection to Azure Blob storage (no mount needed)
-        # Workspace should be one of "dev", "staging", "prod"
-        # workspace = "dev"  # This is dynamically changed depending on workspace !!!!
-        # workspace = self.detect_workspace() # done at the Job class level: self.workspace
-        blob_name = self.conf['workspace'][self.workspace]['data-lake']
-        account_name = self.conf['workspace'][self.workspace]['azure-storage-account-name']
-        storage_key = dbutils.secrets.get(scope = self.conf['workspace'][self.workspace]['storage-secret-scope'], 
-                                          key = self.conf['workspace'][self.workspace]['storage-secret-scope-key'])
-        spark.conf.set("fs.azure.account.key."+account_name+".blob.core.windows.net", storage_key)
-        cwd = "wasbs://"+blob_name+"@"+account_name+".blob.core.windows.net/"
 
         # Define the centralized registry
         # registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
