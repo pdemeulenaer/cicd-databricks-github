@@ -1,16 +1,9 @@
 name: CI pipeline
 
 on:
-  # push:
-  #   branches:
-  #     - development
   pull_request:
     branches:
-      # - main  
       - development   
-      # - 'release/**'       
-    tags-ignore:
-      - 'v*' # this tag type is used for release pipelines
 
 jobs:
   ci-pipeline:
@@ -49,7 +42,6 @@ jobs:
       #   run: |
       #     echo "Launching unit tests"
       #     make test 
-      #     # cat that file  
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
