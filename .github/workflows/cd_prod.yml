@@ -45,8 +45,8 @@ jobs:
 
 
 
-      # # TODO: CREATE THE TAG
-      # # git tag -a v1.4 -m "my version 1.4" #(https://git-scm.com/book/en/v2/Git-Basics-Tagging)
+      # TODO: CREATE THE TAG
+      # git tag -a v1.4 -m "my version 1.4" #(https://git-scm.com/book/en/v2/Git-Basics-Tagging)
           
 
       # # 4. Deploy the Inference Job to Staging 
