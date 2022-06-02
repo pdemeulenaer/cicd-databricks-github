@@ -44,7 +44,12 @@ jobs:
       #     make test 
 
       - name: Get the version number
-        run: cat cicd_databricks_github/__init__.py
+        run: |
+          cat cicd_databricks_github/__init__.py
+          s=$(<cicd_databricks_github/__init__.py)
+          s=${s#*'"'}; 
+          version=${s%'"'*}
+          echo "$version"
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
