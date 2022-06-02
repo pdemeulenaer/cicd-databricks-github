@@ -43,6 +43,9 @@ jobs:
       #     echo "Launching unit tests"
       #     make test 
 
+      - name: Get the version number
+        run: cat cicd_databricks_github/__init__.py
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
