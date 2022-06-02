@@ -77,8 +77,7 @@ class SampleJob(Job):
         print(version, artifact_uri, run_id)
 
         # Model transition to prod
-        with mlflow.start_run(run_id) as run:
-            client.transition_model_version_stage(name=model_name, version=version, stage="Production")
+        client.transition_model_version_stage(name=model_name, version=version, stage="Production")
                                 
         # print("Step 1.0 completed: model transition to prod")  
         self.logger.info("Step 1.0 completed: model transition to prod")                

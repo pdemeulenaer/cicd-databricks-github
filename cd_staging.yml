@@ -1,0 +1,53 @@
+name: CD to Staging
+
+on:
+  pull_request:
+    branches:  
+      - 'main'         
+
+jobs:
+  cd-staging:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_STAGING }} 
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN_STAGING }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.9
+
+      - name: Install packages
+        run: |
+          make install
+
+      # Deploy & run training pipeline
+      - name: Deploy the training job (as retraining pipeline job)
+        run: |
+          dbx deploy --jobs=ci-train-job  
+
+      - name: Run the training job
+        run: |
+          dbx launch --job=ci-train-job --trace
+
+      # Deploy the Inference Job to Staging 
+      - name: Deploy the inference job
+        run: |
+          dbx deploy --jobs=cd-infer-job-staging 
+
+      - name: Run the inference job (as one-time job)
+        run: |
+          dbx launch --job=cd-infer-job-staging --trace   
+
+
+       
+
