@@ -64,11 +64,6 @@ class SampleJob(Job):
         model_names = [m.name for m in client.list_registered_models()]
         print(model_names)
 
-        # Load model from MLflow experiment
-        # model = mlflow.pyfunc.load_model(f'models://{scope}:{key}@databricks/{model3_name}/Staging')
-        model = mlflow.pyfunc.load_model(f'models://connection-to-data-workspace:data-workspace@databricks/'+model_name+'/None')  
-        # model = mlflow.pyfunc.load_model(model_path)
-
         # Extracting model information
         mv = client.get_latest_versions(model_name, ['Staging'])[0]
         version = mv.version
