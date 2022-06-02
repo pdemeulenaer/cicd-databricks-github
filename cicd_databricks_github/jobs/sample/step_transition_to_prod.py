@@ -45,12 +45,13 @@ class SampleJob(Job):
         tracking_uri = self.conf['workspace'][self.workspace]['tracking-uri']
         output_path = self.conf["data"]["output_path"]
 
-        # Define the centralized registry
+       # Define the centralized registry
         # registry_uri = f'databricks://connection-to-data-workspace:data-workspace'
+        mlflow.set_tracking_uri(tracking_uri) # BUG: is this working here?
         mlflow.set_registry_uri(registry_uri) # BUG: is this working here?
-
+        
         # Define the MLFlow experiment location
-        mlflow.set_experiment(experiment)       
+        mlflow.set_experiment(experiment)    # note: the experiment will STILL be recorded to local MLflow instance!      
 
         # try:
         # ========================================
