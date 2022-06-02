@@ -194,16 +194,18 @@ class SampleJob(Job):
         # fs_table_version = run.data.tags['fs_table_version']
         train_dataset = spark.read.format("delta").option("versionAsOf", train_dataset_version).load(train_dataset_path)
         train_dataset_pd = train_dataset.toPandas()
+
+        train_dataset_pd.drop('target', inplace=True, axis=1)
         
         # Data drift calculation
         data_columns = ColumnMapping()
-        data_columns.numerical_features = ['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
+        data_columns.numerical_features = train_dataset_pd.columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
 
         data_drift_profile = Profile(sections=[DataDriftProfileSection()])
         df_with_predictions_pd = df_with_predictions.toPandas()
         print(train_dataset_pd.columns)
         print(df_with_predictions_pd.columns)
-        data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping = None) #column_mapping=data_columns) 
+        data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
         data_drift_profile_dict = json.loads(data_drift_profile.json())
         # print(data_drift_profile_dict['data_drift'])
         
