@@ -201,7 +201,9 @@ class SampleJob(Job):
 
         data_drift_profile = Profile(sections=[DataDriftProfileSection()])
         df_with_predictions_pd = df_with_predictions.toPandas()
-        data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
+        print(train_dataset_pd.columns)
+        print(df_with_predictions_pd.columns)
+        data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping = None) #column_mapping=data_columns) 
         data_drift_profile_dict = json.loads(data_drift_profile.json())
         # print(data_drift_profile_dict['data_drift'])
         
