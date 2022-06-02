@@ -28,6 +28,15 @@ jobs:
         with:
           python-version: 3.7.9
 
+      - name: Get the version number
+        run: |
+          cat cicd_databricks_github/__init__.py
+          s=$(<cicd_databricks_github/__init__.py)
+          s=${s#*'"'}; 
+          version=${s%'"'*}
+          release=v"$version"
+          echo $release
+
       - name: Install packages
         run: |
           make install
@@ -42,14 +51,6 @@ jobs:
       #   run: |
       #     echo "Launching unit tests"
       #     make test 
-
-      - name: Get the version number
-        run: |
-          cat cicd_databricks_github/__init__.py
-          s=$(<cicd_databricks_github/__init__.py)
-          s=${s#*'"'}; 
-          version=${s%'"'*}
-          echo "$version"
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
