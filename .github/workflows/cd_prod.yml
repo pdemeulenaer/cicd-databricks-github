@@ -51,12 +51,12 @@ jobs:
           version=${s%'"'*}
           echo v"$version"
 
-      - name: Bump version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: v"$version"
+      # - name: Bump version and push tag
+      #   id: tag_version
+      #   uses: mathieudutour/github-tag-action@v6.0
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     custom_tag: v"$version"
 
 
       - name: Create Release
@@ -65,10 +65,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v"$version"
-          release_name: Release v"$version"
+          tag_name: $(version)
+          release_name: Release $(version)
           body: |
-            Release for version v"$version".
+            Release for version $(version).
           draft: false
           prerelease: false
 
