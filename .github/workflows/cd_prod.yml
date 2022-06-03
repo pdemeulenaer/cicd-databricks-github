@@ -38,9 +38,9 @@ jobs:
         run: |
           dbx deploy --jobs=cd-infer-job-prod
 
-      - name: Run the inference job (as one-time job)
-        run: |
-          dbx launch --job=cd-infer-job-prod --trace   
+      # - name: Run the inference job (as one-time job)
+      #   run: |
+      #     dbx launch --job=cd-infer-job-prod --trace   
 
 
       - name: Get the version number
