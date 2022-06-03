@@ -50,6 +50,7 @@ jobs:
           s=${s#*'"'}; 
           version=${s%'"'*}
           echo v"$version"
+          echo "::set-env name=version::$version"
 
       # - name: Bump version and push tag
       #   id: tag_version
@@ -65,10 +66,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: $(version)
-          release_name: Release $(version)
+          tag_name: $version
+          release_name: Release $version
           body: |
-            Release for version $(version).
+            Release for version $version.
           draft: false
           prerelease: false
 
