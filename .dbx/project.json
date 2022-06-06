@@ -1,7 +1,7 @@
 {
   "environments": {
     "default": {
-      "profile": "prod",
+      "profile": "staging",
       "workspace_dir": "/Shared/dbx/cicd_databricks_github",
       "artifact_location": "dbfs:/Shared/dbx/projects/cicd_databricks_github"
     }
