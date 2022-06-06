@@ -21,8 +21,8 @@ validate:
 	dbx launch --job=validation --trace
 
 inference:
-	dbx deploy --jobs=cd-infer-job-prod --deployment-file=./conf/deployment.json
-	dbx launch --job=cd-infer-job-prod --trace
+	dbx deploy --jobs=cd-infer-job-staging --deployment-file=./conf/deployment.json
+	dbx launch --job=cd-infer-job-staging --trace
 
 message:
 	echo hello $(foo)
