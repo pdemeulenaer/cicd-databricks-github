@@ -256,15 +256,15 @@ class SampleJob(Job):
         df_with_predictions_pd = df_with_predictions.toPandas()
         print(train_dataset_pd.columns)
         print(df_with_predictions_pd.columns)
-        data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
-        data_drift_profile_dict = json.loads(data_drift_profile.json())
-        # print(data_drift_profile_dict['data_drift'])
+        performance_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
+        performance_drift_profile_dict = json.loads(performance_drift_profile.json())
+        # print(performance_drift_profile_dict['data_drift'])
         
         # Save the data monitoring to data lake 
-        data_monitor_json = json.dumps(data_drift_profile_dict['data_drift'])
-        data_monitor_df = spark.read.json(sc.parallelize([data_monitor_json]))
-        display(data_monitor_df)
-        data_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"data_monitoring")
+        performance_monitor_json = json.dumps(performance_drift_profile_dict['data_drift'])
+        performance_monitor_df = spark.read.json(sc.parallelize([performance_monitor_json]))
+        display(performance_monitor_df)
+        performance_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"performance_monitoring")
 
         self.logger.info("Step 1.3 completed: performance monitoring")  
 
