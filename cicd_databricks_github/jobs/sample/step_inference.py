@@ -252,7 +252,7 @@ class SampleJob(Job):
         data_columns.prediction = 'prediction'
         data_columns.numerical_features = train_dataset_pd.columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
 
-        data_drift_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
+        performance_drift_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
         df_with_predictions_pd = df_with_predictions.toPandas()
         print(train_dataset_pd.columns)
         print(df_with_predictions_pd.columns)
