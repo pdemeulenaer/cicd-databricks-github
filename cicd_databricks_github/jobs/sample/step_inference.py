@@ -14,7 +14,7 @@ from mlflow.tracking import MlflowClient
 
 # Monitoring
 from evidently.model_profile import Profile
-from evidently.model_profile.sections import DataDriftProfileSection
+from evidently.model_profile.sections import DataDriftProfileSection, ClassificationPerformanceProfileSection
 from evidently.pipeline.column_mapping import ColumnMapping
 
 
@@ -84,22 +84,27 @@ class SampleJob(Job):
 
         # Load the raw data and associated label tables
         raw_data = spark.read.format('delta').load(cwd + 'raw_data')
-        labels = spark.read.format('delta').load(cwd + 'labels')
+        # labels = spark.read.format('delta').load(cwd + 'labels') # TODO: REMOVE LABELS HERE, WE ARE NOT USING THEM DURING THE INFERENCE !!!!
         
-        # Joining raw_data and labels
-        raw_data_with_labels = raw_data.join(labels, ['Id','hour'])
-        display(raw_data_with_labels)
+        # # Joining raw_data and labels  # TODO: REMOVE LABELS HERE, WE ARE NOT USING THEM DURING THE INFERENCE !!!!
+        # raw_data_with_labels = raw_data.join(labels, ['Id','hour'])
+        # display(raw_data_with_labels)
         
-        # Selection of the data and labels FROM last LARGE time step (e.g. day or week let's say)
-        # Hence we will TAKE the last large timestep of the data
-        # max_hour = raw_data_with_labels.select("hour").rdd.max()[0]
-        max_date = raw_data_with_labels.select("date").rdd.max()[0]
+        # # Selection of the data and labels FROM last LARGE time step (e.g. day or week let's say)
+        # # Hence we will TAKE the last large timestep of the data
+        # # max_hour = raw_data_with_labels.select("hour").rdd.max()[0]
+        # max_date = raw_data_with_labels.select("date").rdd.max()[0]
+        # print(max_date)
+        # # raw_data_with_labels = raw_data_with_labels.withColumn("filter_out", when((col("hour")==max_hour) & (col("date")==max_date),"1").otherwise(0)) # don't take last hour of last day of data
+        # raw_data_with_labels = raw_data_with_labels.withColumn("filter_out", when(col("date")==max_date,"1").otherwise(0)) # don't take last day of data
+        # raw_data_with_labels = raw_data_with_labels.filter("filter_out==1").drop("filter_out")
+        # display(raw_data_with_labels)
+        # raw_data = raw_data_with_labels.drop("target")
+
+        max_date = raw_data.select("date").rdd.max()[0]
         print(max_date)
-        # raw_data_with_labels = raw_data_with_labels.withColumn("filter_out", when((col("hour")==max_hour) & (col("date")==max_date),"1").otherwise(0)) # don't take last hour of last day of data
-        raw_data_with_labels = raw_data_with_labels.withColumn("filter_out", when(col("date")==max_date,"1").otherwise(0)) # don't take last day of data
-        raw_data_with_labels = raw_data_with_labels.filter("filter_out==1").drop("filter_out")
-        display(raw_data_with_labels)
-        raw_data = raw_data_with_labels.drop("target")
+        raw_data = raw_data.withColumn("filter_out", when(col("date")==max_date,"1").otherwise(0)) # don't take last day of data
+        raw_data = raw_data.filter("filter_out==1").drop("filter_out")
         display(raw_data)
 
         # print("Step 1.0 completed: Loaded Iris dataset in Pandas")
@@ -176,16 +181,13 @@ class SampleJob(Job):
         #     print(traceback.format_exc())
         #     raise e   y
 
+
         # try:
         # ========================================
         # 1.2 Data monitoring
-        # ========================================
-        
-        # print("Step 1.2 completed: data monitoring")  
-        self.logger.info("Step 1.2 completed: data monitoring")                
+        # ========================================           
 
-        # Extract the right version of the training dataset (as logged in MLflow) # BUG: will this work in PROD ?
-        # run = mlflow.get_run(latest_model.run_id)
+        # Extract the right version of the training dataset (as logged in MLflow)
         client = mlflow.tracking.MlflowClient(tracking_uri=tracking_uri, registry_uri=registry_uri)
         run = client.get_run(latest_model.run_id)
         train_dataset_version = run.data.tags['train_dataset_version']
@@ -200,7 +202,6 @@ class SampleJob(Job):
         # Data drift calculation
         data_columns = ColumnMapping()
         data_columns.numerical_features = train_dataset_pd.columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
-
         data_drift_profile = Profile(sections=[DataDriftProfileSection()])
         df_with_predictions_pd = df_with_predictions.toPandas()
         print(train_dataset_pd.columns)
@@ -221,7 +222,57 @@ class SampleJob(Job):
         #     print("Errored on step 1.2: data monitoring")
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
-        #     raise e              
+        #     raise e        
+
+
+       # try:
+        # ========================================
+        # 1.3 Performance monitoring  (Here assumption of no delayed outcome!)
+        # ========================================            
+
+        # Extract the right version of the training dataset (as logged in MLflow)
+        client = mlflow.tracking.MlflowClient(tracking_uri=tracking_uri, registry_uri=registry_uri)
+        run = client.get_run(latest_model.run_id)
+        train_dataset_version = run.data.tags['train_dataset_version']
+        train_dataset_path = run.data.tags['train_dataset_path']
+        # test_dataset_version = run.data.tags['test_dataset_version']
+        # fs_table_version = run.data.tags['fs_table_version']
+        train_dataset = spark.read.format("delta").option("versionAsOf", train_dataset_version).load(train_dataset_path)
+        train_dataset_pd = train_dataset.toPandas()
+
+        # Load the target labels of the unseen data (the ones we try to infer). Here is the assumption of no delayed outcome... 
+        labels = spark.read.format('delta').load(cwd + 'labels')
+        df_with_predictions = df_with_predictions.join(labels, ['Id','hour'])
+        display(df_with_predictions)
+
+        
+        # Performance drift calculation
+        data_columns = ColumnMapping()
+        data_columns.target = 'target'
+        data_columns.prediction = 'prediction'
+        data_columns.numerical_features = train_dataset_pd.columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
+
+        data_drift_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
+        df_with_predictions_pd = df_with_predictions.toPandas()
+        print(train_dataset_pd.columns)
+        print(df_with_predictions_pd.columns)
+        data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
+        data_drift_profile_dict = json.loads(data_drift_profile.json())
+        # print(data_drift_profile_dict['data_drift'])
+        
+        # Save the data monitoring to data lake 
+        data_monitor_json = json.dumps(data_drift_profile_dict['data_drift'])
+        data_monitor_df = spark.read.json(sc.parallelize([data_monitor_json]))
+        display(data_monitor_df)
+        data_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"data_monitoring")
+
+        self.logger.info("Step 1.3 completed: performance monitoring")  
+
+        # except Exception as e:
+        #     print("Errored on step 1.2: data monitoring")
+        #     print("Exception Trace: {0}".format(e))
+        #     print(traceback.format_exc())
+        #     raise e           
 
 
     def launch(self):
