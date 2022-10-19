@@ -8,5 +8,7 @@
               "artifact_location": "dbfs:/Shared/dbx/projects/cicd_databricks_github"
           }
       }
-  }
+  },
+  "inplace_jinja_support": false,
+  "failsafe_cluster_reuse_with_assets": false
 }
