@@ -40,22 +40,22 @@ jobs:
       # 1. Deploy & run integration tests
       # - name: Deploy integration test
       #   run: |
-      #     dbx deploy --jobs=cicd-databricks-github-sample-integration-test --files-only
+      #     dbx deploy --jobs=cicd-databricks-github-sample-integration-test --assets-only
 
       # - name: Run integration test
       #   run: |
-      #     dbx launch --job=cicd-databricks-github-sample-integration-test --as-run-submit --trace    
+      #     dbx launch --job=cicd-databricks-github-sample-integration-test --from-assets --trace    
 
 
 
       # 2. Deploy & run training pipeline
       # - name: Deploy the training job (as one-time job)
       #   run: |
-      #     dbx deploy --jobs=ci-train-job --files-only
+      #     dbx deploy --jobs=ci-train-job --assets-only
        
       # - name: Run the training job (as one-time job)
       #   run: |
-      #     dbx launch --job=ci-train-job --as-run-submit --trace   
+      #     dbx launch --job=ci-train-job --from-assets --trace   
 
       # Add in case we want to deploy the job and have it present in the Jobs UI, scheduled
       - name: Deploy the training job (as retraining pipeline job)

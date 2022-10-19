@@ -1,9 +1,12 @@
 {
   "environments": {
-    "default": {
-      "profile": "staging",
-      "workspace_dir": "/Shared/dbx/cicd_databricks_github",
-      "artifact_location": "dbfs:/Shared/dbx/projects/cicd_databricks_github"
-    }
+      "default": {
+          "profile": "staging",
+          "storage_type": "mlflow",
+          "properties": {
+              "workspace_directory": "/Shared/dbx/cicd_databricks_github",
+              "artifact_location": "dbfs:/Shared/dbx/projects/cicd_databricks_github"
+          }
+      }
   }
 }
