@@ -1,0 +1,44 @@
+workspace:
+  dev:
+    azure-storage-account-name: "datalakeblobstorage"
+    storage-secret-scope: "connection-to-datalakeblobstorage"
+    storage-secret-scope-key: "datalakeblobstorage"
+    data-lake: "data-lake-blob-dev"
+    tracking-uri: "databricks"
+    registry-uri: "databricks://connection-to-data-workspace:data-workspace"
+  staging:
+    azure-storage-account-name: "datalakeblobstorage"
+    storage-secret-scope: "connection-to-datalakeblobstorage"
+    storage-secret-scope-key: "datalakeblobstorage"
+    data-lake: "data-lake-blob-dev"
+    tracking-uri: "databricks"
+    registry-uri: "databricks://connection-to-data-workspace:data-workspace"
+  prod:
+    azure-storage-account-name: "datalakeblobstorage"
+    storage-secret-scope: "connection-to-datalakeblobstorage"
+    storage-secret-scope-key: "datalakeblobstorage"
+    data-lake: "data-lake-blob-prod"
+    tracking-uri: "databricks://connection-to-staging-workspace:staging-workspace"
+    registry-uri: "databricks://connection-to-data-workspace:data-workspace"
+data:
+  output_format: "delta"
+  data_path: "dbfs:/dbx/tmp/cicd_databricks_github/data/"
+  output_path: "dbfs:/dbx/tmp/cicd_databricks_github/output_data/"
+  train_val_dataset: "train_val_iris_dataset"
+  train_dataset: "train_iris_dataset"
+  test_dataset: "test_iris_dataset"
+  inference_dataset: "full_iris_dataset"
+  scored_inference_dataset: "scored_full_iris_dataset"
+model":
+  model_name": "IrisClassificationRF"
+  experiment_name": "/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment"
+  hyperparameters_grid":
+    max_depth: [3, 10]
+    n_estimators: [30, 50]
+    max_features: ["auto"]
+    criterion: ["gini", "entropy"]
+  hyperparameters_fixed":
+    class_weight: "balanced"
+    bootstrap: "True"
+    random_state: "21"
+  minimal_threshold": 0.8
