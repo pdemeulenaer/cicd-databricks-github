@@ -1,3 +1,4 @@
+# JOB API V2.1
 # Custom section is used to store configurations that might be repetative.
 # Please read YAML documentation for details on how to use substitutions and anchors.
 custom:
@@ -7,7 +8,7 @@ custom:
   basic-static-cluster: &basic-static-cluster
     new_cluster:
       <<: *basic-cluster-props
-      instance_pool_id: "0520-103527-swamp3-pool-8kkbt5ma"
+      instance_pool_id: "0504-155324-goon210-pool-p1whoqep"
       num_workers: 1
       # node_type_id: "Standard_E8_v3"
       init_scripts:
