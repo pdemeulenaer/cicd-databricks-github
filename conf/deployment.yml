@@ -1,0 +1,44 @@
+# Custom section is used to store configurations that might be repetative.
+# Please read YAML documentation for details on how to use substitutions and anchors.
+custom:
+  basic-cluster-props: &basic-cluster-props
+    spark_version: "10.4.x-cpu-ml-scala2.12"
+
+  basic-static-cluster: &basic-static-cluster
+    new_cluster:
+      <<: *basic-cluster-props
+      instance_pool_id: "0520-103527-swamp3-pool-8kkbt5ma"
+      num_workers: 1
+      # node_type_id: "Standard_E8_v3"
+      init_scripts:
+        - dbfs:
+            destination: "dbfs:/databricks/scripts/external-metastore.sh"
+
+environments:
+  default:
+    workflows:
+      #############################################################
+      # CI train workflow
+      #############################################################
+      - name: "ci-train-workflow"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *basic-static-cluster
+        tasks:
+          - task_key: "step-training-task"
+            description: "Step Training"
+            job_cluster_key: "default"
+            libraries: []
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_training.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]
+          - task_key: "step-validation-task"
+            depends_on:
+              - task_key: "step-training-task"
+            job_cluster_key: "default"
+            libraries: []
+            max_retries: 0            
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_validation.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]
