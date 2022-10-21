@@ -66,6 +66,13 @@ CD:
 
 * [Done] Finish the inference on test dataset; reading the model from MLflow. In the simplistic case, we will use the best artifact among ALL experiments tracked in mlflow (later, we need to capture the latest mlflow experiment built during the CI execution). So that is a strong simplification so far.
 
+* [TODO] update the code to dbx v0.7.6
+
+* [TODO] Update the deployment file following Jobs API 2.1 instead of 2.0 convention
+
+* [TODO] Update the databricks local configuration using Jobs API 2.1 instead of 2.0. To do this, run configure like
+databricks jobs configure --version=2.1 (that will reconfigure ONLY the current environment in the .databrickcfg file)
+
 * (optional) Get the name of the branch of the last commit (if in feature branch) as a tag in MLflow experiment. For the CI experiment, if passes tests, set the tag as "development"
 
 * (optional) Add step in the CI the captures all experiments of the branch that is PR'ed into the development branch, and compare the performance of the new experiment, produced during the training that happens within the CI, as a safeguard (the performance should not deviate "too much")
