@@ -12,17 +12,32 @@ format:
 test:
 	python -m pytest -vv --disable-warnings tests/ --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml --cov-report term #--cov-report html:cov_html #--doctest-modules #--cov=hello test_hello.py
 
-training:
-	dbx deploy --jobs=training --deployment-file=./conf/deployment-training.json
-	dbx launch --job=training --trace
 
-validate:
-	dbx deploy --jobs=validation --deployment-file=./conf/deployment-validation.json
-	dbx launch --job=validation --trace
+# For executions in command line (for test purpose, on interactive clusters)
+train_task: # TODO:
+	# dbx deploy --jobs=training --deployment-file=./conf/deployment-training.json
+	# dbx launch --job=training --trace
+	dbx execute train-workflow --task step-training-task --cluster-name ...	
 
-inference:
-	dbx deploy --jobs=cd-infer-job-staging --deployment-file=./conf/deployment.json
-	dbx launch --job=cd-infer-job-staging --trace
+validate_task: # TODO:
+	# dbx deploy --jobs=validation --deployment-file=./conf/deployment-validation.json
+	# dbx launch --job=validation --trace
+	dbx execute train-workflow --task step-validation-task --cluster-name ...		
+
+inference_task: # TODO:
+	# dbx deploy --jobs=cd-infer-job-staging --deployment-file=./conf/deployment.json
+	# dbx launch --job=cd-infer-job-staging --trace
+
+# For executions within the CI/CD pipeline
+train_workflow:
+	# dbx deploy --jobs=training --deployment-file=./conf/deployment-training.json
+	# dbx launch --job=training --trace
+	dbx deploy train-workflow
+	dbx launch train-workflow --trace		
+
+inference: # TODO:
+	# dbx deploy --jobs=cd-infer-job-staging --deployment-file=./conf/deployment.json
+	# dbx launch --job=cd-infer-job-staging --trace
 
 message:
 	echo hello $(foo)

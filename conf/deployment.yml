@@ -21,7 +21,7 @@ environments:
       #############################################################
       # CI train workflow
       #############################################################
-      - name: "ci-train-workflow"
+      - name: "train-workflow"
         job_clusters:
           - job_cluster_key: "default"
             <<: *basic-static-cluster
