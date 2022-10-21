@@ -1,4 +1,4 @@
-from cicd_databricks_github.common import Job
+from cicd_databricks_github.common import Task
 
 import pandas as pd
 import numpy as np

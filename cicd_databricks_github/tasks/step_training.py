@@ -1,6 +1,6 @@
 # Model training code
 
-from cicd_databricks_github.common import Job
+from cicd_databricks_github.common import Task
 from cicd_databricks_github import module
 
 # General packages

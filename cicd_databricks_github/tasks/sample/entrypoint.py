@@ -1,4 +1,4 @@
-from cicd_databricks_github.common import Job
+from cicd_databricks_github.common import Task
 
 import json
 
