@@ -35,9 +35,17 @@ train_workflow:
 	dbx deploy train-workflow
 	dbx launch train-workflow --trace		
 
-inference: # TODO:
+inference_dev: # TODO:
 	# dbx deploy --jobs=cd-infer-job-staging --deployment-file=./conf/deployment.json
 	# dbx launch --job=cd-infer-job-staging --trace
+	dbx deploy inference-workflow-dev
+	dbx launch inference-workflow-dev --trace	
+
+inference_staging: # TODO:
+	# dbx deploy --jobs=cd-infer-job-staging --deployment-file=./conf/deployment.json
+	# dbx launch --job=cd-infer-job-staging --trace
+	dbx deploy inference-workflow-staging
+	dbx launch inference-workflow-staging --trace		
 
 message:
 	echo hello $(foo)

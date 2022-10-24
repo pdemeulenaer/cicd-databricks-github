@@ -40,7 +40,6 @@ environments:
           - task_key: "step-training-task"
             description: "Step Training"
             job_cluster_key: "default"
-            libraries: []
             max_retries: 0
             spark_python_task:
               python_file: "file://cicd_databricks_github/tasks/step_training.py"
@@ -49,8 +48,64 @@ environments:
             depends_on:
               - task_key: "step-training-task"
             job_cluster_key: "default"
-            libraries: []
             max_retries: 0            
             spark_python_task:
               python_file: "file://cicd_databricks_github/tasks/step_validation.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]
+
+      - name: "inference-workflow-dev"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *dev-pool-cluster
+        tasks:
+          - task_key: "step-infer-task"
+            description: "Step Inference Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]         
+
+      - name: "inference-workflow-staging"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *staging-pool-cluster
+        tasks:
+          - task_key: "step-infer-task"
+            description: "Step Inference Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]            
+
+      - name: "inference-workflow-prod"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *prod-pool-cluster
+        tasks:
+          - task_key: step-transition-to-prod
+            description: step transition to prod task
+            job_cluster_key: "default"
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_transition_to_prod.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]              
+
+          - task_key: "step-infer-task"
+            depends_on:
+              - task_key: "step-transition-to-prod"          
+            description: "Step Inference Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]                               
