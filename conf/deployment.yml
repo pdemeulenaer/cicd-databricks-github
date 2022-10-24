@@ -4,16 +4,27 @@
 custom:
   basic-cluster-props: &basic-cluster-props
     spark_version: "10.4.x-cpu-ml-scala2.12"
+    num_workers: 1
+    # node_type_id: "Standard_E8_v3"
+    init_scripts:
+      - dbfs:
+          destination: "dbfs:/databricks/scripts/external-metastore.sh"    
 
-  basic-static-cluster: &basic-static-cluster
+  dev-pool-cluster: &dev-pool-cluster
     new_cluster:
       <<: *basic-cluster-props
       instance_pool_id: "0504-155324-goon210-pool-p1whoqep"
-      num_workers: 1
-      # node_type_id: "Standard_E8_v3"
-      init_scripts:
-        - dbfs:
-            destination: "dbfs:/databricks/scripts/external-metastore.sh"
+
+  staging-pool-cluster: &staging-pool-cluster
+    new_cluster:
+      <<: *basic-cluster-props
+      instance_pool_id: "0520-103527-swamp3-pool-8kkbt5ma"
+
+  prod-pool-cluster: &prod-pool-cluster
+    new_cluster:
+      <<: *basic-cluster-props
+      instance_pool_id: "0520-103936-jokes3-pool-46dtg4oi"            
+
 
 environments:
   default:
@@ -24,7 +35,7 @@ environments:
       - name: "train-workflow"
         job_clusters:
           - job_cluster_key: "default"
-            <<: *basic-static-cluster
+            <<: *dev-pool-cluster
         tasks:
           - task_key: "step-training-task"
             description: "Step Training"
