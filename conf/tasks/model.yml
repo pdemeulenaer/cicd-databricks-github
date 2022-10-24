@@ -29,16 +29,16 @@ data:
   test_dataset: "test_iris_dataset"
   inference_dataset: "full_iris_dataset"
   scored_inference_dataset: "scored_full_iris_dataset"
-model":
-  model_name": "IrisClassificationRF"
-  experiment_name": "/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment"
-  hyperparameters_grid":
+model:
+  model_name: "IrisClassificationRF"
+  experiment_name: "/Shared/simple-rf-sklearn/simple-rf-sklearn_experiment"
+  hyperparameters_grid:
     max_depth: [3, 10]
     n_estimators: [30, 50]
     max_features: ["auto"]
     criterion: ["gini", "entropy"]
-  hyperparameters_fixed":
+  hyperparameters_fixed:
     class_weight: "balanced"
     bootstrap: "True"
     random_state: "21"
-  minimal_threshold": 0.8
+  minimal_threshold: 0.8
