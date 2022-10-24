@@ -18,13 +18,13 @@ from evidently.model_profile.sections import DataDriftProfileSection, Classifica
 from evidently.pipeline.column_mapping import ColumnMapping
 
 
-class SampleJob(Job):
+class InferenceTask(Task):
 
     # def __init__(self):
     #     self.workspace = self.detect_workspace()
 
     # Custom function
-    def inference(self, **kwargs):
+    def _inference(self, **kwargs):
         """
         Model inference function
         """
@@ -274,24 +274,16 @@ class SampleJob(Job):
         #     print(traceback.format_exc())
         #     raise e           
 
-
     def launch(self):
-        self.logger.info("Launching sample job")
+        self.logger.info("Launching inference task")
+        self._inference()
+        self.logger.info("Inference task finished!")  
 
-        listing = self.dbutils.fs.ls("dbfs:/")
+# if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
+def entrypoint():  # pragma: no cover
+    task = InferenceTask()
+    task.launch()
 
-        for l in listing:
-            self.logger.info(f"DBFS directory: {l}")
-
-        df = self.spark.range(0, 1000)
-
-        df.write.format(self.conf["output_format"]).mode("overwrite").save(
-            self.conf["output_path"]
-        )
-
-        self.logger.info("Sample job finished!")
-        
-
-if __name__ == "__main__":
-    job = SampleJob()
-    job.inference()
+# if you're using spark_python_task, you'll need the __main__ block to start the code execution
+if __name__ == '__main__':
+    entrypoint()

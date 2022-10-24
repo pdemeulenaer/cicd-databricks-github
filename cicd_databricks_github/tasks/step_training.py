@@ -35,10 +35,10 @@ from databricks.feature_store import FeatureLookup
 # from delta.tables import DeltaTable
 
 
-class SampleJob(Job):
+class TrainTask(Task):
 
     # Custom function
-    def train(self, **kwargs):
+    def _train(self, **kwargs):
         """
         Model training function
         """
@@ -351,28 +351,20 @@ class SampleJob(Job):
         #     print("Exception Trace: {0}".format(e))
         #     print(traceback.format_exc())
         #     raise e                  
-
         
     def launch(self):
-        self.logger.info("Launching sample job")
+        self.logger.info("Launching train task")
+        self._train()
+        self.logger.info("Train task finished!")  
 
-        listing = self.dbutils.fs.ls("dbfs:/")
+# if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
+def entrypoint():  # pragma: no cover
+    task = TrainTask()
+    task.launch()
 
-        for l in listing:
-            self.logger.info(f"DBFS directory: {l}")
-
-        df = self.spark.range(0, 1000)
-
-        df.write.format(self.conf["output_format"]).mode("overwrite").save(
-            self.conf["output_path"]
-        )
-
-        self.logger.info("Sample job finished!")       
-
-
-if __name__ == "__main__":
-    job = SampleJob()
-    job.train()
+# if you're using spark_python_task, you'll need the __main__ block to start the code execution
+if __name__ == '__main__':
+    entrypoint()
 
 
 
