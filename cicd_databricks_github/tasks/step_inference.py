@@ -258,7 +258,8 @@ class InferenceTask(Task):
         print(df_with_predictions_pd.columns)
         performance_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
         performance_drift_profile_dict = json.loads(performance_drift_profile.json())
-        # print(performance_drift_profile_dict['data_drift'])
+        print(classification_performance_profile.json())
+        print(performance_drift_profile_dict['data_drift'])
         
         # Save the data monitoring to data lake 
         performance_monitor_json = json.dumps(performance_drift_profile_dict['data_drift'])
