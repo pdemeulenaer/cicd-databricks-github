@@ -226,7 +226,7 @@ class InferenceTask(Task):
         #     raise e        
 
 
-       # try:
+        # try:
         # ========================================
         # 1.3 Performance monitoring  (Here assumption of no delayed outcome!)
         # ========================================            
@@ -241,7 +241,7 @@ class InferenceTask(Task):
         train_dataset = spark.read.format("delta").option("versionAsOf", train_dataset_version).load(train_dataset_path)
         train_dataset_pd = train_dataset.toPandas()
 
-        # Load the target labels of the unseen data (the ones we try to infer). Here is the assumption of no delayed outcome... 
+        # Load the target labels of the unseen data (the ones we tried to infer in step 1.1). Here is the assumption of no delayed outcome... 
         labels = spark.read.format('delta').load(cwd + 'labels')
         df_with_predictions = df_with_predictions.join(labels, ['Id','hour'])
         

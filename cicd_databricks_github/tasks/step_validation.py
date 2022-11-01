@@ -111,7 +111,7 @@ class ValidationTask(Task):
         # Initialize client
         # client = mlflow.tracking.MlflowClient()
         client = mlflow.tracking.MlflowClient(tracking_uri=tracking_uri, registry_uri=registry_uri)
-        model_names = [m.name for m in client.list_registered_models()] # if m.name.startswith(prefix)]
+        model_names = [m.name for m in client.search_registered_models()] # if m.name.startswith(prefix)]
         print(model_names)
         
         # # Get experiment and runs # NOT CONSIDERED SINCE ONLY LOCAL MODEL
